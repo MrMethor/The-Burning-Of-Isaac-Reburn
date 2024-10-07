@@ -2,7 +2,7 @@ import fri.shapesge.Image;
 
 public class Pause {
 
-    private Image background = new Image("resource/pause.png");
+    private final Image background = new Image("resource/pause.png");
     private final Button resume;
     private final Button menu;
     private boolean exited = false;

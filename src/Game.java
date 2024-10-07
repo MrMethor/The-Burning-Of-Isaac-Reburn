@@ -9,6 +9,7 @@ public class Game {
     }
 
     public void update(Controls controls) {
+        // Paused
         if (this.pause != null) {
             this.pause.update(controls);
             if (this.pause.resumed()) {
@@ -23,6 +24,8 @@ public class Game {
             }
             return;
         }
+
+        // Game
         int playerX = 0;
         int playerY = 0;
         for (int i = 0; i < controls.getKeyboard().length; i++) {
