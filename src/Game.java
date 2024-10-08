@@ -31,7 +31,7 @@ public class Game {
         for (int i = 0; i < controls.keyboard().length; i++) {
             switch (controls.keyboard()[i]) {
                 case moveUP:
-                    playerY += -1;
+                    playerY -= 1;
                     break;
                 case moveDown:
                     playerY += 1;
@@ -40,7 +40,7 @@ public class Game {
                     playerX += 1;
                     break;
                 case moveLeft:
-                    playerX += -1;
+                    playerX -= 1;
                     break;
                 case escape:
                     controls.removeCommand(Keyboard.escape);

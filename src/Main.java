@@ -9,6 +9,7 @@ public class Main {
     private final Controls controls = new Controls();
     private boolean running = true;
 
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         Main main = new Main();
     }

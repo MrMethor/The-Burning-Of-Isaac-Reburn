@@ -9,7 +9,6 @@ public class Controls {
         Arrays.fill(keyboard, Keyboard.None);
         Arrays.fill(mouse, null);
     }
-
     public void W_pressed() {
         addCommand(Keyboard.moveUP);
     }

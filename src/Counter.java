@@ -11,11 +11,11 @@ public class Counter {
     private int elapsedTime = 0;
 
     public void addFPS() {
-        this.fpsCounter++;
+        fpsCounter++;
     }
 
     public void addUPS() {
-        this.upsCounter++;
+        upsCounter++;
     }
 
     public void addTime(long alpha) {
@@ -24,19 +24,18 @@ public class Counter {
             resetCounter();
             //print();
         }
-        this.elapsedTime += alpha;
+        elapsedTime += (int)alpha;
     }
 
     public void resetCounter() {
-        this.ups = this.upsCounter;
-        this.fps = this.fpsCounter;
-        this.upsCounter = 0;
-        this.fpsCounter = 0;
+        ups = upsCounter;
+        fps = fpsCounter;
+        upsCounter = 0;
+        fpsCounter = 0;
     }
-/*
+
     public void print() {
         System.out.println("UPS: " + ups);
         System.out.println("FPS: " + fps);
     }
-*/
 }
