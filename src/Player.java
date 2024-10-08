@@ -3,11 +3,6 @@ import fri.shapesge.TextBlock;
 
 public class Player {
 
-    // Texture
-    private Image texture;
-    private final int width = 116;
-    private final int height = 176;
-
     // Movement
     private double previousX;
     private double previousY;
@@ -19,6 +14,7 @@ public class Player {
     private double slideFactor = 0.9;
 
     // Animations
+    private final Image texture;
     private int movingX;
     private int movingY;
     private long animationCounter;
@@ -59,12 +55,14 @@ public class Player {
     }
 
     public void render() {
+        int width = 116;
+        int height = 176;
         double renderedX = new Interpolation().interpolate(this.previousX, this.x) - (double)width / 2;
         double renderedY = new Interpolation().interpolate(this.previousY, this.y) - (double)height / 2;
         this.texture.changePosition((int)renderedX, (int)renderedY);
     }
 
-    public void close(){
+    public void close() {
         this.texture.makeInvisible();
         this.debug.makeInvisible();
     }
