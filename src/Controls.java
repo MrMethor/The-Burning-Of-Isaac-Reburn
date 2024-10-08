@@ -50,7 +50,7 @@ public class Controls {
         this.mouse[0] = new Mouse(x, y);
     }
 
-    public Keyboard[] getKeyboard() {
+    public Keyboard[] keyboard() {
         return keyboard;
     }
 

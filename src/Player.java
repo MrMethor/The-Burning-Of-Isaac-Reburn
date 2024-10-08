@@ -4,6 +4,8 @@ import fri.shapesge.TextBlock;
 public class Player {
 
     private Image texture;
+    private double previousX;
+    private double previousY;
     private double x;
     private double y;
     private double velocityX;
@@ -25,6 +27,8 @@ public class Player {
 
     public void update() {
         this.debug.changeText("x: " + x + "\ny: " + y);
+        this.previousX = this.x;
+        this.previousY = this.y;
         this.x += this.velocityX;
         this.y += this.velocityY;
         this.velocityX *= slideFactor;
@@ -38,6 +42,10 @@ public class Player {
             compensation = 0.7;
         this.velocityX += x * speed * compensation;
         this.velocityY += y * speed * compensation;
+    }
+
+    public void render() {
+        this.texture.changePosition((int)new Interpolation().interpolate(this.previousX, this.x), (int)new Interpolation().interpolate(this.previousY, this.y));
     }
 
     public void close(){

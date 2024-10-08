@@ -28,8 +28,8 @@ public class Game {
         // Game
         int playerX = 0;
         int playerY = 0;
-        for (int i = 0; i < controls.getKeyboard().length; i++) {
-            switch (controls.getKeyboard()[i]) {
+        for (int i = 0; i < controls.keyboard().length; i++) {
+            switch (controls.keyboard()[i]) {
                 case moveUP:
                     playerY += -1;
                     break;
@@ -50,6 +50,11 @@ public class Game {
         }
         player.move(playerX, playerY);
         player.update();
+    }
+
+    public void render() {
+        if (this.pause == null)
+            this.player.render();
     }
 
     public boolean exited() {

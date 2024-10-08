@@ -2,13 +2,18 @@ import fri.shapesge.Manager;
 
 public class Main {
 
-    static Menu menu = null;
-    static Game game = null;
-    static Controls controls = new Controls();
-    static boolean running = true;
+    public static Interpolation interpolation = new Interpolation();
+
+    private Menu menu = null;
+    private Game game = null;
+    private final Controls controls = new Controls();
+    private boolean running = true;
 
     public static void main(String[] args) {
+        Main main = new Main();
+    }
 
+    public Main() {
         Manager manager = new Manager();
         manager.manageObject(controls);
 
@@ -23,7 +28,9 @@ public class Main {
                 update();
                 counter.addUPS();
             }
+            interpolation.setInterpolation((double)delta / counter.MS);
             counter.addFPS();
+            render();
 
             // Counter
             long current = System.nanoTime() ;
@@ -36,28 +43,33 @@ public class Main {
     }
 
     // Updates Logic
-    static void update() {
-        if (game == null) {
-            if (menu == null)
-                menu = new Menu();
+    private void update() {
+        if (this.game == null) {
+            if (this.menu == null)
+                this.menu = new Menu();
 
             // Menu logic
-            menu.update(controls);
-            if (menu.isNewGame()) {
-                menu.close();
-                menu = null;
-                game = new Game();
+            this.menu.update(controls);
+            if (this.menu.isNewGame()) {
+                this.menu.close();
+                this.menu = null;
+                this.game = new Game();
             }
-            else if (menu.isCloseGame()) {
-                menu.close();
-                menu = null;
-                running = false;
+            else if (this.menu.isCloseGame()) {
+                this.menu.close();
+                this.menu = null;
+                this.running = false;
             }
             return;
         }
         // Game logic
-        game.update(controls);
-        if (game.exited())
-            game = null;
+        this.game.update(controls);
+        if (this.game.exited())
+            this.game = null;
+    }
+
+    private void render() {
+        if (this.game != null)
+            this.game.render();
     }
 }

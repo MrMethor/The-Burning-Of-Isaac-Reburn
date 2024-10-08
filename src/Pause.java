@@ -16,8 +16,8 @@ public class Pause {
     }
 
     public void update(Controls controls) {
-        for (int i = 0; i < controls.getKeyboard().length; i++) {
-            if (controls.getKeyboard()[i] == Keyboard.escape){
+        for (int i = 0; i < controls.keyboard().length; i++) {
+            if (controls.keyboard()[i] == Keyboard.escape){
                 controls.removeCommand(Keyboard.escape);
                 this.resumed = true;
                 break;
