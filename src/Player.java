@@ -1,40 +1,35 @@
 import fri.shapesge.Image;
-import fri.shapesge.TextBlock;
+
+import java.util.ArrayList;
 
 public class Player {
 
     // Movement
     private double previousX;
     private double previousY;
-    private double x;
-    private double y;
+    private double x = (double)1920 / 2;
+    private double y = (double)1080 / 2;
     private double velocityX;
     private double velocityY;
-    private double speed;
-    private double slideFactor = 0.9;
+    private final double speed = 1;
+    private final double slideFactor = 0.9;
+
+    // Attack
+    private final ArrayList<Integer> firingOrder = new ArrayList<>();
+    private Side firing = null;
 
     // Animations
-    private final Image texture;
+    private final Image texture = new Image("resource/character/character_idle.png");
     private int movingX;
     private int movingY;
     private long animationCounter;
 
-    // Debug
-    private TextBlock debug = new TextBlock("", 50, 50);
-
     public Player() {
-        this.x = 1920 / 2;
-        this.y = 1080 / 2;
-        this.speed = 1;
-        this.texture = new Image("resource/character/character_idle.png");
         this.texture.changePosition((int)this.x, (int)this.y);
         this.texture.makeVisible();
-        this.debug.changeColor("white");
-        this.debug.makeVisible();
     }
 
     public void update() {
-        this.debug.changeText("x: " + x + "\ny: " + y);
         this.previousX = this.x;
         this.previousY = this.y;
         this.x += this.velocityX;
@@ -54,6 +49,20 @@ public class Player {
         this.velocityY += y * speed * compensation;
     }
 
+    public void firingDirection(boolean[] sides) {
+        for (int i = 0; i < sides.length; i++) {
+            if (sides[i] && !this.firingOrder.contains(i))
+                this.firingOrder.add(0, i);
+            else if (!sides[i] && firingOrder.contains(i)) {
+                this.firingOrder.remove(Integer.valueOf(i));
+            }
+        }
+        if (!firingOrder.isEmpty())
+            this.firing = Side.getSide(firingOrder.get(0));
+        else
+            this.firing = null;
+    }
+
     public void render() {
         int width = 116;
         int height = 176;
@@ -64,15 +73,20 @@ public class Player {
 
     public void close() {
         this.texture.makeInvisible();
-        this.debug.makeInvisible();
     }
 
     private void animate() {
         long frame = animationCounter / (long)(10 / this.speed) % 4 + 1;
-        if (this.movingY == -1)
-            this.texture.changeImage("resource/character/character_back" + frame + ".png");
+        if (this.firing != null) {
+            if (this.movingX == 0 && this.movingY == 0)
+                this.texture.changeImage("resource/character/character_" + this.firing.str() + 2 + ".png");
+            else
+                this.texture.changeImage("resource/character/character_" + this.firing.str() + frame + ".png");
+        }
+        else if (this.movingY == -1)
+            this.texture.changeImage("resource/character/character_up" + frame + ".png");
         else if (this.movingY == 1)
-            this.texture.changeImage("resource/character/character_front" + frame + ".png");
+            this.texture.changeImage("resource/character/character_down" + frame + ".png");
         else if (this.movingX == -1)
             this.texture.changeImage("resource/character/character_left" + frame + ".png");
         else if (this.movingX == 1)
