@@ -4,11 +4,11 @@ public class Counter {
     public final int SECOND = 1000000000;
     public final int MS = SECOND / DESIRED_UPS;
 
-    private int ups = 0;
-    private int fps = 0;
-    private int upsCounter = 0;
-    private int fpsCounter = 0;
-    private int elapsedTime = 0;
+    private int ups;
+    private int fps;
+    private int upsCounter;
+    private int fpsCounter;
+    private int elapsedTime;
 
     public void addFPS() {
         fpsCounter++;
@@ -34,7 +34,7 @@ public class Counter {
         fpsCounter = 0;
     }
 
-    public void print() {
+    private void print() {
         System.out.println("UPS: " + ups);
         System.out.println("FPS: " + fps);
     }

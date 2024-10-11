@@ -1,3 +1,1 @@
-public record Mouse(int x, int y) {
-
-}
+public record Mouse(int x, int y) {}

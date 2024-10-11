@@ -16,19 +16,24 @@ public class Button {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.image = new Image(path);
-        this.image.changePosition(x, y);
-        this.image.makeVisible();
+        image = new Image(path);
+        image.changePosition(x, y);
+        image.makeVisible();
         int labelLength = label.length();
-        this.textBlock = new TextBlock(label);
-        this.textBlock.changePosition(calculateWidth(labelLength), calculateHeight());
-        this.textBlock.changeFont("Castellar", FontStyle.BOLD, height / 2);
-        this.textBlock.changeColor("#CCCCCC");
-        this.textBlock.makeVisible();
+        textBlock = new TextBlock(label);
+        textBlock.changePosition(calculateWidth(labelLength), calculateHeight());
+        textBlock.changeFont("Castellar", FontStyle.BOLD, height / 2);
+        textBlock.changeColor("#CCCCCC");
+        textBlock.makeVisible();
     }
 
     public boolean isPressed(int x, int y) {
-        return x > this.x && x < this.x + this.width && y > this.y && y < this.y + this.height;
+        return x > this.x && x < this.x + width && y > this.y && y < this.y + height;
+    }
+
+    public void close() {
+        image.makeInvisible();
+        textBlock.makeInvisible();
     }
 
     private int calculateWidth(int labelLength) {
@@ -39,8 +44,4 @@ public class Button {
         return y + height * 2 / 3;
     }
 
-    public void close() {
-        this.image.makeInvisible();
-        this.textBlock.makeInvisible();
-    }
 }

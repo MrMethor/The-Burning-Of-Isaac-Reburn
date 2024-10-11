@@ -1,5 +1,7 @@
 public enum Side {
+
     UP(0, "up"), DOWN(1, "down"), LEFT(2, "left"), RIGHT(3, "right");
+
     private final int value;
     private final String str;
 
@@ -25,4 +27,5 @@ public enum Side {
             default -> null;
         };
     }
+
 }

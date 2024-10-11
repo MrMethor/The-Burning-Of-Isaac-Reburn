@@ -1,27 +1,31 @@
 public class Game {
 
     private final Player player = new Player();
-    private Pause pause = null;
-    private boolean exited = false;
+    private Pause pause;
+    private boolean exited;
 
     public void update(Controls controls) {
-        // Paused
-        if (this.pause != null) {
-            this.pause.update(controls);
-            if (this.pause.resumed()) {
-                this.pause.close();
-                this.pause = null;
-            }
-            else if (this.pause.exited()) {
-                this.pause.close();
-                this.pause = null;
-                this.player.close();
-                this.exited = true;
-            }
-            return;
-        }
+        if (pause != null)
+            updatePause(controls);
+        else
+            updateGame(controls);
+    }
 
-        // Game
+    private void updatePause(Controls controls) {
+        pause.update(controls);
+        if (pause.isResumed()) {
+            pause.close();
+            pause = null;
+        }
+        else if (pause.isExited()) {
+            pause.close();
+            pause = null;
+            player.close();
+            exited = true;
+        }
+    }
+
+    private void updateGame(Controls controls) {
         int playerX = 0;
         int playerY = 0;
         boolean[] fire = {false, false, false, false};
@@ -38,21 +42,22 @@ public class Game {
                 case fireRight: fire[Side.RIGHT.num()] = true; break;
                 case escape:
                     controls.removeCommand(Keyboard.escape);
-                    this.pause = new Pause();
+                    pause = new Pause();
                     break;
             }
         }
-        this.player.firingDirection(fire);
-        this.player.move(playerX, playerY);
-        this.player.update();
+        player.firingDirection(fire);
+        player.move(playerX, playerY);
+        player.update();
     }
 
     public void render() {
-        if (this.pause == null)
-            this.player.render();
+        if (pause == null)
+            player.render();
     }
 
     public boolean exited() {
         return exited;
     }
+
 }

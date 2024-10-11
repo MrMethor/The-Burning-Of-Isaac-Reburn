@@ -4,14 +4,14 @@ public class Main {
 
     public static Interpolation interpolation = new Interpolation();
 
-    private Menu menu = null;
-    private Game game = null;
+    private Menu menu;
+    private Game game;
     private final Controls controls = new Controls();
     private boolean running = true;
 
     @SuppressWarnings("unused")
     public static void main(String[] args) {
-        Main main = new Main();
+        new Main();
     }
 
     public Main() {
@@ -43,34 +43,34 @@ public class Main {
         System.exit(0);
     }
 
-    // Updates Logic
     private void update() {
-        if (this.game == null) {
-            if (this.menu == null)
-                this.menu = new Menu();
+        if (game == null) {
+            if (menu == null)
+                menu = new Menu();
 
             // Menu logic
-            this.menu.update(controls);
-            if (this.menu.isNewGame()) {
-                this.menu.close();
-                this.menu = null;
-                this.game = new Game();
+            menu.update(controls);
+            if (menu.isNewGame()) {
+                menu.close();
+                menu = null;
+                game = new Game();
             }
-            else if (this.menu.isCloseGame()) {
-                this.menu.close();
-                this.menu = null;
-                this.running = false;
+            else if (menu.isCloseGame()) {
+                menu.close();
+                menu = null;
+                running = false;
             }
             return;
         }
         // Game logic
-        this.game.update(controls);
-        if (this.game.exited())
-            this.game = null;
+        game.update(controls);
+        if (game.exited())
+            game = null;
     }
 
     private void render() {
-        if (this.game != null)
-            this.game.render();
+        if (game != null)
+            game.render();
     }
+
 }

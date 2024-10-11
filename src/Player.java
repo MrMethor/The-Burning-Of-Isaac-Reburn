@@ -1,5 +1,4 @@
 import fri.shapesge.Image;
-
 import java.util.ArrayList;
 
 public class Player {
@@ -25,76 +24,75 @@ public class Player {
     private long animationCounter;
 
     public Player() {
-        this.texture.changePosition((int)this.x, (int)this.y);
-        this.texture.makeVisible();
+        texture.changePosition((int)x, (int)y);
+        texture.makeVisible();
     }
 
     public void update() {
-        this.previousX = this.x;
-        this.previousY = this.y;
-        this.x += this.velocityX;
-        this.y += this.velocityY;
-        this.velocityX *= slideFactor;
-        this.velocityY *= slideFactor;
+        previousX = x;
+        previousY = y;
+        x += velocityX;
+        y += velocityY;
+        velocityX *= slideFactor;
+        velocityY *= slideFactor;
         animate();
-    }
-
-    public void move(int x, int y) {
-        this.movingX = x;
-        this.movingY = y;
-        double compensation = 1;
-        if (x != 0 && y != 0)
-            compensation = 0.7;
-        this.velocityX += x * speed * compensation;
-        this.velocityY += y * speed * compensation;
-    }
-
-    public void firingDirection(boolean[] sides) {
-        for (int i = 0; i < sides.length; i++) {
-            if (sides[i] && !this.firingOrder.contains(i))
-                this.firingOrder.add(0, i);
-            else if (!sides[i] && firingOrder.contains(i)) {
-                this.firingOrder.remove(Integer.valueOf(i));
-            }
-        }
-        if (!firingOrder.isEmpty())
-            this.firing = Side.getSide(firingOrder.get(0));
-        else
-            this.firing = null;
     }
 
     public void render() {
         int width = 116;
         int height = 176;
-        double renderedX = new Interpolation().interpolate(this.previousX, this.x) - (double)width / 2;
-        double renderedY = new Interpolation().interpolate(this.previousY, this.y) - (double)height / 2;
-        this.texture.changePosition((int)renderedX, (int)renderedY);
+        double renderedX = new Interpolation().interpolate(previousX, x) - (double)width / 2;
+        double renderedY = new Interpolation().interpolate(previousY, y) - (double)height / 2;
+        texture.changePosition((int)renderedX, (int)renderedY);
     }
 
-    public void close() {
-        this.texture.makeInvisible();
+    public void move(int x, int y) {
+        movingX = x;
+        movingY = y;
+        double compensation = 1;
+        if (x != 0 && y != 0)
+            compensation = 0.7;
+        velocityX += x * speed * compensation;
+        velocityY += y * speed * compensation;
+    }
+
+    public void firingDirection(boolean[] sides) {
+        for (int i = 0; i < sides.length; i++) {
+            if (sides[i] && !firingOrder.contains(i))
+                firingOrder.add(0, i);
+            else if (!sides[i] && firingOrder.contains(i))
+                firingOrder.remove(Integer.valueOf(i));
+        }
+        if (!firingOrder.isEmpty())
+            firing = Side.getSide(firingOrder.get(0));
+        else
+            firing = null;
     }
 
     private void animate() {
-        long frame = animationCounter / (long)(10 / this.speed) % 4 + 1;
-        if (this.firing != null) {
-            if (this.movingX == 0 && this.movingY == 0)
-                this.texture.changeImage("resource/character/character_" + this.firing.str() + 2 + ".png");
+        long frame = animationCounter / (long)(10 / speed) % 4 + 1;
+        String defaultPath = "resource/character/character_";
+        if (firing != null) {
+            if (movingX == 0 && movingY == 0)
+                texture.changeImage(defaultPath + firing.str() + 2 + ".png");
             else
-                this.texture.changeImage("resource/character/character_" + this.firing.str() + frame + ".png");
+                texture.changeImage(defaultPath + firing.str() + frame + ".png");
         }
-        else if (this.movingY == -1)
-            this.texture.changeImage("resource/character/character_up" + frame + ".png");
-        else if (this.movingY == 1)
-            this.texture.changeImage("resource/character/character_down" + frame + ".png");
-        else if (this.movingX == -1)
-            this.texture.changeImage("resource/character/character_left" + frame + ".png");
-        else if (this.movingX == 1)
-            this.texture.changeImage("resource/character/character_right" + frame + ".png");
+        else if (movingY == -1)
+            texture.changeImage(defaultPath + "up" + frame + ".png");
+        else if (movingY == 1)
+            texture.changeImage(defaultPath + "down" + frame + ".png");
+        else if (movingX == -1)
+            texture.changeImage(defaultPath + "left" + frame + ".png");
+        else if (movingX == 1)
+            texture.changeImage(defaultPath + "right" + frame + ".png");
         else
-            this.texture.changeImage("resource/character/character_idle.png");
+            texture.changeImage(defaultPath + "idle.png");
+        animationCounter++;
+    }
 
-        this.animationCounter++;
+    public void close() {
+        texture.makeInvisible();
     }
 
 }

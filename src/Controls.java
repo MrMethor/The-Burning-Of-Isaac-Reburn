@@ -2,8 +2,8 @@ import java.util.Arrays;
 
 public class Controls {
 
-    private final Keyboard[] keyboard = new Keyboard[8];
     private final Mouse[] mouse = new Mouse[3];
+    private final Keyboard[] keyboard = new Keyboard[8];
 
     public Controls() {
         Arrays.fill(keyboard, Keyboard.None);
@@ -38,16 +38,16 @@ public class Controls {
         }
     }
 
+    public Mouse[] mouse() {
+        return mouse;
+    }
+
     public void LEFT_clicked(int x, int y) {
         this.mouse[0] = new Mouse(x, y);
     }
 
     public Keyboard[] keyboard() {
         return keyboard;
-    }
-
-    public Mouse[] mouse() {
-        return mouse;
     }
 
     public void W_pressed() {
@@ -66,20 +66,20 @@ public class Controls {
         removeCommand(Keyboard.moveDown);
     }
 
-    public void D_pressed() {
-        addCommand(Keyboard.moveRight);
-    }
-
-    public void D_released() {
-        removeCommand(Keyboard.moveRight);
-    }
-
     public void A_pressed() {
         addCommand(Keyboard.moveLeft);
     }
 
     public void A_released() {
         removeCommand(Keyboard.moveLeft);
+    }
+
+    public void D_pressed() {
+        addCommand(Keyboard.moveRight);
+    }
+
+    public void D_released() {
+        removeCommand(Keyboard.moveRight);
     }
 
     public void UP_pressed() {
@@ -98,20 +98,20 @@ public class Controls {
         removeCommand(Keyboard.fireDown);
     }
 
-    public void RIGHT_pressed() {
-        addCommand(Keyboard.fireRight);
-    }
-
-    public void RIGHT_released() {
-        removeCommand(Keyboard.fireRight);
-    }
-
     public void LEFT_pressed() {
         addCommand(Keyboard.fireLeft);
     }
 
     public void LEFT_released() {
         removeCommand(Keyboard.fireLeft);
+    }
+
+    public void RIGHT_pressed() {
+        addCommand(Keyboard.fireRight);
+    }
+
+    public void RIGHT_released() {
+        removeCommand(Keyboard.fireRight);
     }
 
     public void ESCAPE_pressed() {
