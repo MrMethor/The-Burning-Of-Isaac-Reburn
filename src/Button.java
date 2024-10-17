@@ -1,11 +1,7 @@
-import fri.shapesge.FontStyle;
-import fri.shapesge.Image;
-import fri.shapesge.TextBlock;
-
 public class Button {
 
-    private final Image image;
-    private final TextBlock textBlock;
+    //private final Image image;
+    //private final TextBlock label;
     private final int x;
     private final int y;
     private final int width;
@@ -16,24 +12,19 @@ public class Button {
         this.y = y;
         this.width = width;
         this.height = height;
-        image = new Image(path);
-        image.changePosition(x, y);
-        image.makeVisible();
-        int labelLength = label.length();
-        textBlock = new TextBlock(label);
-        textBlock.changePosition(calculateWidth(labelLength), calculateHeight());
-        textBlock.changeFont("Castellar", FontStyle.BOLD, height / 2);
-        textBlock.changeColor("#CCCCCC");
-        textBlock.makeVisible();
+        //image = new Image(path);
+        //image.changePosition(x, y);
+        //image.makeVisible();
+        //int labelLength = label.length();
+        //this.label = new TextBlock(label);
+        //this.label.changePosition(calculateWidth(labelLength), calculateHeight());
+        //this.label.changeFont("Castellar", FontStyle.BOLD, height / 2);
+        //this.label.changeColor("#CCCCCC");
+        //this.label.makeVisible();
     }
 
     public boolean isPressed(int x, int y) {
         return x > this.x && x < this.x + width && y > this.y && y < this.y + height;
-    }
-
-    public void close() {
-        image.makeInvisible();
-        textBlock.makeInvisible();
     }
 
     private int calculateWidth(int labelLength) {

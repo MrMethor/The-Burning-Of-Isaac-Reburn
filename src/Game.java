@@ -1,31 +1,10 @@
+import java.awt.Graphics2D;
+
 public class Game {
 
     private final Player player = new Player();
-    private Pause pause;
-    private boolean exited;
 
     public void update(Controls controls) {
-        if (pause != null)
-            updatePause(controls);
-        else
-            updateGame(controls);
-    }
-
-    private void updatePause(Controls controls) {
-        pause.update(controls);
-        if (pause.isResumed()) {
-            pause.close();
-            pause = null;
-        }
-        else if (pause.isExited()) {
-            pause.close();
-            pause = null;
-            player.close();
-            exited = true;
-        }
-    }
-
-    private void updateGame(Controls controls) {
         int playerX = 0;
         int playerY = 0;
         boolean[] fire = {false, false, false, false};
@@ -42,7 +21,7 @@ public class Game {
                 case fireRight: fire[Side.RIGHT.num()] = true; break;
                 case escape:
                     controls.removeCommand(Keyboard.escape);
-                    pause = new Pause();
+                    Main.changeState(2);
                     break;
             }
         }
@@ -51,13 +30,7 @@ public class Game {
         player.update();
     }
 
-    public void render() {
-        if (pause == null)
-            player.render();
+    public void render(Graphics2D g) {
+        player.render();
     }
-
-    public boolean exited() {
-        return exited;
-    }
-
 }

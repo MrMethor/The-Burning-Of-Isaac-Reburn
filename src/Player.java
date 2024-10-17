@@ -1,4 +1,3 @@
-import fri.shapesge.Image;
 import java.util.ArrayList;
 
 public class Player {
@@ -18,14 +17,14 @@ public class Player {
     private Side firing = null;
 
     // Animations
-    private final Image texture = new Image("resource/character/character_idle.png");
+    //private final Image texture = new Image("resource/character/character_idle.png");
     private int movingX;
     private int movingY;
     private long animationCounter;
 
     public Player() {
-        texture.changePosition((int)x, (int)y);
-        texture.makeVisible();
+        //texture.changePosition((int)x, (int)y);
+        //texture.makeVisible();
     }
 
     public void update() {
@@ -43,7 +42,7 @@ public class Player {
         int height = 176;
         double renderedX = new Interpolation().interpolate(previousX, x) - (double)width / 2;
         double renderedY = new Interpolation().interpolate(previousY, y) - (double)height / 2;
-        texture.changePosition((int)renderedX, (int)renderedY);
+        //texture.changePosition((int)renderedX, (int)renderedY);
     }
 
     public void move(int x, int y) {
@@ -73,26 +72,22 @@ public class Player {
         long frame = animationCounter / (long)(10 / speed) % 4 + 1;
         String defaultPath = "resource/character/character_";
         if (firing != null) {
-            if (movingX == 0 && movingY == 0)
-                texture.changeImage(defaultPath + firing.str() + 2 + ".png");
-            else
-                texture.changeImage(defaultPath + firing.str() + frame + ".png");
+            if (movingX == 0 && movingY == 0){}
+                //texture.changeImage(defaultPath + firing.str() + 2 + ".png");
+            else{}
+                //texture.changeImage(defaultPath + firing.str() + frame + ".png");
         }
-        else if (movingY == -1)
-            texture.changeImage(defaultPath + "up" + frame + ".png");
-        else if (movingY == 1)
-            texture.changeImage(defaultPath + "down" + frame + ".png");
-        else if (movingX == -1)
-            texture.changeImage(defaultPath + "left" + frame + ".png");
-        else if (movingX == 1)
-            texture.changeImage(defaultPath + "right" + frame + ".png");
-        else
-            texture.changeImage(defaultPath + "idle.png");
+        else if (movingY == -1){}
+            //texture.changeImage(defaultPath + "up" + frame + ".png");
+        else if (movingY == 1){}
+            //texture.changeImage(defaultPath + "down" + frame + ".png");
+        else if (movingX == -1){}
+            //texture.changeImage(defaultPath + "left" + frame + ".png");
+        else if (movingX == 1){}
+            //texture.changeImage(defaultPath + "right" + frame + ".png");
+        else{}
+            //texture.changeImage(defaultPath + "idle.png");
         animationCounter++;
-    }
-
-    public void close() {
-        texture.makeInvisible();
     }
 
 }

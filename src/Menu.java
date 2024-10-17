@@ -1,16 +1,14 @@
-import fri.shapesge.Image;
+import java.awt.Graphics2D;
 
 public class Menu {
 
-    private final Image background = new Image("resource/menu.jpg");
+    //private final Image background = new Image("resource/menu.jpg");
     private final Button start;
     private final Button exit;
-    private boolean newGame;
-    private boolean closeGame;
 
     public Menu() {
-        background.changePosition(0,0);
-        background.makeVisible();
+        //background.changePosition(0,0);
+        //background.makeVisible();
         start = new Button("BEGIN", "resource/start.png",1920 / 2 - 480 / 2, 750, 480, 100);
         exit = new Button("EXIT", "resource/exit.png", 1920 / 2 - 480 / 2, 900, 480, 100);
     }
@@ -19,25 +17,15 @@ public class Menu {
         if (controls.mouse()[0] != null) {
 
             if (start.isPressed(controls.mouse()[0].x(), controls.mouse()[0].y()))
-                newGame = true;
+                Main.changeState(1);
             else if (exit.isPressed(controls.mouse()[0].x(), controls.mouse()[0].y()))
-                closeGame = true;
+                Main.changeState(-1);
 
             controls.mouse()[0] = null;
         }
     }
 
-    public boolean isNewGame() {
-        return newGame;
-    }
+    public void render(Graphics2D g) {
 
-    public boolean isCloseGame() {
-        return closeGame;
-    }
-
-    public void close() {
-        this.background.makeInvisible();
-        this.start.close();
-        this.exit.close();
     }
 }

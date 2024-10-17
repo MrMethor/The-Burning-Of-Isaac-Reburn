@@ -1,6 +1,8 @@
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Arrays;
 
-public class Controls {
+public class Controls implements KeyListener {
 
     private final Mouse[] mouse = new Mouse[3];
     private final Keyboard[] keyboard = new Keyboard[8];
@@ -42,79 +44,22 @@ public class Controls {
         return mouse;
     }
 
-    public void LEFT_clicked(int x, int y) {
-        this.mouse[0] = new Mouse(x, y);
-    }
-
     public Keyboard[] keyboard() {
         return keyboard;
     }
 
-    public void W_pressed() {
-        addCommand(Keyboard.moveUP);
+    @Override
+    public void keyTyped(KeyEvent e) {
+
     }
 
-    public void W_released() {
-        removeCommand(Keyboard.moveUP);
+    @Override
+    public void keyPressed(KeyEvent e) {
+
     }
 
-    public void S_pressed() {
-        addCommand(Keyboard.moveDown);
-    }
+    @Override
+    public void keyReleased(KeyEvent e) {
 
-    public void S_released() {
-        removeCommand(Keyboard.moveDown);
-    }
-
-    public void A_pressed() {
-        addCommand(Keyboard.moveLeft);
-    }
-
-    public void A_released() {
-        removeCommand(Keyboard.moveLeft);
-    }
-
-    public void D_pressed() {
-        addCommand(Keyboard.moveRight);
-    }
-
-    public void D_released() {
-        removeCommand(Keyboard.moveRight);
-    }
-
-    public void UP_pressed() {
-        addCommand(Keyboard.fireUp);
-    }
-
-    public void UP_released() {
-        removeCommand(Keyboard.fireUp);
-    }
-
-    public void DOWN_pressed() {
-        addCommand(Keyboard.fireDown);
-    }
-
-    public void DOWN_released() {
-        removeCommand(Keyboard.fireDown);
-    }
-
-    public void LEFT_pressed() {
-        addCommand(Keyboard.fireLeft);
-    }
-
-    public void LEFT_released() {
-        removeCommand(Keyboard.fireLeft);
-    }
-
-    public void RIGHT_pressed() {
-        addCommand(Keyboard.fireRight);
-    }
-
-    public void RIGHT_released() {
-        removeCommand(Keyboard.fireRight);
-    }
-
-    public void ESCAPE_pressed() {
-        addCommand(Keyboard.escape);
     }
 }

@@ -2,7 +2,7 @@ public class Interpolation {
     
     private static double interpolation;
 
-    public void setInterpolation(double interp) {
+    public static void setInterpolation(double interp) {
         interpolation = interp;
     }
 
