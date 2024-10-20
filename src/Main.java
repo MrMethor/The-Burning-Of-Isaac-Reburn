@@ -1,11 +1,17 @@
-import Enums.*;
+import Enums.GameState;
+import Enums.StateTransition;
+import Tools.Screen;
 import Tools.Controls;
 import Tools.Counter;
 import Tools.Interpolation;
-import Tools.Screen;
+import Tools.TextBox;
 
+import java.awt.Canvas;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Color;
+import java.awt.Font;
 import javax.swing.JFrame;
-import java.awt.*;
 import java.awt.image.BufferStrategy;
 
 public class Main extends Canvas implements Runnable {
@@ -84,9 +90,9 @@ public class Main extends Canvas implements Runnable {
         }
 
         if (Screen.FPS) {
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("Calibri", Font.PLAIN, 15));
-            g.drawString("FPS: " + counter.getFPS(), 0, 15);
+            int size = 15;
+            Tools.TextBox fps = new TextBox("FPS: " + counter.getFPS(), 0, size, Color.WHITE, "Calibri", Font.PLAIN, size);
+            fps.draw(g);
         }
         g.dispose();
         bs.show();

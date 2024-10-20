@@ -3,7 +3,7 @@ import Tools.Interpolation;
 import Tools.Screen;
 import Enums.Side;
 
-import java.awt.*;
+import java.awt.Graphics;
 import java.util.ArrayList;
 
 public class Player {

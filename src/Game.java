@@ -1,16 +1,13 @@
 import Enums.GameState;
 import Tools.Controls;
 import Tools.Interpolation;
+import java.awt.Graphics;
 
-import java.awt.*;
-
-// Holds everything game related
 public class Game {
 
     private final Room room = new Room();
     private final Player player = new Player();
 
-    // Processes input and game components
     public void update(Controls controls) {
         int playerX = 0;
         int playerY = 0;
@@ -44,7 +41,6 @@ public class Game {
         player.update();
     }
 
-    // Draws the game graphics
     public void render(Graphics g, Interpolation interpolation) {
         room.render(g, interpolation);
         player.render(g, interpolation);

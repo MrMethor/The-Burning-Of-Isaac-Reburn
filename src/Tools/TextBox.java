@@ -1,5 +1,9 @@
 package Tools;
-import java.awt.*;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.FontMetrics;
 
 public class TextBox {
 
@@ -22,13 +26,13 @@ public class TextBox {
         this.color = color;
     }
 
-    public TextBox(String text, int x, int y, Color color, Font font) {
+    public TextBox(String text, int x, int y, Color color, String fontFamily, int decor, int size) {
         this.text = text;
         this.x = (int) (x * Screen.getScale());
         this.y = (int) (y * Screen.getScale());
         this.width = (int) (width * Screen.getScale());
         this.height = (int) (height * Screen.getScale());
-        this.font = font;
+        this.font = new Font(fontFamily, decor, (int)((double)size * Screen.getScale()));
         this.color = color;
     }
 
@@ -38,7 +42,10 @@ public class TextBox {
 
         g.setColor(color);
         g.setFont(font);
-        g.drawString(text, calculateX(g.getFontMetrics(font)), calculateY(g.getFontMetrics(font)));
+        if (height == 0 || width == 0)
+            g.drawString(text, x, y);
+        else
+            g.drawString(text, calculateX(g.getFontMetrics(font)), calculateY(g.getFontMetrics(font)));
 
         g.setColor(previousColor);
         g.setFont(previousFont);

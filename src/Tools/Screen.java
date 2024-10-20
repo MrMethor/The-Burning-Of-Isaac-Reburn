@@ -1,22 +1,33 @@
 package Tools;
 
-import java.awt.*;
+import java.awt.Toolkit;
 
 public class Screen {
 
-    public static final boolean FULLSCREEN = false;
-    public static final boolean FPS = true;
+    // You can change these
+    //#############################################
+    public static final boolean FULLSCREEN = true;
+    public static final boolean FPS = true; // FPS counter showed
+    private static int desiredWidth = 1920; // what resolution should the game be, in case fullscreen is off
+    public static final int DESIRED_UPS = 60; // how quickly the time passes 60 is normal
+    //###############################################
+
+    private static int desiredHeight = desiredWidth * 9 / 16;
     public static final int WIDTH = 1920;
     public static final int HEIGHT = 1080;
 
-    private static int desiredWidth = 1280;
-    private static int desiredHeight = desiredWidth * 9 / 16 ;
     private static double scale;
 
     public Screen() {
-        if (FULLSCREEN) {
-            desiredWidth = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
-            desiredHeight = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+        int maxWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+        int maxHeight = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+        if (FULLSCREEN || desiredWidth >= maxWidth) {
+            desiredWidth = maxWidth;
+            desiredHeight = maxHeight;
+        }
+        else if (desiredWidth < 300) {
+            desiredWidth = 300;
+            desiredHeight = desiredWidth * 9 / 16;
         }
         scale = desiredWidth /(double)WIDTH;
     }

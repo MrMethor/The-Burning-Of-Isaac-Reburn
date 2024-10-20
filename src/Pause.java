@@ -4,7 +4,7 @@ import Tools.Image;
 import Tools.Interpolation;
 import Tools.Screen;
 
-import java.awt.*;
+import java.awt.Graphics;
 
 public class Pause {
 

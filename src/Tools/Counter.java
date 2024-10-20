@@ -2,9 +2,8 @@ package Tools;
 
 public class Counter {
 
-    public static final int DESIRED_UPS = 60;
     public static final int SECOND = 1000000000;
-    public static final int MS = SECOND / DESIRED_UPS;
+    public static final int MS = SECOND / Screen.DESIRED_UPS;
 
     private int ups;
     private int fps;
@@ -24,7 +23,6 @@ public class Counter {
         if (elapsedTime >= SECOND) {
             elapsedTime = 0;
             resetCounter();
-            //print();
         }
         elapsedTime += (int)alpha;
     }
