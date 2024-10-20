@@ -1,56 +1,53 @@
+import Enums.*;
+import Tools.Controls;
+import Tools.Counter;
+import Tools.Interpolation;
+import Tools.Screen;
+
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Dimension;
+import java.awt.*;
+import java.awt.image.BufferStrategy;
 
-public class Main extends JPanel implements Runnable {
+public class Main extends Canvas implements Runnable {
 
-    private static int newState = 0;
-    private int gameState = newState;
+    public static GameState newState = GameState.MENU;
 
-    private boolean running = true;
+    private GameState gameState = GameState.MENU;
+    private boolean running;
     private Thread thread;
+    private JFrame frame;
 
+    private final Screen screen = new Screen();
     private Menu menu = new Menu();
     private Game game;
     private Pause pause;
     private final Controls controls = new Controls();
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Game");
-        Main main = new Main();
-        frame.add(main);
-        frame.pack();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setBackground(Color.BLACK);
-        frame.setVisible(true);
-        main.start();
-    }
+    private final Counter counter = new Counter();
+    private final Interpolation interpolation = new Interpolation();
 
     public Main() {
-        setPreferredSize(new Dimension(1920, 1080));
+        Dimension screenSize = new Dimension(Screen.getWidth(), Screen.getHeight());
+        setPreferredSize(screenSize);
+        frame = new JFrame();
         setFocusable(true);
         requestFocus();
         addKeyListener(controls);
+        addMouseListener(controls);
     }
 
     public void run() {
-        Counter counter = new Counter();
         long delta = 0;
         long last = System.nanoTime();
 
         while (running) {
-
-            if (delta >= counter.MS) {
-                delta = 0;
+            if (delta >= Counter.MS) {
+                delta -= Counter.MS;
                 update();
                 counter.addUPS();
             }
-            Interpolation.setInterpolation((double)delta / counter.MS);
+            interpolation.setInterpolation((double)delta / Counter.MS);
             counter.addFPS();
-            repaint();
+            render();
 
             // Counter
             long current = System.nanoTime() ;
@@ -59,19 +56,6 @@ public class Main extends JPanel implements Runnable {
             last = current;
             counter.addTime(alpha);
         }
-        stop();
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D graphics = (Graphics2D) g;
-
-        switch (gameState) {
-            case 0: menu.render(graphics); break;
-            case 1: game.render(graphics); break;
-            case 2: pause.render(graphics); break;
-        }
     }
 
     private void update() {
@@ -79,50 +63,95 @@ public class Main extends JPanel implements Runnable {
             updateState();
 
         switch (gameState) {
-            case 0: menu.update(controls); break;
-            case 1: game.update(controls); break;
-            case 2: pause.update(controls); break;
+            case MENU: menu.update(controls); break;
+            case GAME: game.update(controls); break;
+            case PAUSE: pause.update(controls); break;
         }
+    }
+
+    private void render() {
+        BufferStrategy bs = getBufferStrategy();
+        if (bs == null) {
+            createBufferStrategy(3);
+            return;
+        }
+        Graphics g = bs.getDrawGraphics();
+
+        switch (gameState) {
+            case MENU: menu.render(g, interpolation); break;
+            case GAME: game.render(g, interpolation); break;
+            case PAUSE: game.render(g, interpolation); pause.render(g, interpolation); break;
+        }
+
+        if (Screen.FPS) {
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Calibri", Font.PLAIN, 15));
+            g.drawString("FPS: " + counter.getFPS(), 0, 15);
+        }
+        g.dispose();
+        bs.show();
 
     }
 
     private void updateState() {
-        switch(newState) {
-            case -1:
-                menu = null;
-                running = false;
-            case 0:
-                game = null;
-                menu = new Menu();
-                break;
-            case 1:
-                menu = null;
+        switch(StateTransition.getTransition(gameState, newState)) {
+            case START_GAME:
                 game = new Game();
+                menu = null;
                 break;
-            case 2:
+            case PAUSE_GAME:
                 pause = new Pause();
+                break;
+            case RESUME_GAME:
+                pause = null;
+                break;
+            case BACK_TO_MENU:
+                menu = new Menu();
+                game = null;
+                break;
+            case EXIT_GAME:
+                stop();
                 break;
         }
         gameState = newState;
     }
 
-    private void start() {
+    private synchronized void start() {
+        running = true;
         thread = new Thread(this);
         thread.start();
     }
 
-    private void stop() {
+    private synchronized void stop() {
         running = false;
+        removeKeyListener(controls);
+        removeMouseListener(controls);
         try {
-            thread.join();
+            thread.join(1);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         System.exit(0);
     }
 
-    public static void changeState(int ns) {
-        newState = ns;
+    public static void main(String[] args) {
+        System.setProperty("sun.java2d.uiScale", "1.0");
+        Main main = new Main();
+        main.frame.setTitle("The Burning Of Isaac: Reburn");
+        main.frame.setResizable(false);
+        if (Screen.FULLSCREEN){
+            main.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            main.frame.setUndecorated(true);
+        }
+        main.frame.add(main);
+        main.frame.pack();
+        main.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        main.frame.setLocationRelativeTo(null);
+        main.frame.setVisible(true);
+        main.start();
     }
 
+    public static void changeState(GameState ns) {
+        newState = ns;
+    }
 }

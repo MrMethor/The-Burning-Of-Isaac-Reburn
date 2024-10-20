@@ -1,5 +1,7 @@
-public enum Keyboard {
-    moveUP,
+package Enums;
+
+public enum Actions {
+    moveUp,
     moveDown,
     moveLeft,
     moveRight,
@@ -7,6 +9,4 @@ public enum Keyboard {
     fireDown,
     fireLeft,
     fireRight,
-    escape,
-    None
 }

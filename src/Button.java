@@ -1,7 +1,13 @@
-public class Button {
+import Tools.Image;
+import Tools.Interpolation;
+import Tools.TextBox;
 
-    //private final Image image;
-    //private final TextBlock label;
+import java.awt.*;
+
+public class Button{
+
+    private final Image image;
+    private final TextBox label;
     private final int x;
     private final int y;
     private final int width;
@@ -12,27 +18,18 @@ public class Button {
         this.y = y;
         this.width = width;
         this.height = height;
-        //image = new Image(path);
-        //image.changePosition(x, y);
-        //image.makeVisible();
-        //int labelLength = label.length();
-        //this.label = new TextBlock(label);
-        //this.label.changePosition(calculateWidth(labelLength), calculateHeight());
-        //this.label.changeFont("Castellar", FontStyle.BOLD, height / 2);
-        //this.label.changeColor("#CCCCCC");
-        //this.label.makeVisible();
+
+        Color color = Color.decode("#BBBBBB");
+        this.label = new TextBox(label, x, y, color, "Castellar", Font.BOLD, height / 2, width, height);
+        image = new Image(path, x, y, width, height);
+    }
+
+    public void render(Graphics g, Interpolation interpolation) {
+        image.draw(g);
+        label.draw(g);
     }
 
     public boolean isPressed(int x, int y) {
         return x > this.x && x < this.x + width && y > this.y && y < this.y + height;
     }
-
-    private int calculateWidth(int labelLength) {
-        return (8 + x + width / 3) + (4 - labelLength) * 18;
-    }
-
-    private int calculateHeight() {
-        return y + height * 2 / 3;
-    }
-
 }

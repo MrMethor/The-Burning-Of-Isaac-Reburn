@@ -1,3 +1,5 @@
+package Enums;
+
 public enum Side {
 
     UP(0, "up"),

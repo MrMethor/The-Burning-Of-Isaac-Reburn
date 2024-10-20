@@ -1,8 +1,10 @@
+package Tools;
+
 public class Counter {
 
-    public final int DESIRED_UPS = 60;
-    public final int SECOND = 1000000000;
-    public final int MS = SECOND / DESIRED_UPS;
+    public static final int DESIRED_UPS = 60;
+    public static final int SECOND = 1000000000;
+    public static final int MS = SECOND / DESIRED_UPS;
 
     private int ups;
     private int fps;
@@ -34,8 +36,11 @@ public class Counter {
         fpsCounter = 0;
     }
 
-    private void print() {
-        System.out.println("UPS: " + ups);
-        System.out.println("FPS: " + fps);
+    public int getFPS() {
+        return fps;
+    }
+
+    public int getUPS() {
+        return ups;
     }
 }

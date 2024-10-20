@@ -1,36 +1,52 @@
-import java.awt.Graphics2D;
+import Enums.GameState;
+import Tools.Controls;
+import Tools.Interpolation;
 
+import java.awt.*;
+
+// Holds everything game related
 public class Game {
 
+    private final Room room = new Room();
     private final Player player = new Player();
 
+    // Processes input and game components
     public void update(Controls controls) {
         int playerX = 0;
         int playerY = 0;
-        boolean[] fire = {false, false, false, false};
+        boolean fireUp = false, fireDown = false, fireLeft = false, fireRight = false;
 
-        for (int i = 0; i < controls.keyboard().length; i++) {
-            switch (controls.keyboard()[i]) {
-                case moveUP: playerY -= 1; break;
-                case moveDown:  playerY += 1; break;
+        // Tools.Actions
+        for (int i = 0; i < controls.actions().size(); i++) {
+            switch (controls.actions().get(i)) {
+                case moveUp: playerY -= 1; break;
+                case moveDown: playerY += 1; break;
                 case moveRight: playerX += 1; break;
                 case moveLeft: playerX -= 1; break;
-                case fireUp: fire[Side.UP.num()] = true; break;
-                case fireDown: fire[Side.DOWN.num()] = true; break;
-                case fireLeft: fire[Side.LEFT.num()] = true; break;
-                case fireRight: fire[Side.RIGHT.num()] = true; break;
-                case escape:
-                    controls.removeCommand(Keyboard.escape);
-                    Main.changeState(2);
-                    break;
+                case fireUp: fireUp = true; break;
+                case fireDown: fireDown = true; break;
+                case fireLeft: fireLeft = true; break;
+                case fireRight: fireRight = true; break;
             }
         }
-        player.firingDirection(fire);
+
+        // Tools.Commands
+        for (int i = 0; i < controls.commands().size(); i++) {
+            switch (controls.commands().get(i).command()) {
+                case escape: Main.changeState(GameState.PAUSE); break;
+            }
+            controls.removeCommand(controls.commands().get(i));
+        }
+
+        // Components
+        player.firingDirection(new boolean[]{fireUp, fireDown, fireLeft, fireRight});
         player.move(playerX, playerY);
         player.update();
     }
 
-    public void render(Graphics2D g) {
-        player.render();
+    // Draws the game graphics
+    public void render(Graphics g, Interpolation interpolation) {
+        room.render(g, interpolation);
+        player.render(g, interpolation);
     }
 }

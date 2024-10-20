@@ -1,3 +1,9 @@
+import Tools.Image;
+import Tools.Interpolation;
+import Tools.Screen;
+import Enums.Side;
+
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Player {
@@ -17,15 +23,10 @@ public class Player {
     private Side firing = null;
 
     // Animations
-    //private final Image texture = new Image("resource/character/character_idle.png");
+    private Tools.Image texture = new Image("resource/character/character_idle.png", Screen.WIDTH / 2, Screen.HEIGHT / 2, 116, 176);
     private int movingX;
     private int movingY;
     private long animationCounter;
-
-    public Player() {
-        //texture.changePosition((int)x, (int)y);
-        //texture.makeVisible();
-    }
 
     public void update() {
         previousX = x;
@@ -37,12 +38,13 @@ public class Player {
         animate();
     }
 
-    public void render() {
+    public void render(Graphics g, Interpolation interpolation) {
         int width = 116;
         int height = 176;
-        double renderedX = new Interpolation().interpolate(previousX, x) - (double)width / 2;
-        double renderedY = new Interpolation().interpolate(previousY, y) - (double)height / 2;
-        //texture.changePosition((int)renderedX, (int)renderedY);
+        double renderedX = interpolation.interpolate(previousX, x) - (double)width / 2;
+        double renderedY = interpolation.interpolate(previousY, y) - (double)height / 2;
+        texture.changePosition((int)renderedX, (int)renderedY);
+        texture.draw(g);
     }
 
     public void move(int x, int y) {
@@ -72,21 +74,21 @@ public class Player {
         long frame = animationCounter / (long)(10 / speed) % 4 + 1;
         String defaultPath = "resource/character/character_";
         if (firing != null) {
-            if (movingX == 0 && movingY == 0){}
-                //texture.changeImage(defaultPath + firing.str() + 2 + ".png");
-            else{}
-                //texture.changeImage(defaultPath + firing.str() + frame + ".png");
+            if (movingX == 0 && movingY == 0)
+                texture.changeImage(defaultPath + firing.str() + 2 + ".png");
+            else
+                texture.changeImage(defaultPath + firing.str() + frame + ".png");
         }
-        else if (movingY == -1){}
-            //texture.changeImage(defaultPath + "up" + frame + ".png");
-        else if (movingY == 1){}
-            //texture.changeImage(defaultPath + "down" + frame + ".png");
-        else if (movingX == -1){}
-            //texture.changeImage(defaultPath + "left" + frame + ".png");
-        else if (movingX == 1){}
-            //texture.changeImage(defaultPath + "right" + frame + ".png");
-        else{}
-            //texture.changeImage(defaultPath + "idle.png");
+        else if (movingY == -1)
+            texture.changeImage(defaultPath + "up" + frame + ".png");
+        else if (movingY == 1)
+            texture.changeImage(defaultPath + "down" + frame + ".png");
+        else if (movingX == -1)
+            texture.changeImage(defaultPath + "left" + frame + ".png");
+        else if (movingX == 1)
+            texture.changeImage(defaultPath + "right" + frame + ".png");
+        else
+            texture.changeImage(defaultPath + "idle.png");
         animationCounter++;
     }
 
