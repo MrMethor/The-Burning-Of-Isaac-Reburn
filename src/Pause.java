@@ -1,42 +1,45 @@
+import Engine.Wrap;
 import Enums.GameState;
-import Tools.Controls;
+import Tools.Button;
 import Tools.Image;
-import Tools.Interpolation;
-import Tools.Screen;
 
 import java.awt.Graphics;
 
 public class Pause {
 
-    private Tools.Image background = new Image("resource/pause.png", 0, 0, Screen.WIDTH, Screen.HEIGHT);
+    private final Wrap wrap;
+    private Tools.Image background;
     private final Button resume;
     private final Button menu;
 
-    public Pause() {
-        resume = new Button("RESUME", "resource/start.png",1920 / 2 - 480 / 2, 550, 480, 100);
-        menu = new Button("EXIT", "resource/exit.png", 1920 / 2 - 480 / 2, 700, 480, 100);
+    public Pause(Wrap wrap) {
+        this.wrap = wrap;
+        background = new Image(wrap,"resource/pause.png", 0, 0, 1920, 1080);
+        resume = new Button(wrap,"RESUME", "resource/start.png",1920 / 2 - 480 / 2, 550, 480, 100);
+        menu = new Button(wrap,"EXIT", "resource/exit.png", 1920 / 2 - 480 / 2, 700, 480, 100);
     }
 
-    public void update(Controls controls) {
-        for (int i = 0; i < controls.commands().size(); i++) {
-            switch (controls.commands().get(i).command()) {
+    public void update() {
+        var commands = wrap.getCommands();
+        for (int i = 0; i < commands.size(); i++) {
+            switch (commands.get(i).command()) {
                 case leftClick:
-                    if (resume.isPressed(controls.commands().get(i).x(), controls.commands().get(i).y()))
-                        Main.changeState(GameState.GAME);
-                    else if (menu.isPressed(controls.commands().get(i).x(), controls.commands().get(i).y()))
-                        Main.changeState(GameState.MENU);
+                    if (resume.isPressed(commands.get(i).x(), commands.get(i).y()))
+                        wrap.changeState(GameState.GAME);
+                    else if (menu.isPressed(commands.get(i).x(), commands.get(i).y()))
+                        wrap.changeState(GameState.MENU);
                     break;
                 case escape:
-                    Main.changeState(GameState.GAME);
+                    wrap.changeState(GameState.GAME);
                     break;
             }
-            controls.removeCommand(controls.commands().get(i));
+            wrap.getControls().removeCommand(commands.get(i));
         }
     }
 
-    public void render(Graphics g, Interpolation interpolation) {
+    public void render(Graphics g) {
         background.draw(g);
-        resume.render(g, interpolation);
-        menu.render(g, interpolation);
+        resume.render(g);
+        menu.render(g);
     }
 }

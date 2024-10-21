@@ -1,12 +1,13 @@
+import Engine.Wrap;
 import Tools.Image;
-import Tools.Interpolation;
-import Tools.Screen;
 import Enums.Side;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
 
 public class Player {
+
+    private final Wrap wrap;
 
     // Movement
     private double previousX;
@@ -23,10 +24,15 @@ public class Player {
     private Side firing = null;
 
     // Animations
-    private Tools.Image texture = new Image("resource/character/character_idle.png", Screen.WIDTH / 2, Screen.HEIGHT / 2, 116, 176);
+    private Tools.Image texture;
     private int movingX;
     private int movingY;
     private long animationCounter;
+
+    public Player(Wrap wrap) {
+        this.wrap = wrap;
+        texture = new Image(wrap, "resource/character/character_idle.png", (int)x, (int)y, 116, 176);
+    }
 
     public void update() {
         previousX = x;
@@ -38,11 +44,11 @@ public class Player {
         animate();
     }
 
-    public void render(Graphics g, Interpolation interpolation) {
+    public void render(Graphics g) {
         int width = 116;
         int height = 176;
-        double renderedX = interpolation.interpolate(previousX, x) - (double)width / 2;
-        double renderedY = interpolation.interpolate(previousY, y) - (double)height / 2;
+        double renderedX = wrap.interpolate(previousX, x) - (double)width / 2;
+        double renderedY = wrap.interpolate(previousY, y) - (double)height / 2;
         texture.changePosition((int)renderedX, (int)renderedY);
         texture.draw(g);
     }

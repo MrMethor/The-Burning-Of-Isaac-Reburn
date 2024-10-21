@@ -1,11 +1,12 @@
-import Tools.Image;
-import Tools.Interpolation;
-import Tools.TextBox;
+package Tools;
+
+import Engine.Wrap;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Font;
 
-public class Button{
+public class Button {
 
     private final Image image;
     private final TextBox label;
@@ -14,18 +15,18 @@ public class Button{
     private final int width;
     private final int height;
 
-    public Button(String label, String path, int x, int y, int width, int height) {
+    public Button(Wrap wrap, String label, String path, int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
 
         Color color = Color.decode("#BBBBBB");
-        this.label = new TextBox(label, x, y, color, "Castellar", Font.BOLD, height / 2, width, height);
-        image = new Image(path, x, y, width, height);
+        this.label = new TextBox(wrap, label, x, y, color, "Castellar", Font.BOLD, height / 2, width, height);
+        image = new Image(wrap, path, x, y, width, height);
     }
 
-    public void render(Graphics g, Interpolation interpolation) {
+    public void render(Graphics g) {
         image.draw(g);
         label.draw(g);
     }

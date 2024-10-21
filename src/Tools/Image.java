@@ -1,5 +1,7 @@
 package Tools;
 
+import Engine.Wrap;
+
 import javax.imageio.ImageIO;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -8,27 +10,29 @@ import java.io.IOException;
 
 public class Image {
 
+    private final Wrap wrap;
     private BufferedImage image;
     private int width;
     private int height;
     private int x;
     private int y;
 
-    public Image(String path, int x, int y, int width, int height) {
+    public Image(Wrap wrap, String path, int x, int y, int width, int height) {
+        this.wrap = wrap;
         try {
             image = ImageIO.read(new File(path));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.x = (int) ((double)x * Screen.getScale());
-        this.y = (int) ((double)y * Screen.getScale());
-        this.width = (int) ((double)width * Screen.getScale());
-        this.height = (int) ((double)height * Screen.getScale());
+        this.x = (int) ((double)x * wrap.getScale());
+        this.y = (int) ((double)y * wrap.getScale());
+        this.width = (int) ((double)width * wrap.getScale());
+        this.height = (int) ((double)height * wrap.getScale());
     }
 
     public void changePosition(int x, int y) {
-        this.x = (int) (x * Screen.getScale());
-        this.y = (int) (y * Screen.getScale());
+        this.x = (int) (x * wrap.getScale());
+        this.y = (int) (y * wrap.getScale());
     }
 
     public void changeImage(String path){

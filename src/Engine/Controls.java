@@ -1,7 +1,8 @@
-package Tools;
+package Engine;
 
 import Enums.Actions;
 import Enums.Commands;
+import Tools.Coords;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -13,6 +14,11 @@ public class Controls implements MouseListener, KeyListener {
 
     private final ArrayList<Coords> commands = new ArrayList<>();
     private final ArrayList<Actions> actions = new ArrayList<>();
+    private Double scale;
+
+    public Controls(double scale) {
+        this.scale = scale;
+    }
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -48,7 +54,7 @@ public class Controls implements MouseListener, KeyListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         switch (e.getButton()) {
-            case MouseEvent.BUTTON1: addCommand(Commands.leftClick, (int)((double)e.getX() / Screen.getScale()), (int)((double)e.getY() / Screen.getScale())); break;
+            case MouseEvent.BUTTON1: addCommand(Commands.leftClick, (int)((double)e.getX() / scale), (int)((double)e.getY() / scale)); break;
         }
     }
 
@@ -70,11 +76,11 @@ public class Controls implements MouseListener, KeyListener {
     }
 
     // Getters
-    public ArrayList<Coords> commands() {
+    public ArrayList<Coords> getCommands() {
         return commands;
     }
 
-    public ArrayList<Actions> actions() {
+    public ArrayList<Actions> getActions() {
         return actions;
     }
 

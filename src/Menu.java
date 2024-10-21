@@ -1,38 +1,42 @@
+import Engine.Wrap;
 import Enums.GameState;
-import Tools.Controls;
+import Tools.Button;
 import Tools.Image;
-import Tools.Interpolation;
 
 import java.awt.Graphics;
 
 public class Menu {
 
-    private Tools.Image background = new Image("resource/menu.jpg", 0, 0, 1920, 1080);
+    private final Wrap wrap;
+    private Tools.Image background;
     private final Button start;
     private final Button exit;
 
-    public Menu() {
-        start = new Button("BEGIN", "resource/start.png",1920 / 2 - 480 / 2, 750, 480, 100);
-        exit = new Button("EXIT", "resource/exit.png", 1920 / 2 - 480 / 2, 900, 480, 100);
+    public Menu(Wrap wrap) {
+        this.wrap = wrap;
+        background = new Image(wrap, "resource/menu.jpg", 0, 0, 1920, 1080);
+        start = new Button(wrap, "BEGIN", "resource/start.png",1920 / 2 - 480 / 2, 750, 480, 100);
+        exit = new Button(wrap, "EXIT", "resource/exit.png", 1920 / 2 - 480 / 2, 900, 480, 100);
     }
 
-    public void update(Controls controls) {
-        for (int i = 0; i < controls.commands().size(); i++) {
-            switch (controls.commands().get(i).command()) {
+    public void update() {
+        var commands = wrap.getCommands();
+        for (int i = 0; i < commands.size(); i++) {
+            switch (commands.get(i).command()) {
                 case leftClick:
-                    if (start.isPressed(controls.commands().get(i).x(), controls.commands().get(i).y()))
-                        Main.changeState(GameState.GAME);
-                    else if (exit.isPressed(controls.commands().get(i).x(), controls.commands().get(i).y()))
-                        Main.changeState(GameState.EXIT);
+                    if (start.isPressed(commands.get(i).x(), commands.get(i).y()))
+                        wrap.changeState(GameState.GAME);
+                    else if (exit.isPressed(commands.get(i).x(), commands.get(i).y()))
+                        wrap.changeState(GameState.EXIT);
                 break;
             }
-            controls.removeCommand(controls.commands().get(i));
+            wrap.getControls().removeCommand(commands.get(i));
         }
     }
 
-    public void render(Graphics g, Interpolation interpolation) {
+    public void render(Graphics g) {
         background.draw(g);
-        start.render(g, interpolation);
-        exit.render(g, interpolation);
+        start.render(g);
+        exit.render(g);
     }
 }
