@@ -10,7 +10,7 @@ public class Room {
 
     public Room(Wrap wrap) {
         this.wrap = wrap;
-        image = new Image(wrap, "resource/room.jpg", 0, 0, 1920, 1080);
+        image = new Image(wrap, "resource/room.jpg", 0, 0);
     }
 
     public void render(Graphics g) {

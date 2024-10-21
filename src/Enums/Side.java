@@ -2,25 +2,19 @@ package Enums;
 
 public enum Side {
 
-    UP(0, "up"),
-    DOWN(1, "down"),
-    LEFT(2, "left"),
-    RIGHT(3, "right");
+    UP(0),
+    DOWN(1),
+    LEFT(2),
+    RIGHT(3);
 
     private final int value;
-    private final String str;
 
-    Side(int value, String str) {
+    Side(int value) {
         this.value = value;
-        this.str = str;
     }
 
     public int num() {
         return value;
-    }
-
-    public String str() {
-        return str;
     }
 
     public static Side getSide(int i) {

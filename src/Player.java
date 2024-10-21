@@ -1,6 +1,7 @@
 import Engine.Wrap;
 import Tools.Image;
 import Enums.Side;
+import Tools.SpriteSheet;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
@@ -24,14 +25,16 @@ public class Player {
     private Side firing = null;
 
     // Animations
-    private Tools.Image texture;
+    private SpriteSheet spriteSheet;
+    private Image texture;
     private int movingX;
     private int movingY;
     private long animationCounter;
 
     public Player(Wrap wrap) {
         this.wrap = wrap;
-        texture = new Image(wrap, "resource/character/character_idle.png", (int)x, (int)y, 116, 176);
+        spriteSheet = new SpriteSheet("resource/character.png", 3, 4);
+        texture = new Image(wrap, spriteSheet.getSprite(1, 0), (int)x, (int)y, 150, 150);
     }
 
     public void update() {
@@ -77,24 +80,24 @@ public class Player {
     }
 
     private void animate() {
-        long frame = animationCounter / (long)(10 / speed) % 4 + 1;
-        String defaultPath = "resource/character/character_";
+        int numFrame = (int)(animationCounter / (long)(10 / speed) % 4);
+        int frame = numFrame == 3 ? 1 : numFrame;
         if (firing != null) {
             if (movingX == 0 && movingY == 0)
-                texture.changeImage(defaultPath + firing.str() + 2 + ".png");
+                texture.changeImage(spriteSheet.getSprite(1, firing.num()));
             else
-                texture.changeImage(defaultPath + firing.str() + frame + ".png");
+                texture.changeImage(spriteSheet.getSprite(frame, firing.num()));
         }
         else if (movingY == -1)
-            texture.changeImage(defaultPath + "up" + frame + ".png");
+            texture.changeImage(spriteSheet.getSprite(frame, 0));
         else if (movingY == 1)
-            texture.changeImage(defaultPath + "down" + frame + ".png");
+            texture.changeImage(spriteSheet.getSprite(frame, 1));
         else if (movingX == -1)
-            texture.changeImage(defaultPath + "left" + frame + ".png");
+            texture.changeImage(spriteSheet.getSprite(frame, 2));
         else if (movingX == 1)
-            texture.changeImage(defaultPath + "right" + frame + ".png");
+            texture.changeImage(spriteSheet.getSprite(frame, 3));
         else
-            texture.changeImage(defaultPath + "idle.png");
+            texture.changeImage(spriteSheet.getSprite(1, 1));
         animationCounter++;
     }
 

@@ -14,7 +14,7 @@ public class Menu {
 
     public Menu(Wrap wrap) {
         this.wrap = wrap;
-        background = new Image(wrap, "resource/menu.jpg", 0, 0, 1920, 1080);
+        background = new Image(wrap, "resource/menu.jpg", 0, 0);
         start = new Button(wrap, "BEGIN", "resource/start.png",1920 / 2 - 480 / 2, 750, 480, 100);
         exit = new Button(wrap, "EXIT", "resource/exit.png", 1920 / 2 - 480 / 2, 900, 480, 100);
     }

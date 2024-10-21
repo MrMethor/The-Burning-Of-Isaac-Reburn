@@ -14,7 +14,7 @@ public class Pause {
 
     public Pause(Wrap wrap) {
         this.wrap = wrap;
-        background = new Image(wrap,"resource/pause.png", 0, 0, 1920, 1080);
+        background = new Image(wrap,"resource/pause.png", 0, 0);
         resume = new Button(wrap,"RESUME", "resource/start.png",1920 / 2 - 480 / 2, 550, 480, 100);
         menu = new Button(wrap,"EXIT", "resource/exit.png", 1920 / 2 - 480 / 2, 700, 480, 100);
     }

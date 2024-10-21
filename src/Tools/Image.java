@@ -22,12 +22,43 @@ public class Image {
         try {
             image = ImageIO.read(new File(path));
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Couldn't find the file");
         }
         this.x = (int) ((double)x * wrap.getScale());
         this.y = (int) ((double)y * wrap.getScale());
         this.width = (int) ((double)width * wrap.getScale());
         this.height = (int) ((double)height * wrap.getScale());
+    }
+
+    public Image(Wrap wrap, String path, int x, int y) {
+        this.wrap = wrap;
+        try {
+            image = ImageIO.read(new File(path));
+        } catch (IOException e) {
+            System.out.println("Couldn't find the file");
+        }
+        this.x = (int) ((double)x * wrap.getScale());
+        this.y = (int) ((double)y * wrap.getScale());
+        this.width = (int)((double)image.getWidth() * wrap.getScale());
+        this.height = (int)((double)image.getHeight() * wrap.getScale());
+    }
+
+    public Image (Wrap wrap, BufferedImage image, int x, int y, int width, int height) {
+        this.wrap = wrap;
+        this.image = image;
+        this.x = (int) ((double)x * wrap.getScale());
+        this.y = (int) ((double)y * wrap.getScale());
+        this.width = (int) ((double)width * wrap.getScale());
+        this.height = (int) ((double)height * wrap.getScale());
+    }
+
+    public Image (Wrap wrap, BufferedImage image, int x, int y) {
+        this.wrap = wrap;
+        this.image = image;
+        this.x = (int) ((double)x * wrap.getScale());
+        this.y = (int) ((double)y * wrap.getScale());
+        this.width = (int)((double)image.getWidth() * wrap.getScale());
+        this.height = (int)((double)image.getHeight() * wrap.getScale());
     }
 
     public void changePosition(int x, int y) {
@@ -41,6 +72,9 @@ public class Image {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public void changeImage(BufferedImage image){
+        this.image = image;
     }
 
     public void draw(Graphics g) {
