@@ -1,3 +1,4 @@
 fullscreen true
-fps true
+debug false
 width 800
+ups 60

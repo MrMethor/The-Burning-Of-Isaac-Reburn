@@ -2,8 +2,8 @@ package Engine;
 
 public class Counter {
 
-    private static final int SECOND_IN_NANO = 1000000000;
-    private int timeToElapse;
+    private static final double SECOND_IN_NANO = 1000000000;
+    private double timeToElapse;
     private int desiredUPS;
 
     private int ups;
@@ -17,15 +17,15 @@ public class Counter {
         timeToElapse = SECOND_IN_NANO / desiredUPS;
     }
 
-    public void addFPS() {
-        fpsCounter++;
-    }
-
     public void addUPS() {
         upsCounter++;
     }
 
-    public void addTime(long alpha) {
+    public void addFPS() {
+        fpsCounter++;
+    }
+
+    public void addTime(double alpha) {
         if (elapsedTime >= SECOND_IN_NANO) {
             elapsedTime = 0;
             resetCounter();
@@ -49,7 +49,7 @@ public class Counter {
         return ups;
     }
 
-    public int getTimeToElapse() {
+    public double getTimeToElapse() {
         return timeToElapse;
     }
 }

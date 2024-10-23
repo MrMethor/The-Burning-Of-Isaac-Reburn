@@ -1,12 +1,10 @@
+import Enums.GameState;
 import Enums.StateTransition;
-import Tools.TextBox;
 import Engine.Wrap;
 
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Color;
-import java.awt.Font;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import java.awt.image.BufferStrategy;
@@ -38,32 +36,32 @@ public class Main extends Canvas implements Runnable {
     }
 
     public void run() {
-        long delta = 0;
+        double timeToElapse = wrap.getTimeToElapse();
+        double delta = 0;
         long last = System.nanoTime();
 
         while (running) {
-            int timeToElapse = wrap.getTimeToElapse();
-            if (delta >= timeToElapse) {
-                delta -= timeToElapse;
+            long current = System.nanoTime();
+            delta += (current - last) / timeToElapse;
+            if (delta >= 1.0) {
+                delta--;
                 update();
                 wrap.addUPS();
             }
-            wrap.setInterpolation((double)delta / timeToElapse);
-            wrap.addFPS();
+            wrap.setInterpolation(delta);
             render();
-
-            // Counter
-            long current = System.nanoTime() ;
-            long alpha = current - last;
-            delta += alpha;
+            wrap.addFPS();
+            wrap.addTime(current - last);
             last = current;
-            wrap.addTime(alpha);
         }
     }
 
     private void update() {
         if (wrap.getGameState() != wrap.getNewState())
             updateState();
+
+        if (wrap.isFPS())
+            wrap.updateDebug();
 
         switch (wrap.getGameState()) {
             case MENU: menu.update(); break;
@@ -75,45 +73,39 @@ public class Main extends Canvas implements Runnable {
     private void render() {
         BufferStrategy bs = getBufferStrategy();
         if (bs == null) {
-            createBufferStrategy(3);
+            createBufferStrategy(2);
             return;
         }
         Graphics g = bs.getDrawGraphics();
+        //#############################################
 
         switch (wrap.getGameState()) {
             case MENU: menu.render(g); break;
             case GAME: game.render(g); break;
-            case PAUSE: game.render(g); pause.render(g); break;
+            case PAUSE: pause.render(g); break;
         }
 
-        if (wrap.isFPS()) {
-            int size = 15;
-            Tools.TextBox fps = new TextBox(wrap,"FPS: " + wrap.getFPS(), 0, size, Color.WHITE, "Calibri", Font.PLAIN, size);
-            fps.draw(g);
-        }
+        if (wrap.isFPS() && wrap.getGameState() != GameState.PAUSE)
+            wrap.drawDebug(g);
+
+        //#############################################
         g.dispose();
         bs.show();
     }
 
     private void updateState() {
-        switch(Objects.requireNonNull(StateTransition.getTransition(wrap.getGameState(), wrap.getNewState()))) {
-            case START_GAME:
+        switch (StateTransition.getTransition(wrap.getGameState(), wrap.getNewState())) {
+            case START_GAME -> {
                 game = new Game(wrap);
                 menu = null;
-                break;
-            case PAUSE_GAME:
-                pause = new Pause(wrap);
-                break;
-            case RESUME_GAME:
-                pause = null;
-                break;
-            case BACK_TO_MENU:
+            }
+            case PAUSE_GAME -> pause = new Pause(wrap);
+            case RESUME_GAME -> pause = null;
+            case BACK_TO_MENU -> {
                 menu = new Menu(wrap);
                 game = null;
-                break;
-            case EXIT_GAME:
-                stop();
-                break;
+            }
+            case EXIT_GAME -> stop();
         }
         wrap.updateGameState(wrap.getNewState());
     }

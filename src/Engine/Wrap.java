@@ -3,7 +3,11 @@ package Engine;
 import Enums.Actions;
 import Enums.GameState;
 import Tools.Coords;
+import Tools.TextBox;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Font;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -18,6 +22,9 @@ public class Wrap {
     private final Counter counter;
     private final Interpolation interpolation;
 
+    private final TextBox debugUPS;
+    private final TextBox debugFPS;
+
     public Wrap(String path) {
         boolean fullscreen = false;
         boolean fps = false;
@@ -30,7 +37,7 @@ public class Wrap {
                 String line = reader.nextLine();
                 if (line.contains("fullscreen"))
                     fullscreen = line.contains("true");
-                else if (line.contains("fps"))
+                else if (line.contains("debug"))
                     fps = line.contains("true");
                 else if (line.contains("width"))
                     width = Integer.parseInt(line.replaceAll("\\D", ""));
@@ -47,6 +54,10 @@ public class Wrap {
         controls = new Controls(screen.getScale());
         counter = new Counter(ups);
         interpolation = new Interpolation();
+
+        int size = 20;
+        debugFPS = new TextBox(this, "", 0, size, Color.WHITE, "Calibri", Font.PLAIN, size);
+        debugUPS = new TextBox(this, "", 0, size * 2, Color.WHITE, "Calibri", Font.PLAIN, size);
     }
 
     public int getWidth() {
@@ -59,26 +70,6 @@ public class Wrap {
 
     public Controls getControls() {
         return controls;
-    }
-
-    public int getTimeToElapse() {
-        return counter.getTimeToElapse();
-    }
-
-    public void addUPS() {
-        counter.addUPS();
-    }
-
-    public void addFPS() {
-        counter.addFPS();
-    }
-
-    public void addTime(long time) {
-        counter.addTime(time);
-    }
-
-    public void setInterpolation(double interpolation) {
-        this.interpolation.setInterpolation(interpolation);
     }
 
     public GameState getGameState() {
@@ -101,14 +92,6 @@ public class Wrap {
         return screen.isFPS();
     }
 
-    public int getFPS() {
-        return counter.getFPS();
-    }
-
-    public int getUPS() {
-        return counter.getUPS();
-    }
-
     public ArrayList<Coords> getCommands() {
         return controls.getCommands();
     }
@@ -127,5 +110,35 @@ public class Wrap {
 
     public boolean isFullscreen() {
         return screen.isFullscreen();
+    }
+
+    public void drawDebug(Graphics g) {
+        debugFPS.draw(g);
+        debugUPS.draw(g);
+    }
+
+    public void updateDebug() {
+        debugFPS.changeText("FPS: " + counter.getFPS());
+        debugUPS.changeText("UPS: " + counter.getUPS());
+    }
+
+    public double getTimeToElapse() {
+        return counter.getTimeToElapse();
+    }
+
+    public void setInterpolation(double interpolation) {
+        this.interpolation.setInterpolation(interpolation);
+    }
+
+    public void addTime(double alpha) {
+        counter.addTime(alpha);
+    }
+
+    public void addFPS() {
+        counter.addFPS();
+    }
+
+    public void addUPS() {
+        counter.addUPS();
     }
 }

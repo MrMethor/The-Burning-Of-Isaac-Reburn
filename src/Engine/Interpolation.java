@@ -11,5 +11,4 @@ public class Interpolation {
     public double interpolate(double previous, double current) {
         return previous + (interpolation * (current - previous));
     }
-
 }

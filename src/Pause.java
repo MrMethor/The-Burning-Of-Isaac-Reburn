@@ -1,20 +1,17 @@
 import Engine.Wrap;
 import Enums.GameState;
 import Tools.Button;
-import Tools.Image;
 
 import java.awt.Graphics;
 
 public class Pause {
 
     private final Wrap wrap;
-    private Tools.Image background;
     private final Button resume;
     private final Button menu;
 
     public Pause(Wrap wrap) {
         this.wrap = wrap;
-        background = new Image(wrap,"resource/pause.png", 0, 0);
         resume = new Button(wrap,"RESUME", "resource/start.png",1920 / 2 - 480 / 2, 550, 480, 100);
         menu = new Button(wrap,"EXIT", "resource/exit.png", 1920 / 2 - 480 / 2, 700, 480, 100);
     }
@@ -38,7 +35,6 @@ public class Pause {
     }
 
     public void render(Graphics g) {
-        background.draw(g);
         resume.render(g);
         menu.render(g);
     }

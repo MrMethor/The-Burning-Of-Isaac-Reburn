@@ -61,6 +61,10 @@ public class TextBox {
         this.y = (int) (y * wrap.getScale());
     }
 
+    public void changeText(String text) {
+        this.text = text;
+    }
+
     private int calculateX(FontMetrics metrics) {
         return x + (width - metrics.stringWidth(text)) / 2;
     }
