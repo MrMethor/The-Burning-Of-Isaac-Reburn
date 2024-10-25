@@ -1,17 +1,22 @@
 import Engine.Wrap;
 import Enums.GameState;
+import Tools.Hitbox;
+
 import java.awt.Graphics;
+import java.util.ArrayList;
 
 public class Game {
 
     private final Room room;
     private final Player player;
     private final Wrap wrap;
+    private final ArrayList<Hitbox> hitboxes;
 
     public Game(Wrap wrap) {
         this.wrap = wrap;
-        player = new Player(wrap);
-        room = new Room(wrap);
+        hitboxes = new ArrayList<>();
+        room = new Room(wrap, hitboxes);
+        player = new Player(wrap, hitboxes);
     }
 
     public void update() {
@@ -47,10 +52,27 @@ public class Game {
         player.firingDirection(new boolean[]{fireUp, fireDown, fireLeft, fireRight});
         player.move(playerX, playerY);
         player.update();
+        updateHitboxes();
     }
 
     public void render(Graphics g) {
         room.render(g);
         player.render(g);
+        if (wrap.isHitboxes()) {
+            for (int i = 0; i < hitboxes.size(); i++)
+                hitboxes.get(i).draw(g);
+        }
+    }
+
+    private void updateHitboxes() {
+        for (int i = 0; i < hitboxes.size(); i++)
+            hitboxes.get(i).resetCollisions();
+        for (int i = 0; i < hitboxes.size(); i++) {
+            for (int j = 0; j < hitboxes.size(); j++) {
+                if (j == i)
+                    continue;
+                hitboxes.get(i).collision(hitboxes.get(j));
+            }
+        }
     }
 }

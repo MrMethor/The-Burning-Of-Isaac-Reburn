@@ -1,4 +1,5 @@
 import Engine.Wrap;
+import Tools.Hitbox;
 import Tools.Image;
 import Enums.Side;
 import Tools.SpriteSheet;
@@ -13,28 +14,32 @@ public class Player {
     // Movement
     private double previousX;
     private double previousY;
-    private double x = (double)1920 / 2;
-    private double y = (double)1080 / 2;
+    private double x = 1920 / 2.0;
+    private double y = 1080 / 2.0;
     private double velocityX;
     private double velocityY;
     private final double speed = 1;
     private final double slideFactor = 0.9;
+    private final Hitbox hitbox;
+    private int size = 150;
 
     // Attack
     private final ArrayList<Integer> firingOrder = new ArrayList<>();
     private Side firing = null;
 
     // Animations
-    private SpriteSheet spriteSheet;
-    private Image texture;
+    private final SpriteSheet spriteSheet;
+    private final Image texture;
     private int movingX;
     private int movingY;
     private long animationCounter;
 
-    public Player(Wrap wrap) {
+    public Player(Wrap wrap, ArrayList<Hitbox> hitboxes) {
         this.wrap = wrap;
         spriteSheet = new SpriteSheet("resource/character.png", 3, 4);
-        texture = new Image(wrap, spriteSheet.getSprite(1, 0), (int)x, (int)y, 150, 150);
+        texture = new Image(wrap, spriteSheet.getSprite(1, 0), x, y, size, size);
+        hitbox = new Hitbox(wrap, x, y, (int)(0.5 * size), (int)(0.5 * size), true, true);
+        hitboxes.add(hitbox);
     }
 
     public void update() {
@@ -42,16 +47,23 @@ public class Player {
         previousY = y;
         x += velocityX;
         y += velocityY;
+        if (velocityX < 0 && hitbox.getCollision(Side.LEFT.num()) < 0)
+            x -= hitbox.getCollision(Side.LEFT.num());
+        else if (velocityX > 0 && hitbox.getCollision(Side.RIGHT.num()) < 0)
+            x += hitbox.getCollision(Side.RIGHT.num());
+        if (velocityY < 0 && hitbox.getCollision(Side.UP.num()) < 0)
+            y -= hitbox.getCollision(Side.UP.num());
+        else if (velocityY > 0 && hitbox.getCollision(Side.DOWN.num()) < 0)
+            y += hitbox.getCollision(Side.DOWN.num());
         velocityX *= slideFactor;
         velocityY *= slideFactor;
+        hitbox.move(x, y + size / 4.0);
         animate();
     }
 
     public void render(Graphics g) {
-        int width = 116;
-        int height = 176;
-        double renderedX = wrap.interpolate(previousX, x) - (double)width / 2;
-        double renderedY = wrap.interpolate(previousY, y) - (double)height / 2;
+        double renderedX = wrap.interpolate(previousX, x) - size / 2.0;
+        double renderedY = wrap.interpolate(previousY, y) - size / 2.0;
         texture.changePosition((int)renderedX, (int)renderedY);
         texture.draw(g);
     }
@@ -100,5 +112,4 @@ public class Player {
             texture.changeImage(spriteSheet.getSprite(1, 1));
         animationCounter++;
     }
-
 }

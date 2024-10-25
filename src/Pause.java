@@ -2,7 +2,7 @@ import Engine.Wrap;
 import Enums.GameState;
 import Tools.Button;
 
-import java.awt.Graphics;
+import java.awt.*;
 
 public class Pause {
 
@@ -35,6 +35,10 @@ public class Pause {
     }
 
     public void render(Graphics g) {
+        Color c = g.getColor();
+        g.setColor(new Color(0f,0f,0f,.02f));
+        g.fillRect(0, 0, 1920, 1080);
+        g.setColor(c);
         resume.render(g);
         menu.render(g);
     }

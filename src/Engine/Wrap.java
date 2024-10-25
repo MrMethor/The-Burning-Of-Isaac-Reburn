@@ -21,6 +21,7 @@ public class Wrap {
     private final Controls controls;
     private final Counter counter;
     private final Interpolation interpolation;
+    private boolean hitboxes;
 
     private final TextBox debugUPS;
     private final TextBox debugFPS;
@@ -43,6 +44,8 @@ public class Wrap {
                     width = Integer.parseInt(line.replaceAll("\\D", ""));
                 else if (line.contains("ups"))
                     ups = Integer.parseInt(line.replaceAll("\\D", ""));
+                else if (line.contains("hitbox"))
+                    hitboxes = line.contains("true");
             }
         } catch (FileNotFoundException e) {
             System.out.println("Config file not found. Proceeding with default settings.");
@@ -140,5 +143,9 @@ public class Wrap {
 
     public void addUPS() {
         counter.addUPS();
+    }
+
+    public boolean isHitboxes() {
+        return hitboxes;
     }
 }

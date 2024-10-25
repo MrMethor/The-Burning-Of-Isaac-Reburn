@@ -1,4 +1,5 @@
 fullscreen true
-debug false
+debug true
 width 800
 ups 60
+hitbox false
