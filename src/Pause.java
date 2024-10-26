@@ -1,45 +1,34 @@
 import Engine.Wrap;
 import Enums.GameState;
 import Tools.Button;
+import Engine.MenuType;
 
-import java.awt.*;
-
-public class Pause {
-
-    private final Wrap wrap;
-    private final Button resume;
-    private final Button menu;
+public class Pause extends MenuType {
 
     public Pause(Wrap wrap) {
-        this.wrap = wrap;
-        resume = new Button(wrap,"RESUME", "resource/start.png",1920 / 2 - 480 / 2, 550, 480, 100);
-        menu = new Button(wrap,"EXIT", "resource/exit.png", 1920 / 2 - 480 / 2, 700, 480, 100);
+        super(wrap);
     }
 
-    public void update() {
-        var commands = wrap.getCommands();
-        for (int i = 0; i < commands.size(); i++) {
-            switch (commands.get(i).command()) {
-                case leftClick:
-                    if (resume.isPressed(commands.get(i).x(), commands.get(i).y()))
-                        wrap.changeState(GameState.GAME);
-                    else if (menu.isPressed(commands.get(i).x(), commands.get(i).y()))
-                        wrap.changeState(GameState.MENU);
-                    break;
-                case escape:
-                    wrap.changeState(GameState.GAME);
-                    break;
-            }
-            wrap.getControls().removeCommand(commands.get(i));
+    @Override
+    protected void setupButtons() {
+        int buttonSize = 500;
+        int centerX = 1920 / 2 - buttonSize / 2;
+        buttons.put("resume", new Button(wrap, "RESUME", buttonOn(true), centerX, 550, buttonSize));
+        buttons.put("menu", new Button(wrap, "EXIT", buttonOn(false), centerX, 700, buttonSize));
+    }
+
+    @Override
+    protected void buttonClicked(String name) {
+        switch (name) {
+            case "resume" -> wrap.changeState(GameState.GAME);
+            case "menu" -> wrap.changeState(GameState.MENU);
         }
     }
 
-    public void render(Graphics g) {
-        Color c = g.getColor();
-        g.setColor(new Color(0f,0f,0f,.02f));
-        g.fillRect(0, 0, 1920, 1080);
-        g.setColor(c);
-        resume.render(g);
-        menu.render(g);
+    @Override
+    protected void keyPressed(String name) {
+        switch(name) {
+            case "escape" -> wrap.changeState(GameState.GAME);
+        }
     }
 }

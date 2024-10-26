@@ -1,42 +1,34 @@
 import Engine.Wrap;
 import Enums.GameState;
 import Tools.Button;
-import Tools.Image;
+import Engine.MenuType;
 
-import java.awt.Graphics;
-
-public class Menu {
-
-    private final Wrap wrap;
-    private Tools.Image background;
-    private final Button start;
-    private final Button exit;
+public class Menu extends MenuType {
 
     public Menu(Wrap wrap) {
-        this.wrap = wrap;
-        background = new Image(wrap, "resource/menu.jpg", 0, 0);
-        start = new Button(wrap, "BEGIN", "resource/start.png",1920 / 2 - 480 / 2, 750, 480, 100);
-        exit = new Button(wrap, "EXIT", "resource/exit.png", 1920 / 2 - 480 / 2, 900, 480, 100);
+        super(wrap, "resource/menu.jpg");
     }
 
-    public void update() {
-        var commands = wrap.getCommands();
-        for (int i = 0; i < commands.size(); i++) {
-            switch (commands.get(i).command()) {
-                case leftClick:
-                    if (start.isPressed(commands.get(i).x(), commands.get(i).y()))
-                        wrap.changeState(GameState.GAME);
-                    else if (exit.isPressed(commands.get(i).x(), commands.get(i).y()))
-                        wrap.changeState(GameState.EXIT);
-                break;
-            }
-            wrap.getControls().removeCommand(commands.get(i));
+    @Override
+    protected void setupButtons() {
+        int buttonSize = 400;
+        int centerX = 1920 / 2 - buttonSize / 2;
+        buttons.put("start", new Button(wrap, "BEGIN", buttonOn(true), centerX, 750, buttonSize));
+        buttons.put("settings", new Button(wrap, "SETTINGS", buttonOn(false), centerX, 850, buttonSize));
+        buttons.put("exit", new Button(wrap, "EXIT", buttonOn(false), centerX, 950, buttonSize));
+    }
+
+    @Override
+    protected void buttonClicked(String name) {
+        switch (name) {
+            case "start" -> wrap.changeState(GameState.GAME);
+            case "settings" -> wrap.changeState(GameState.SETTINGS);
+            case "exit" -> wrap.changeState(GameState.EXIT);
         }
     }
 
-    public void render(Graphics g) {
-        background.draw(g);
-        start.render(g);
-        exit.render(g);
+    @Override
+    protected void keyPressed(String name) {
+
     }
 }

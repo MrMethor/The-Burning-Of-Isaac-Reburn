@@ -1,11 +1,12 @@
 import Engine.Wrap;
 import Enums.GameState;
+import Engine.Component;
 import Tools.Hitbox;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
 
-public class Game {
+public class Game implements Component {
 
     private final Room room;
     private final Player player;
@@ -28,14 +29,14 @@ public class Game {
         var actions = wrap.getActions();
         for (int i = 0; i < actions.size(); i++) {
             switch (actions.get(i)) {
-                case moveUp: playerY -= 1; break;
-                case moveDown: playerY += 1; break;
-                case moveRight: playerX += 1; break;
-                case moveLeft: playerX -= 1; break;
-                case fireUp: fireUp = true; break;
-                case fireDown: fireDown = true; break;
-                case fireLeft: fireLeft = true; break;
-                case fireRight: fireRight = true; break;
+                case moveUp -> playerY -= 1;
+                case moveDown -> playerY += 1;
+                case moveRight -> playerX += 1;
+                case moveLeft -> playerX -= 1;
+                case fireUp -> fireUp = true;
+                case fireDown -> fireDown = true;
+                case fireLeft -> fireLeft = true;
+                case fireRight -> fireRight = true;
             }
         }
 
@@ -43,7 +44,7 @@ public class Game {
         var commands = wrap.getCommands();
         for (int i = 0; i < commands.size(); i++) {
             switch (commands.get(i).command()) {
-                case escape: wrap.changeState(GameState.PAUSE); break;
+                case escape -> wrap.changeState(GameState.PAUSE);
             }
             wrap.getControls().removeCommand(commands.get(i));
         }

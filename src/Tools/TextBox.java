@@ -13,7 +13,6 @@ public class TextBox {
     private String text;
     private Font font;
     private Color color;
-    private boolean centered;
     private int width;
     private int height;
     private int x;
@@ -35,8 +34,6 @@ public class TextBox {
         this.text = text;
         this.x = (int) (x * wrap.getScale());
         this.y = (int) (y * wrap.getScale());
-        this.width = (int) (width * wrap.getScale());
-        this.height = (int) (height * wrap.getScale());
         this.font = new Font(fontFamily, decor, (int)((double)size * wrap.getScale()));
         this.color = color;
     }

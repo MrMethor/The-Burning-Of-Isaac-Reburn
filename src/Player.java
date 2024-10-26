@@ -1,4 +1,5 @@
 import Engine.Wrap;
+import Engine.Component;
 import Tools.Hitbox;
 import Tools.Image;
 import Enums.Side;
@@ -7,7 +8,7 @@ import Tools.SpriteSheet;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
-public class Player {
+public class Player implements Component {
 
     private final Wrap wrap;
 
@@ -38,7 +39,7 @@ public class Player {
         this.wrap = wrap;
         spriteSheet = new SpriteSheet("resource/character.png", 3, 4);
         texture = new Image(wrap, spriteSheet.getSprite(1, 0), x, y, size, size);
-        hitbox = new Hitbox(wrap, x, y, (int)(0.5 * size), (int)(0.5 * size), true, true);
+        hitbox = new Hitbox(wrap, x, y, (int)(0.4 * size), (int)(0.5 * size), true, true);
         hitboxes.add(hitbox);
     }
 
@@ -92,7 +93,7 @@ public class Player {
     }
 
     private void animate() {
-        int numFrame = (int)(animationCounter / (long)(10 / speed) % 4);
+        int numFrame = (int)(animationCounter / (10.0 / speed) / (size / 150.0) % 4);
         int frame = numFrame == 3 ? 1 : numFrame;
         if (firing != null) {
             if (movingX == 0 && movingY == 0)

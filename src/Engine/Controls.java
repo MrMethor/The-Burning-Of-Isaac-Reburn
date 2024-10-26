@@ -14,10 +14,10 @@ public class Controls implements MouseListener, KeyListener {
 
     private final ArrayList<Coords> commands = new ArrayList<>();
     private final ArrayList<Actions> actions = new ArrayList<>();
-    private Double scale;
+    private final Wrap wrap;
 
-    public Controls(double scale) {
-        this.scale = scale;
+    public Controls(Wrap wrap) {
+        this.wrap = wrap;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class Controls implements MouseListener, KeyListener {
     @Override
     public void mouseClicked(MouseEvent e) {
         switch (e.getButton()) {
-            case MouseEvent.BUTTON1: addCommand(Commands.leftClick, (int)((double)e.getX() / scale), (int)((double)e.getY() / scale)); break;
+            case MouseEvent.BUTTON1: addCommand(Commands.leftClick, (int)((double)e.getX() / wrap.getScale()), (int)((double)e.getY() / wrap.getScale())); break;
         }
     }
 

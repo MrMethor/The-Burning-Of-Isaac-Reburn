@@ -1,11 +1,12 @@
 import Engine.Wrap;
+import Engine.Component;
 import Tools.Hitbox;
 import Tools.Image;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
 
-public class Room {
+public class Room implements Component {
 
     private Image image;
     private final Hitbox hitbox;
@@ -15,6 +16,8 @@ public class Room {
         hitbox = new Hitbox(wrap, 1920.0 / 2, 1080.0 / 2, 1550, 820, false, false);
         hitboxes.add(hitbox);
     }
+
+    public void update() {}
 
     public void render(Graphics g) {
         image.draw(g);

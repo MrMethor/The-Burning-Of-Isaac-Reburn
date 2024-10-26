@@ -1,4 +1,3 @@
-import Enums.GameState;
 import Enums.StateTransition;
 import Engine.Wrap;
 
@@ -8,31 +7,21 @@ import java.awt.Graphics;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import java.awt.image.BufferStrategy;
-import java.util.Objects;
 
 public class Main extends Canvas implements Runnable {
 
     private boolean running;
     private Thread thread;
-    private final JFrame frame;
+    private JFrame frame = null;
 
     private final Wrap wrap = new Wrap("resource/config.txt");
     private Menu menu = new Menu(wrap);
     private Game game;
     private Pause pause;
+    private Settings settings;
 
     public Main() {
-        Dimension screenSize = new Dimension(wrap.getWidth(), wrap.getHeight());
-        setPreferredSize(screenSize);
-        frame = new JFrame();
-        if (wrap.isFullscreen()) {
-            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-            frame.setUndecorated(true);
-        }
-        setFocusable(true);
-        requestFocus();
-        addKeyListener(wrap.getControls());
-        addMouseListener(wrap.getControls());
+        setupFrame();
     }
 
     public void run() {
@@ -57,23 +46,27 @@ public class Main extends Canvas implements Runnable {
     }
 
     private void update() {
+        if (wrap.updateSettings())
+            updateSettings();
+
         if (wrap.getGameState() != wrap.getNewState())
             updateState();
 
-        if (wrap.isFPS())
+        if (wrap.isDebug())
             wrap.updateDebug();
 
         switch (wrap.getGameState()) {
             case MENU: menu.update(); break;
             case GAME: game.update(); break;
             case PAUSE: pause.update(); break;
+            case SETTINGS: settings.update(); break;
         }
     }
 
     private void render() {
         BufferStrategy bs = getBufferStrategy();
         if (bs == null) {
-            createBufferStrategy(2);
+            createBufferStrategy(3);
             return;
         }
         Graphics g = bs.getDrawGraphics();
@@ -83,9 +76,10 @@ public class Main extends Canvas implements Runnable {
             case MENU: menu.render(g); break;
             case GAME: game.render(g); break;
             case PAUSE: pause.render(g); break;
+            case SETTINGS: settings.render(g); break;
         }
 
-        if (wrap.isFPS() && wrap.getGameState() != GameState.PAUSE)
+        if (wrap.isDebug())
             wrap.drawDebug(g);
 
         //#############################################
@@ -105,9 +99,56 @@ public class Main extends Canvas implements Runnable {
                 menu = new Menu(wrap);
                 game = null;
             }
+            case MENU_TO_SETTINGS -> {
+                settings = new Settings(wrap);
+                menu = null;
+            }
+            case SETTINGS_TO_MENU -> {
+                menu = new Menu(wrap);
+                settings = null;
+            }
             case EXIT_GAME -> stop();
         }
         wrap.updateGameState(wrap.getNewState());
+    }
+
+    private void updateSettings() {
+        setupFrame();
+    }
+
+    public static void main(String[] args) {
+        System.setProperty("sun.java2d.uiScale", "1.0");
+        Main main = new Main();
+        main.start();
+    }
+
+    private void setupFrame() {
+        if (frame != null){
+            frame.setVisible(false);
+            frame = null;
+            removeKeyListener(wrap.getControls());
+            removeMouseListener(wrap.getControls());
+            setFocusable(false);
+        }
+        frame = new JFrame();
+        Dimension screenSize = new Dimension(wrap.getWidth(), wrap.getHeight());
+        setPreferredSize(screenSize);
+        setFocusable(true);
+        requestFocus();
+        addKeyListener(wrap.getControls());
+        addMouseListener(wrap.getControls());
+        if (wrap.isFullscreen()) {
+            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            frame.setUndecorated(true);
+        }
+        frame.setTitle("The Burning Of Isaac: Reburn");
+        frame.setResizable(false);
+        frame.add(this);
+        frame.pack();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setIconImage(new ImageIcon("resource/icon.png").getImage());
+        frame.setVisible(true);
     }
 
     private synchronized void start() {
@@ -126,19 +167,5 @@ public class Main extends Canvas implements Runnable {
             throw new RuntimeException(e);
         }
         System.exit(0);
-    }
-
-    public static void main(String[] args) {
-        System.setProperty("sun.java2d.uiScale", "1.0");
-        Main main = new Main();
-        main.frame.setTitle("The Burning Of Isaac: Reburn");
-        main.frame.setResizable(false);
-        main.frame.add(main);
-        main.frame.pack();
-        main.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        main.frame.setLocationRelativeTo(null);
-        main.frame.setIconImage(new ImageIcon("resource/icon.png").getImage());
-        main.frame.setVisible(true);
-        main.start();
     }
 }

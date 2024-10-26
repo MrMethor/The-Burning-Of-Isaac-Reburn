@@ -15,11 +15,11 @@ public class Button {
     private final int width;
     private final int height;
 
-    public Button(Wrap wrap, String label, String path, int x, int y, int width, int height) {
+    public Button(Wrap wrap, String label, String path, int x, int y, int size) {
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
+        this.width = size;
+        this.height = (int)(size / 480.0 * 100.0);
 
         Color color = Color.decode("#BBBBBB");
         this.label = new TextBox(wrap, label, x, y, color, "Castellar", Font.BOLD, height / 2, width, height);
@@ -33,5 +33,9 @@ public class Button {
 
     public boolean isPressed(int x, int y) {
         return x > this.x && x < this.x + width && y > this.y && y < this.y + height;
+    }
+
+    public void changeImage(String path) {
+        image.changeImage(path);
     }
 }
