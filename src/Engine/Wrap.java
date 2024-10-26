@@ -30,7 +30,7 @@ public class Wrap {
     public Wrap(String path) {
         boolean fullscreen = false;
         boolean debug = false;
-        int width = 1280;
+        int width = 0;
         int ups = 60;
         try {
             File file = new File(path);

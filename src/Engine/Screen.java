@@ -5,18 +5,17 @@ import java.awt.Toolkit;
 public class Screen {
 
     public final int WIDTH = 1920;
+    private final int maxWidth = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
     private boolean fullscreen;
-    private boolean debug; // Debug counter showed
-    private int desiredWidth; // what resolution should the game be, in case fullscreen is off
+    private boolean debug;
+    private int desiredWidth;
     private int desiredHeight;
     private double scale;
 
     public Screen(boolean fullscreen, boolean debug, int width) {
         this.fullscreen = fullscreen;
         this.debug = debug;
-        desiredWidth = width;
-
-        int maxWidth = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+        desiredWidth = width == 0 ? maxWidth / 2 : width;
 
         if (fullscreen || desiredWidth >= maxWidth)
             desiredWidth = maxWidth;
@@ -48,12 +47,12 @@ public class Screen {
 
     public void setFullscreen(boolean fc) {
         if (fullscreen && !fc) {
-            desiredWidth = 1000;
+            desiredWidth = maxWidth / 2;
             desiredHeight = desiredWidth * 9 / 16;
             scale = desiredWidth /(double)WIDTH;
         }
-        if (!fullscreen && fc) {
-            desiredWidth = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+        else if (!fullscreen && fc) {
+            desiredWidth = maxWidth;
             desiredHeight = desiredWidth * 9 / 16;
             scale = desiredWidth /(double)WIDTH;
         }
