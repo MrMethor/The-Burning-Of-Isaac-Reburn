@@ -21,6 +21,8 @@ public class Player implements Component {
     private double velocityY;
     private final double speed = 1;
     private final double slideFactor = 0.9;
+
+    // Body
     private final Hitbox hitbox;
     private int size = 150;
 

@@ -32,7 +32,7 @@ public abstract class MenuType implements Component {
                 case leftClick -> {
                     int fi = i;
                     buttons.forEach((string, button) -> {
-                        if (button.isPressed(commands.get(fi).x(), commands.get(fi).y()))
+                        if (button.isWithinBounds(commands.get(fi).x(), commands.get(fi).y()))
                             buttonClicked(string);
                     });
                 }
@@ -40,6 +40,9 @@ public abstract class MenuType implements Component {
             }
             wrap.getControls().removeCommand(commands.get(i));
         }
+        buttons.forEach((string, button) ->{
+            button.update();
+        });
     }
 
     public void render(Graphics g) {

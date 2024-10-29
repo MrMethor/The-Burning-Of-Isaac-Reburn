@@ -4,16 +4,14 @@ import Enums.Actions;
 import Enums.Commands;
 import Tools.Coords;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 
-public class Controls implements MouseListener, KeyListener {
+public class Controls implements MouseListener, KeyListener, MouseMotionListener {
 
     private final ArrayList<Coords> commands = new ArrayList<>();
     private final ArrayList<Actions> actions = new ArrayList<>();
+    private final double[] mouseCoords = new double[2];
     private final Wrap wrap;
 
     public Controls(Wrap wrap) {
@@ -58,6 +56,12 @@ public class Controls implements MouseListener, KeyListener {
         }
     }
 
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        mouseCoords[0] = e.getX() / wrap.getScale();
+        mouseCoords[1] = e.getY() / wrap.getScale();
+    }
+
     private void addAction(Actions action) {
         if (!actions.contains(action))
             actions.add(action);
@@ -82,6 +86,10 @@ public class Controls implements MouseListener, KeyListener {
 
     public ArrayList<Actions> getActions() {
         return actions;
+    }
+
+    public double[] getMouseCoords() {
+        return mouseCoords;
     }
 
     // Unused
@@ -110,4 +118,8 @@ public class Controls implements MouseListener, KeyListener {
 
     }
 
+    @Override
+    public void mouseDragged(MouseEvent e) {
+
+    }
 }

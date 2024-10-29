@@ -1,9 +1,7 @@
 import Enums.StateTransition;
 import Engine.Wrap;
 
-import java.awt.Canvas;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.*;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import java.awt.image.BufferStrategy;
@@ -21,6 +19,11 @@ public class Main extends Canvas implements Runnable {
     private Settings settings;
 
     public Main() {
+        setFocusable(true);
+        requestFocus();
+        addKeyListener(wrap.getControls());
+        addMouseListener(wrap.getControls());
+        addMouseMotionListener(wrap.getControls());
         setupFrame();
     }
 
@@ -46,8 +49,10 @@ public class Main extends Canvas implements Runnable {
     }
 
     private void update() {
+        wrap.setCursor(null);
+
         if (wrap.updateSettings())
-            updateSettings();
+            setupFrame();
 
         if (wrap.getGameState() != wrap.getNewState())
             updateState();
@@ -61,6 +66,8 @@ public class Main extends Canvas implements Runnable {
             case PAUSE: pause.update(); break;
             case SETTINGS: settings.update(); break;
         }
+
+        frame.setCursor(wrap.getCursor());
     }
 
     private void render() {
@@ -112,31 +119,14 @@ public class Main extends Canvas implements Runnable {
         wrap.updateGameState(wrap.getNewState());
     }
 
-    private void updateSettings() {
-        setupFrame();
-    }
-
-    public static void main(String[] args) {
-        System.setProperty("sun.java2d.uiScale", "1.0");
-        Main main = new Main();
-        main.start();
-    }
-
     private void setupFrame() {
         if (frame != null){
             frame.setVisible(false);
             frame = null;
-            removeKeyListener(wrap.getControls());
-            removeMouseListener(wrap.getControls());
-            setFocusable(false);
         }
         frame = new JFrame();
         Dimension screenSize = new Dimension(wrap.getWidth(), wrap.getHeight());
         setPreferredSize(screenSize);
-        setFocusable(true);
-        requestFocus();
-        addKeyListener(wrap.getControls());
-        addMouseListener(wrap.getControls());
         if (wrap.isFullscreen()) {
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             frame.setUndecorated(true);
@@ -149,6 +139,12 @@ public class Main extends Canvas implements Runnable {
         frame.setLocationRelativeTo(null);
         frame.setIconImage(new ImageIcon("resource/icon.png").getImage());
         frame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        System.setProperty("sun.java2d.uiScale", "1.0");
+        Main main = new Main();
+        main.start();
     }
 
     private synchronized void start() {

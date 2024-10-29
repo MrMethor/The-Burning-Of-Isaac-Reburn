@@ -5,9 +5,7 @@ import Enums.GameState;
 import Tools.Coords;
 import Tools.TextBox;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Font;
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -23,6 +21,7 @@ public class Wrap {
     private final Counter counter;
     private final Interpolation interpolation;
     private boolean hitboxes;
+    private Cursor cursor;
 
     private TextBox debugUPS;
     private TextBox debugFPS;
@@ -164,6 +163,12 @@ public class Wrap {
         return controls.getActions();
     }
 
+    public double getMouseX() {
+        return controls.getMouseCoords()[0];
+    }
+
+    public double getMouseY() { return controls.getMouseCoords()[1]; }
+
     public boolean isFullscreen() {
         return screen.isFullscreen();
     }
@@ -174,6 +179,14 @@ public class Wrap {
 
     public boolean isHitboxes() {
         return hitboxes;
+    }
+
+    public Cursor getCursor() {
+        return cursor;
+    }
+
+    public void setCursor(Cursor cursor) {
+        this.cursor = cursor;
     }
 
 }
