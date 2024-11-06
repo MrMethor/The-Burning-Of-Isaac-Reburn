@@ -1,7 +1,8 @@
+package Menus;
+
 import Engine.Wrap;
 import Enums.GameState;
 import Tools.Button;
-import Engine.MenuType;
 
 public class Menu extends MenuType {
 

@@ -1,5 +1,8 @@
 import Enums.StateTransition;
 import Engine.Wrap;
+import Menus.Menu;
+import Menus.Pause;
+import Menus.Settings;
 
 import java.awt.*;
 import javax.swing.ImageIcon;
@@ -46,6 +49,7 @@ public class Main extends Canvas implements Runnable {
             wrap.addTime(current - last);
             last = current;
         }
+        System.exit(0);
     }
 
     private void update() {
@@ -103,7 +107,7 @@ public class Main extends Canvas implements Runnable {
             case PAUSE_GAME -> pause = new Pause(wrap);
             case RESUME_GAME -> pause = null;
             case BACK_TO_MENU -> {
-                menu = new Menu(wrap);
+                menu = new Menus.Menu(wrap);
                 game = null;
             }
             case MENU_TO_SETTINGS -> {
@@ -162,6 +166,5 @@ public class Main extends Canvas implements Runnable {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        System.exit(0);
     }
 }

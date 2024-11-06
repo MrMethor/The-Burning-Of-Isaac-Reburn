@@ -1,7 +1,8 @@
+package Menus;
+
 import Engine.Wrap;
 import Enums.GameState;
 import Tools.Button;
-import Engine.MenuType;
 
 public class Settings extends MenuType {
 

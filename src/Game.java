@@ -1,46 +1,28 @@
+import Characters.Character;
+import Characters.Enemy;
+import Characters.Player;
 import Engine.Wrap;
 import Enums.GameState;
 import Engine.Component;
-import Tools.Hitbox;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Game implements Component {
 
     private final Room room;
-    private final Player player;
     private final Wrap wrap;
-    private final ArrayList<Hitbox> hitboxes;
+    private final ArrayList<Character> characters = new ArrayList<>();
 
     public Game(Wrap wrap) {
         this.wrap = wrap;
-        hitboxes = new ArrayList<>();
-        room = new Room(wrap, hitboxes);
-        player = new Player(wrap, hitboxes);
+        room = new Room(wrap);
+        characters.add(new Player(wrap));
+        characters.add(new Enemy(wrap));
     }
 
     public void update() {
-        int playerX = 0;
-        int playerY = 0;
-        boolean fireUp = false, fireDown = false, fireLeft = false, fireRight = false;
-
-        // Actions
-        var actions = wrap.getActions();
-        for (int i = 0; i < actions.size(); i++) {
-            switch (actions.get(i)) {
-                case moveUp -> playerY -= 1;
-                case moveDown -> playerY += 1;
-                case moveRight -> playerX += 1;
-                case moveLeft -> playerX -= 1;
-                case fireUp -> fireUp = true;
-                case fireDown -> fireDown = true;
-                case fireLeft -> fireLeft = true;
-                case fireRight -> fireRight = true;
-            }
-        }
-
-        // Commands
         var commands = wrap.getCommands();
         for (int i = 0; i < commands.size(); i++) {
             switch (commands.get(i).command()) {
@@ -48,31 +30,34 @@ public class Game implements Component {
             }
             wrap.getControls().removeCommand(commands.get(i));
         }
-
-        // Components
-        player.firingDirection(new boolean[]{fireUp, fireDown, fireLeft, fireRight});
-        player.move(playerX, playerY);
-        player.update();
+        characters.sort((a, b) -> -1 * a.compareTo(b));
+        for (Character npc : characters)
+            npc.update();
         updateHitboxes();
     }
 
     public void render(Graphics g) {
         room.render(g);
-        player.render(g);
+        for (Character npc : characters)
+            npc.render(g);
+
         if (wrap.isHitboxes()) {
-            for (int i = 0; i < hitboxes.size(); i++)
-                hitboxes.get(i).draw(g);
+            room.getHitbox().render(g);
+            for (Character character : characters)
+                character.getHitbox().render(g);
         }
     }
 
     private void updateHitboxes() {
-        for (int i = 0; i < hitboxes.size(); i++)
-            hitboxes.get(i).resetCollisions();
-        for (int i = 0; i < hitboxes.size(); i++) {
-            for (int j = 0; j < hitboxes.size(); j++) {
-                if (j == i)
+        for (Character character : characters)
+            character.getHitbox().resetCollisions();
+        for (Character character : characters)
+            character.getHitbox().collision(room.getHitbox());
+        for (int i = 0; i < characters.size(); i++) {
+            for (int j = i; j < characters.size(); j++) {
+                if (i == j)
                     continue;
-                hitboxes.get(i).collision(hitboxes.get(j));
+                characters.get(i).getHitbox().collision(characters.get(j).getHitbox());
             }
         }
     }

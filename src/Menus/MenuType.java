@@ -1,5 +1,7 @@
-package Engine;
+package Menus;
 
+import Engine.Component;
+import Engine.Wrap;
 import Tools.Image;
 
 import java.awt.*;
