@@ -61,9 +61,18 @@ public class Image {
         this.height = (int)((double)image.getHeight() * wrap.getScale());
     }
 
+    public void rotateImage(int degree) {
+
+    }
+
     public void changePosition(int x, int y) {
         this.x = (int) (x * wrap.getScale());
         this.y = (int) (y * wrap.getScale());
+    }
+
+    public void changeSize(int width, int height) {
+        this.width = (int) ((double)width * wrap.getScale());
+        this.height = (int) ((double)height * wrap.getScale());
     }
 
     public void changeImage(String path){
@@ -79,6 +88,9 @@ public class Image {
     }
 
     public void draw(Graphics g) {
-        g.drawImage(image, x, y, width, height, null);
+        if (width != image.getWidth() || height != image.getHeight())
+            g.drawImage(image, x, y, width, height, null);
+        else
+            g.drawImage(image, x, y, null);
     }
 }

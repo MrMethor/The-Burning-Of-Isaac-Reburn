@@ -31,6 +31,7 @@ public class Wrap {
         boolean debug = false;
         int width = 0;
         int ups = 60;
+        int maxFPS = 60;
         try {
             File file = new File(path);
             Scanner reader = new Scanner(file);
@@ -46,6 +47,9 @@ public class Wrap {
                     ups = Integer.parseInt(line.replaceAll("\\D", ""));
                 else if (line.contains("hitbox"))
                     hitboxes = line.contains("true");
+                else if (line.contains("fps"))
+                    maxFPS = Integer.parseInt(line.replaceAll("\\D", ""));
+
             }
         } catch (FileNotFoundException e) {
             System.out.println("Config file not found. Proceeding with default settings.");
@@ -56,7 +60,7 @@ public class Wrap {
         gameState = GameState.MENU;
         screen = new Screen(fullscreen, debug, width);
         controls = new Controls(this);
-        counter = new Counter(ups);
+        counter = new Counter(ups, maxFPS);
         interpolation = new Interpolation();
 
         setupDebug();

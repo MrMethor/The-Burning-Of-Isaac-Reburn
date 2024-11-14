@@ -56,9 +56,9 @@ public class Hitbox {
         this.height = height;
     }
 
-    public void collision(Hitbox other) {
+    public boolean collision(Hitbox other) {
         if (!movable)
-            return;
+            return false;
 
         double[] sides = new double[4];
 
@@ -88,6 +88,7 @@ public class Hitbox {
                     }
                     else
                         solidCollisions[sideOut.num()] = Math.min(penetration, solidCollisions[sideOut.num()]);
+                    return true;
                 }
             }
         }
@@ -99,6 +100,7 @@ public class Hitbox {
             for (int i = 0; i < 4; i++)
                 solidCollisions[i] = sides[i] < 0 && sides[i] < solidCollisions[i] ? sides[i] : solidCollisions[i];
         }
+        return false;
     }
 
     public void resetCollisions() {

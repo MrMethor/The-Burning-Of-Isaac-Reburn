@@ -1,63 +1,52 @@
-import Characters.Character;
-import Characters.Enemy;
-import Characters.Player;
+import Entities.Item;
+import Entities.Player;
 import Engine.Wrap;
 import Enums.GameState;
 import Engine.Component;
+import Entities.Entity;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class Game implements Component {
 
-    private final Room room;
     private final Wrap wrap;
-    private final ArrayList<Character> characters = new ArrayList<>();
+    private Entity room;
+    private final ArrayList<Entity> entities = new ArrayList<>();
 
     public Game(Wrap wrap) {
         this.wrap = wrap;
         room = new Room(wrap);
-        characters.add(new Player(wrap));
-        characters.add(new Enemy(wrap));
+        entities.add(new Player(wrap));
+        entities.add(new Item(wrap));
     }
 
     public void update() {
-        var commands = wrap.getCommands();
-        for (int i = 0; i < commands.size(); i++) {
-            switch (commands.get(i).command()) {
+        for (int i = 0; i < wrap.getCommands().size(); i++) {
+            switch (wrap.getCommands().get(i).command()) {
                 case escape -> wrap.changeState(GameState.PAUSE);
             }
-            wrap.getControls().removeCommand(commands.get(i));
+            wrap.getControls().removeCommand(wrap.getCommands().get(i));
         }
-        characters.sort((a, b) -> -1 * a.compareTo(b));
-        for (Character npc : characters)
-            npc.update();
-        updateHitboxes();
+        entities.sort((a, b) -> -1 * a.compareTo(b));
+        for (Entity entity : this.entities)
+            entity.update();
+        checkCollision();
     }
 
     public void render(Graphics g) {
         room.render(g);
-        for (Character npc : characters)
-            npc.render(g);
-
-        if (wrap.isHitboxes()) {
-            room.getHitbox().render(g);
-            for (Character character : characters)
-                character.getHitbox().render(g);
-        }
+        for (Entity entity : entities)
+            entity.render(g);
     }
 
-    private void updateHitboxes() {
-        for (Character character : characters)
-            character.getHitbox().resetCollisions();
-        for (Character character : characters)
-            character.getHitbox().collision(room.getHitbox());
-        for (int i = 0; i < characters.size(); i++) {
-            for (int j = i; j < characters.size(); j++) {
-                if (i == j)
-                    continue;
-                characters.get(i).getHitbox().collision(characters.get(j).getHitbox());
+    private void checkCollision() {
+        for (Entity entity : entities)
+            entity.collision(room);
+        for (int i = 0; i < entities.size(); i++) {
+            for (int j = i; j < entities.size(); j++) {
+                if (i != j)
+                    entities.get(i).collision(entities.get(j));
             }
         }
     }

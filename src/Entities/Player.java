@@ -1,18 +1,24 @@
-package Characters;
+package Entities;
 
 import Engine.Wrap;
+import Enums.EntityType;
 import Enums.Side;
 
-public class Player extends Character {
+import java.util.ArrayList;
+
+public class Player extends Entity {
 
     private int movingX;
     private int movingY;
     private long animationCounter;
 
+    protected final ArrayList<Integer> firingOrder = new ArrayList<>();
+    protected Side facing = null;
+
     public Player(Wrap wrap) {
-        super(wrap, false);
+        super(wrap, EntityType.PLAYER);
         changeSpriteSheet("resource/character.png", 3, 4, 1, 1);
-        changeSize(150, 0.4, 0.35);
+        changeSize(150, 150, 0.4, 0.35);
         changeHitboxOffset(0, 0.3);
     }
 
@@ -22,7 +28,6 @@ public class Player extends Character {
         int playerY = 0;
         boolean fireUp = false, fireDown = false, fireLeft = false, fireRight = false;
 
-        // Actions
         var actions = wrap.getActions();
         for (int i = 0; i < actions.size(); i++) {
             switch (actions.get(i)) {
@@ -68,7 +73,7 @@ public class Player extends Character {
     protected void animate() {
         if (spriteSheet == null)
             return;
-        int numFrame = (int) (animationCounter / (10.0 / speed) / (size / 150.0) % 4);
+        int numFrame = (int) (animationCounter / (10.0 / speed) / (width / 150.0) % 4);
         int frame = numFrame == 3 ? 1 : numFrame;
         if (facing != null) {
             if (movingX == 0 && movingY == 0)

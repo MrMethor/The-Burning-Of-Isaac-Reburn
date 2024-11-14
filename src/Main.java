@@ -80,7 +80,7 @@ public class Main extends Canvas implements Runnable {
             createBufferStrategy(3);
             return;
         }
-        Graphics g = bs.getDrawGraphics();
+        Graphics2D g = (Graphics2D) bs.getDrawGraphics();
         //#############################################
 
         switch (wrap.getGameState()) {
@@ -147,6 +147,7 @@ public class Main extends Canvas implements Runnable {
 
     public static void main(String[] args) {
         System.setProperty("sun.java2d.uiScale", "1.0");
+        System.setProperty("sun.java2d.opengl", "true");
         Main main = new Main();
         main.start();
     }
