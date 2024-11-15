@@ -2,10 +2,9 @@ package Engine;
 
 public class Counter {
 
-    private static final double SECOND_IN_NANO = 1000000000;
+    private static final double SECOND_IN_NANO = 1_000_000_000;
     private double timeToElapse;
     private int desiredUPS;
-    private int maxFPS;
 
     private int ups;
     private int fps;
@@ -13,7 +12,7 @@ public class Counter {
     private int fpsCounter;
     private int elapsedTime;
 
-    public Counter (int desiredUPS, int maxFPS) {
+    public Counter (int desiredUPS) {
         this.desiredUPS = desiredUPS;
         timeToElapse = SECOND_IN_NANO / desiredUPS;
     }

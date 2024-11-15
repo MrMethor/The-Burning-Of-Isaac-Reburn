@@ -43,6 +43,7 @@ public class Main extends Canvas implements Runnable {
                 update();
                 wrap.addUPS();
             }
+
             wrap.setInterpolation(delta);
             render();
             wrap.addFPS();
@@ -96,6 +97,7 @@ public class Main extends Canvas implements Runnable {
         //#############################################
         g.dispose();
         bs.show();
+        Toolkit.getDefaultToolkit().sync();
     }
 
     private void updateState() {
