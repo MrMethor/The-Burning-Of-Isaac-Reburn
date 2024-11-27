@@ -17,7 +17,6 @@ public class Settings extends MenuType {
         hitbox = wrap.isHitboxes();
     }
 
-    @Override
     protected void setupButtons() {
         int buttonSize = 300;
         int centerX = 1920 / 2 - buttonSize / 2;
@@ -28,7 +27,6 @@ public class Settings extends MenuType {
         buttons.put("menu", new Button(wrap, "BACK", buttonOn(false), centerX, 1000, buttonSize));
     }
 
-    @Override
     protected void buttonClicked(String name) {
         switch (name) {
             case "fullscreen" -> {
@@ -51,7 +49,6 @@ public class Settings extends MenuType {
         }
     }
 
-    @Override
     protected void keyPressed(String name) {
         switch (name) {
             case "escape" -> wrap.changeState(GameState.MENU);

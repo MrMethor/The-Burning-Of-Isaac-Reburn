@@ -3,6 +3,7 @@ package Menus;
 import Engine.Component;
 import Engine.Wrap;
 import Tools.Image;
+import Tools.Button;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -10,8 +11,8 @@ import java.util.HashMap;
 public abstract class MenuType implements Component {
 
     protected final Wrap wrap;
-    protected final Tools.Image background;
-    protected HashMap<String, Tools.Button> buttons;
+    protected final Image background;
+    protected HashMap<String, Button> buttons;
 
     public MenuType(Wrap wrap, String BGpath) {
         this.wrap = wrap;

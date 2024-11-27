@@ -10,7 +10,6 @@ public class Menu extends MenuType {
         super(wrap, "resource/menu.jpg");
     }
 
-    @Override
     protected void setupButtons() {
         int buttonSize = 400;
         int centerX = 1920 / 2 - buttonSize / 2;
@@ -19,7 +18,6 @@ public class Menu extends MenuType {
         buttons.put("exit", new Button(wrap, "EXIT", buttonOn(false), centerX, 950, buttonSize));
     }
 
-    @Override
     protected void buttonClicked(String name) {
         switch (name) {
             case "start" -> wrap.changeState(GameState.GAME);
@@ -28,7 +26,6 @@ public class Menu extends MenuType {
         }
     }
 
-    @Override
     protected void keyPressed(String name) {
 
     }

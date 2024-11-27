@@ -16,7 +16,6 @@ public class Button {
     private final int height;
     private boolean hovered;
 
-
     public Button(Wrap wrap, String label, String path, int x, int y, int size) {
         this.wrap = wrap;
         this.x = x;

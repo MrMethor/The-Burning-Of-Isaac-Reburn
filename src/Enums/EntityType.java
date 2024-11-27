@@ -3,5 +3,8 @@ package Enums;
 public enum EntityType {
     PLAYER,
     ENEMY,
-    PROJECTILE, ITEM
+    FRIENDLY_PROJECTILE,
+    ENEMY_PROJECTILE,
+    ITEM,
+    ROOM
 }

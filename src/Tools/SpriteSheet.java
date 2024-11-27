@@ -1,27 +1,37 @@
 package Tools;
 
+import Engine.Wrap;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class SpriteSheet {
+public class SpriteSheet extends Image{
 
-    private BufferedImage image;
+    private BufferedImage spriteSheet;
     private int spriteWidth;
     private int spriteHeight;
+    private int currentColumn;
+    private int currentRow;
 
-    public SpriteSheet(String path, int spriteNumColumn, int spriteNumRow) {
+    public SpriteSheet(Wrap wrap, String path, double x, double y, double width, double height, int spriteNumColumn, int spriteNumRow) {
+        super(wrap, "resource/blank.png", x, y);
         try {
-            image = ImageIO.read(new File(path));
+            spriteSheet = ImageIO.read(new File(path));
         } catch (IOException e) {
             System.out.println("Couldn't find the file");
         }
-        spriteWidth = image.getWidth() / spriteNumColumn;
-        spriteHeight = image.getHeight() / spriteNumRow;
+        spriteWidth = spriteSheet.getWidth() / spriteNumColumn;
+        spriteHeight = spriteSheet.getHeight() / spriteNumRow;
+        changeSize((int)width, (int)height);
     }
 
-    public BufferedImage getSprite(int column, int row) {
-        return image.getSubimage(column * spriteWidth, row * spriteHeight, spriteWidth, spriteHeight);
+    public void swapImage(int column, int row) {
+        if (currentColumn == column && currentRow == row)
+            return;
+        currentColumn = column;
+        currentRow = row;
+        image = spriteSheet.getSubimage(column * spriteWidth, row * spriteHeight, spriteWidth, spriteHeight);
     }
 }

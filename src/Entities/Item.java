@@ -2,12 +2,26 @@ package Entities;
 
 import Engine.Wrap;
 import Enums.EntityType;
+import Tools.Collision;
 
-public class Item extends Entity {
+import java.util.ArrayList;
 
-    public Item(Wrap wrap) {
-        super(wrap, EntityType.ITEM);
-        changeSize(150, 150, 0.4, 0.35);
-        changeHitboxOffset(0, 0.3);
+public class Item extends DynamicEntity {
+
+    public Item(Wrap wrap, ArrayList<Entity> entities, Entity room) {
+        super(wrap, entities, room, EntityType.ITEM, "resource/blank.png", 300, 300, 50, 50, 1, 1, 0, 0);
+    }
+
+    protected void applyCollision(Collision collision) {
+        switch (collision.entityType()) {
+            case PLAYER -> {
+                switch (collision.side()) {
+                    case UP -> velocityY += 1;
+                    case DOWN -> velocityY -= 1;
+                    case LEFT -> velocityX += 1;
+                    case RIGHT -> velocityX -= 1;
+                }
+            }
+        }
     }
 }

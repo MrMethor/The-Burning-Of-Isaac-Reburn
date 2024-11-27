@@ -3,27 +3,33 @@ package Entities;
 import Engine.Wrap;
 import Enums.EntityType;
 import Enums.Side;
+import Tools.Collision;
 
 import java.util.ArrayList;
 
-public class Player extends Entity {
+public class Player extends DynamicEntity {
 
     private int movingX;
     private int movingY;
-    private long animationCounter;
 
-    protected final ArrayList<Integer> firingOrder = new ArrayList<>();
-    protected Side facing = null;
+    private double firingSpeed;
+    private double shotSpeed;
 
-    public Player(Wrap wrap) {
-        super(wrap, EntityType.PLAYER);
-        changeSpriteSheet("resource/character.png", 3, 4, 1, 1);
-        changeSize(150, 150, 0.4, 0.35);
-        changeHitboxOffset(0, 0.3);
+    private final ArrayList<Integer> firingOrder = new ArrayList<>();
+    private Side facing = null;
+    private int firingTime;
+    private int fireCounter;
+
+    public Player(Wrap wrap, ArrayList<Entity> entities, Entity room) {
+        super(wrap, entities, room, EntityType.PLAYER, "resource/character.png", 3, 4, 1920/2.0, 1080/2.0, 150, 150, 0.5, 0.5, 0, 0.3);
+        firingSpeed = 2;
+        shotSpeed = 8;
+        firingTime = (int)(60 / firingSpeed);
+        fireCounter = firingTime;
     }
 
-    @Override
     protected void applyBehavior() {
+
         int playerX = 0;
         int playerY = 0;
         boolean fireUp = false, fireDown = false, fireLeft = false, fireRight = false;
@@ -43,9 +49,78 @@ public class Player extends Entity {
         }
 
         facingDirection(new boolean[]{fireUp, fireDown, fireLeft, fireRight});
+        fireCheck();
         move(playerX, playerY);
     }
 
+    protected void applyMovement() {
+        x += velocityX;
+        y += velocityY;
+        velocityX *= slideFactor;
+        velocityY *= slideFactor;
+    }
+
+    protected void applyCollision(Collision collision) {
+
+        switch (collision.entityType()) {
+            case ROOM -> {
+                switch (collision.side()) {
+                    case UP -> {
+                        if (velocityY < 0 && collision.penetration() < 0)
+                            y -= collision.penetration();
+                    }
+                    case DOWN -> {
+                        if (velocityY > 0 && collision.penetration() < 0)
+                            y += collision.penetration();
+                    }
+                    case LEFT -> {
+                        if (velocityX < 0 && collision.penetration() < 0)
+                            x -= collision.penetration();
+                    }
+                    case RIGHT -> {
+                        if (velocityX > 0 && collision.penetration() < 0)
+                            x += collision.penetration();
+                    }
+                }
+            }
+            case ITEM -> {
+                switch (collision.side()) {
+                    case UP -> velocityY += 1;
+                    case DOWN -> velocityY -= 1;
+                    case LEFT -> velocityX += 1;
+                    case RIGHT -> velocityX -= 1;
+                }
+            }
+        }
+    }
+
+    protected void animate() {
+        int numFrame = (int) (animationCounter / (10.0 / speed) / (width / 150.0) % 4);
+        int column = numFrame == 3 ? 1 : numFrame;
+        int row;
+        if (facing != null) {
+            row = facing.num();
+            if (movingX == 0 && movingY == 0)
+                column = 1;
+        }
+        else if (movingY == -1)
+            row = 0;
+        else if (movingY == 1)
+            row = 1;
+        else if (movingX == -1)
+            row = 2;
+        else if (movingX == 1)
+            row = 3;
+        else {
+            row = 1;
+            column = 1;
+        }
+        swapTexture(column, row);
+        animationCounter++;
+    }
+
+
+    // Help methods
     private void facingDirection(boolean[] sides) {
         for (int i = 0; i < sides.length; i++) {
             if (sides[i] && !firingOrder.contains(i))
@@ -59,6 +134,31 @@ public class Player extends Entity {
             facing = null;
     }
 
+    private void fireCheck() {
+        if (facing != null && fireCounter >= firingTime) {
+            fire();
+            fireCounter -= firingTime;
+        }
+        if (fireCounter != firingTime)
+            fireCounter++;
+    }
+
+    private void fire() {
+        int fireX = 0;
+        int fireY = 0;
+        switch (facing) {
+            case UP -> fireY = 1;
+            case DOWN -> fireY = -1;
+            case LEFT -> fireX = -1;
+            case RIGHT -> fireX = 1;
+        }
+        var rad = Math.atan2(fireY, fireX);
+        int angle = (int)(rad * (180 / Math.PI));
+        if (angle < 0)
+            angle += 360;
+        entities.add(new Projectile(wrap, entities, room, x, y, 100, 100, shotSpeed, velocityX, velocityY, angle));
+    }
+
     private void move(int x, int y) {
         movingX = x;
         movingY = y;
@@ -67,29 +167,5 @@ public class Player extends Entity {
             compensation = 0.7;
         velocityX += x * speed * compensation;
         velocityY += y * speed * compensation;
-    }
-
-    @Override
-    protected void animate() {
-        if (spriteSheet == null)
-            return;
-        int numFrame = (int) (animationCounter / (10.0 / speed) / (width / 150.0) % 4);
-        int frame = numFrame == 3 ? 1 : numFrame;
-        if (facing != null) {
-            if (movingX == 0 && movingY == 0)
-                texture.changeImage(spriteSheet.getSprite(1, facing.num()));
-            else
-                texture.changeImage(spriteSheet.getSprite(frame, facing.num()));
-        } else if (movingY == -1)
-            texture.changeImage(spriteSheet.getSprite(frame, 0));
-        else if (movingY == 1)
-            texture.changeImage(spriteSheet.getSprite(frame, 1));
-        else if (movingX == -1)
-            texture.changeImage(spriteSheet.getSprite(frame, 2));
-        else if (movingX == 1)
-            texture.changeImage(spriteSheet.getSprite(frame, 3));
-        else
-            texture.changeImage(spriteSheet.getSprite(1, 1));
-        animationCounter++;
     }
 }

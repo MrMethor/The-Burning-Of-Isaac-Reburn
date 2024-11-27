@@ -21,10 +21,10 @@ public class Wrap {
     private final Counter counter;
     private final Interpolation interpolation;
     private boolean hitboxes;
+    private int entityCount;
     private Cursor cursor;
 
-    private TextBox debugUPS;
-    private TextBox debugFPS;
+    private ArrayList<TextBox> debug = new ArrayList<>();
 
     public Wrap(String path) {
         boolean fullscreen = false;
@@ -59,24 +59,27 @@ public class Wrap {
         screen = new Screen(fullscreen, debug, width);
         controls = new Controls(this);
         interpolation = new Interpolation();
+        entityCount = 0;
 
         setupDebug();
     }
 
     private void setupDebug() {
+        int numOfRows = 3;
         int size = 20;
-        debugFPS = new TextBox(this, "", 0, size, Color.WHITE, "Calibri", Font.PLAIN, size);
-        debugUPS = new TextBox(this, "", 0, size * 2, Color.WHITE, "Calibri", Font.PLAIN, size);
+        for (int i = 0; i < numOfRows; i++)
+            debug.add(new TextBox(this, "", 0, size * (i + 1), Color.WHITE, "Calibri", Font.PLAIN, size));
     }
 
     public void updateDebug() {
-        debugFPS.changeText("FPS: " + counter.getFPS());
-        debugUPS.changeText("UPS: " + counter.getUPS());
+        debug.get(0).changeText("FPS: " + counter.getFPS());
+        debug.get(1).changeText("UPS: " + counter.getUPS());
+        debug.get(2).changeText("Entity: " + entityCount);
     }
 
     public void drawDebug(Graphics g) {
-        debugFPS.draw(g);
-        debugUPS.draw(g);
+        for(TextBox box : debug)
+            box.draw(g);
     }
 
     public boolean updateSettings() {
@@ -94,6 +97,10 @@ public class Wrap {
 
     public void applySettings(boolean fullscreen, boolean debug, boolean hitbox) {
         newSettings = new boolean[]{fullscreen, debug, hitbox};
+    }
+
+    public void updateEntityCount(int count) {
+        entityCount = count;
     }
 
     // Interpolation
