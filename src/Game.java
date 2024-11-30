@@ -1,6 +1,7 @@
 import Engine.Wrap;
 import Entities.Entity;
-import Entities.Player;
+import Entities.Dynamic.Physical.Player;
+import Entities.Room;
 import Enums.GameState;
 import Engine.Component;
 

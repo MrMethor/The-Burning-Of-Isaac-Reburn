@@ -1,6 +1,8 @@
+package Entities;
+
 import Engine.Wrap;
-import Entities.Entity;
-import Entities.Item;
+import Entities.Dynamic.Physical.Enemies.Fly;
+import Entities.Dynamic.Physical.Items.Item;
 import Enums.EntityType;
 
 import java.awt.*;
@@ -11,6 +13,7 @@ public class Room extends Entity {
     public Room(Wrap wrap, ArrayList<Entity> entities) {
         super(wrap, entities, EntityType.ROOM, "resource/room.jpg", 1920/2.0, 1080/2.0, 1920, 1080, 0.8, 0.75, 0, 0);
         entities.add(new Item(wrap, entities, this));
+        entities.add(new Fly(wrap, entities, this, 600, 600));
     }
 
     public void update() {

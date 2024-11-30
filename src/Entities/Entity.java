@@ -22,6 +22,7 @@ public abstract class Entity implements Component, Comparable<Entity> {
     protected double y;
     protected double width;
     protected double height;
+
     private double hitboxWidthScale;
     private double hitboxHeightScale;
     private double hitboxOffsetX;
@@ -68,7 +69,6 @@ public abstract class Entity implements Component, Comparable<Entity> {
         animate(); //country roads take me hooooome to the place i beloooong
     }
 
-
     protected void collisions() {
         for (Entity entity : entities) {
             if (entity != this)
@@ -106,13 +106,9 @@ public abstract class Entity implements Component, Comparable<Entity> {
         collisions.clear();
     }
 
-
-
     protected void applyBehavior() {}
 
     protected void animate() {}
-
-
 
     public void render(Graphics g) {
         texture.draw(g);
@@ -164,19 +160,23 @@ public abstract class Entity implements Component, Comparable<Entity> {
         return toDestroy;
     }
 
-    protected double getHitboxWidth() {
+    public EntityType getType() {
+        return type;
+    }
+
+    public double getHitboxWidth() {
         return width * hitboxWidthScale;
     }
 
-    protected double getHitboxHeight() {
+    public double getHitboxHeight() {
         return height * hitboxHeightScale;
     }
 
-    protected double getHitboxX() {
+    public double getHitboxX() {
         return x + width * hitboxOffsetX;
     }
 
-    protected double getHitboxY() {
+    public double getHitboxY() {
         return y + height * hitboxOffsetY;
     }
 }

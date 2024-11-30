@@ -1,13 +1,15 @@
-package Entities;
+package Entities.Dynamic.Physical;
 
 import Engine.Wrap;
+import Entities.Entity;
+import Entities.Dynamic.Projectiles.Fireball;
 import Enums.EntityType;
 import Enums.Side;
 import Tools.Collision;
 
 import java.util.ArrayList;
 
-public class Player extends DynamicEntity {
+public class Player extends PhysicalEntity {
 
     private int movingX;
     private int movingY;
@@ -61,36 +63,9 @@ public class Player extends DynamicEntity {
     }
 
     protected void applyCollision(Collision collision) {
-
         switch (collision.entityType()) {
-            case ROOM -> {
-                switch (collision.side()) {
-                    case UP -> {
-                        if (velocityY < 0 && collision.penetration() < 0)
-                            y -= collision.penetration();
-                    }
-                    case DOWN -> {
-                        if (velocityY > 0 && collision.penetration() < 0)
-                            y += collision.penetration();
-                    }
-                    case LEFT -> {
-                        if (velocityX < 0 && collision.penetration() < 0)
-                            x -= collision.penetration();
-                    }
-                    case RIGHT -> {
-                        if (velocityX > 0 && collision.penetration() < 0)
-                            x += collision.penetration();
-                    }
-                }
-            }
-            case ITEM -> {
-                switch (collision.side()) {
-                    case UP -> velocityY += 1;
-                    case DOWN -> velocityY -= 1;
-                    case LEFT -> velocityX += 1;
-                    case RIGHT -> velocityX -= 1;
-                }
-            }
+            case ROOM -> applySolidCollision(collision);
+            case ITEM, ENEMY -> applyRelativeCollision(collision);
         }
     }
 
@@ -156,7 +131,7 @@ public class Player extends DynamicEntity {
         int angle = (int)(rad * (180 / Math.PI));
         if (angle < 0)
             angle += 360;
-        entities.add(new Projectile(wrap, entities, room, x, y, 100, 100, shotSpeed, velocityX, velocityY, angle));
+        entities.add(new Fireball(wrap, entities, room, x, y, 100, 100, shotSpeed, velocityX, velocityY, angle));
     }
 
     private void move(int x, int y) {
