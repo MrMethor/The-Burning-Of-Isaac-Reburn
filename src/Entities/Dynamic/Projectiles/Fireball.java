@@ -1,16 +1,15 @@
 package Entities.Dynamic.Projectiles;
 
 import Engine.Wrap;
-import Entities.Entity;
+import Map.Room;
 import Enums.Side;
-
-import java.util.ArrayList;
+import Tools.EntityList;
 
 public class Fireball extends Projectile {
 
     private Side facing;
 
-    public Fireball(Wrap wrap, ArrayList<Entity> entities, Entity room, double x, double y, int width, int height, double speed, double velocityX, double velocity, int angle) {
+    public Fireball(Wrap wrap, EntityList entities, Room room, double x, double y, int width, int height, double speed, double velocityX, double velocity, int angle) {
         super(wrap, entities, room, true, "resource/fireball.png", 4, 4, x, y, width, height, .5, .5, 0, 0, speed, velocityX, velocity, angle);
         if (angle <= 45 && angle >= -45)
             facing = Side.RIGHT;
@@ -22,7 +21,7 @@ public class Fireball extends Projectile {
             facing = Side.DOWN;
     }
 
-    protected void animate() {
+    public void animate() {
         int column = (int) (animationCounter / 6 % 4);
         int row = facing.num();
         swapTexture(column, row);

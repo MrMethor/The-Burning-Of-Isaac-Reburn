@@ -2,23 +2,22 @@ package Entities.Dynamic.Physical.Enemies;
 
 import Engine.Wrap;
 import Entities.Entity;
+import Map.Room;
 import Enums.EntityType;
-import Tools.Collision;
-
-import java.util.ArrayList;
+import Tools.EntityList;
 
 public class Fly extends Enemy {
 
     private Entity player;
 
-    public Fly(Wrap wrap, ArrayList<Entity> entities, Entity room, double x, double y) {
+    public Fly(Wrap wrap, EntityList entities, Room room, double x, double y) {
         super(wrap, entities, room, EntityType.ENEMY, "resource/fly.png", 2, 2, x, y, 100, 100, .7, .7, 0, 0);
         changeSpeed(.5);
     }
 
-    protected void applyBehavior() {
+    public void applyBehavior() {
         if (player == null) {
-            for (Entity entity : entities) {
+            for (Entity entity : entities.getEntities()) {
                 if (entity.getType() == EntityType.PLAYER)
                     player = entity;
             }
@@ -36,22 +35,7 @@ public class Fly extends Enemy {
         velocityY += directionY * speed;
     }
 
-    protected void applyMovement() {
-        x += velocityX;
-        y += velocityY;
-        velocityX *= slideFactor;
-        velocityY *= slideFactor;
-    }
-
-    protected void applyCollision(Collision collision) {
-        switch (collision.entityType()) {
-            case ROOM -> applySolidCollision(collision);
-            case PLAYER, ENEMY -> applyRelativeCollision(collision);
-            case FRIENDLY_PROJECTILE -> health--;
-        }
-    }
-
-    protected void animate() {
+    public void animate() {
         int column = (int) (animationCounter / 10.0 % 2);
         double playerDistanceX = -1;
 

@@ -10,10 +10,10 @@ import Tools.Image;
 import java.awt.*;
 import java.util.ArrayList;
 
-public abstract class Entity implements Component, Comparable<Entity> {
+public abstract class Entity implements Comparable<Entity> {
 
     protected Wrap wrap;
-    protected ArrayList<Entity> entities;
+    protected EntityList entities;
     protected EntityType type;
 
     protected boolean toDestroy = false;
@@ -33,7 +33,7 @@ public abstract class Entity implements Component, Comparable<Entity> {
 
     protected final ArrayList<Collision> collisions = new ArrayList<>();
 
-    public Entity(Wrap wrap, ArrayList<Entity> entities, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+    public Entity(Wrap wrap, EntityList entities, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         this.wrap = wrap;
         this.entities = entities;
         this.type = type;
@@ -48,7 +48,7 @@ public abstract class Entity implements Component, Comparable<Entity> {
         texture = new Image(wrap, texturePath, x - width / 2.0, y - height / 2.0, width, height);
     }
 
-    public Entity(Wrap wrap, ArrayList<Entity> entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+    public Entity(Wrap wrap, EntityList entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         this.wrap = wrap;
         this.entities = entities;
         this.type = type;
@@ -63,14 +63,8 @@ public abstract class Entity implements Component, Comparable<Entity> {
         texture = new SpriteSheet(wrap, spriteSheetPath, x - width / 2.0, y - height / 2.0, width, height, column, row);
     }
 
-    public void update() {
-        applyBehavior();
-        collisions();
-        animate(); //country roads take me hooooome to the place i beloooong
-    }
-
-    protected void collisions() {
-        for (Entity entity : entities) {
+    public void handleCollisions() {
+        for (Entity entity : entities.getEntities()) {
             if (entity != this)
                 collision(entity);
         }
@@ -83,9 +77,9 @@ public abstract class Entity implements Component, Comparable<Entity> {
 
         double[] sides = new double[4];
 
-        sides[Side.UP.num()] = (getHitboxY() - getHitboxHeight() / 2) - (other.getHitboxY() + getHitboxHeight() / 2);
+        sides[Side.UP.num()] = (getHitboxY() - getHitboxHeight() / 2) - (other.getHitboxY() + other.getHitboxHeight() / 2);
         sides[Side.DOWN.num()] = (other.getHitboxY() - other.getHitboxHeight() / 2) - (getHitboxY() + getHitboxHeight() / 2);
-        sides[Side.LEFT.num()] = (getHitboxX() - getHitboxWidth() / 2) - (other.getHitboxX() + getHitboxWidth() / 2);
+        sides[Side.LEFT.num()] = (getHitboxX() - getHitboxWidth() / 2) - (other.getHitboxX() + other.getHitboxWidth() / 2);
         sides[Side.RIGHT.num()] = (other.getHitboxX() - other.getHitboxWidth() / 2) - (getHitboxX() + getHitboxWidth() / 2);
         if ((sides[Side.UP.num()] < 0 && sides[Side.DOWN.num()] < 0) && (sides[Side.LEFT.num()] < 0 && sides[Side.RIGHT.num()] < 0)) {
             double penetration = -1920;
@@ -106,9 +100,9 @@ public abstract class Entity implements Component, Comparable<Entity> {
         collisions.clear();
     }
 
-    protected void applyBehavior() {}
+    public void applyBehavior() {}
 
-    protected void animate() {}
+    public void animate() {}
 
     public void render(Graphics g) {
         texture.draw(g);

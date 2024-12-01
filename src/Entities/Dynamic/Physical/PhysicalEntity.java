@@ -2,11 +2,10 @@ package Entities.Dynamic.Physical;
 
 import Engine.Wrap;
 import Entities.Dynamic.DynamicEntity;
-import Entities.Entity;
+import Map.Room;
 import Enums.EntityType;
 import Tools.Collision;
-
-import java.util.ArrayList;
+import Tools.EntityList;
 
 public abstract class PhysicalEntity extends DynamicEntity {
 
@@ -14,7 +13,7 @@ public abstract class PhysicalEntity extends DynamicEntity {
     protected double velocityY;
     protected double slideFactor;
 
-    public PhysicalEntity(Wrap wrap, ArrayList<Entity> entities, Entity room, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+    public PhysicalEntity(Wrap wrap, EntityList entities, Room room, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         super (wrap, entities, room, type, texturePath, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         this.room = room;
         velocityX = 0.0;
@@ -23,7 +22,7 @@ public abstract class PhysicalEntity extends DynamicEntity {
         speed = 1;
     }
 
-    public PhysicalEntity(Wrap wrap, ArrayList<Entity> entities, Entity room, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+    public PhysicalEntity(Wrap wrap, EntityList entities, Room room, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         super (wrap, entities, room, type, spriteSheetPath, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         this.room = room;
         velocityX = 0.0;
@@ -32,6 +31,12 @@ public abstract class PhysicalEntity extends DynamicEntity {
         speed = 1;
     }
 
+    protected void calculateMovement() {
+        x += velocityX;
+        y += velocityY;
+        velocityX *= slideFactor;
+        velocityY *= slideFactor;
+    }
 
     protected void applyRelativeCollision(Collision collision) {
         switch (collision.side()) {

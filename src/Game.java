@@ -1,12 +1,11 @@
 import Engine.Wrap;
-import Entities.Entity;
 import Entities.Dynamic.Physical.Player;
-import Entities.Room;
+import Map.Room;
 import Enums.GameState;
 import Engine.Component;
+import Tools.EntityList;
 
 import java.awt.Graphics;
-import java.util.ArrayList;
 
 public class Game implements Component {
 
@@ -16,10 +15,10 @@ public class Game implements Component {
 
     public Game(Wrap wrap) {
         this.wrap = wrap;
-        var entities = new ArrayList<Entity>();
+        EntityList entities = new EntityList();
         room = new Room(wrap, entities);
         player = new Player(wrap, entities, room);
-        entities.add(player);
+        entities.addEntity(player);
     }
 
     public void update() {

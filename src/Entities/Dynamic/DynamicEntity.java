@@ -2,43 +2,43 @@ package Entities.Dynamic;
 
 import Engine.Wrap;
 import Entities.Entity;
+import Map.Room;
 import Enums.EntityType;
 import Enums.Side;
 import Tools.Collision;
+import Tools.EntityList;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 public abstract class DynamicEntity extends Entity {
 
-    protected Entity room;
+    protected Room room;
 
     protected double previousX;
     protected double previousY;
     protected double speed;
 
-    public DynamicEntity(Wrap wrap, ArrayList<Entity> entities, Entity room, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+    public DynamicEntity(Wrap wrap, EntityList entities, Room room, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         super (wrap, entities, type, texturePath, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         this.room = room;
         speed = 1;
     }
 
-    public DynamicEntity(Wrap wrap, ArrayList<Entity> entities, Entity room, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+    public DynamicEntity(Wrap wrap, EntityList entities, Room room, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         super (wrap, entities, type, spriteSheetPath, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         this.room = room;
         speed = 1;
     }
 
-    public void update() {
-        super.update();
+    public void applyMovement() {
         previousX = x;
         previousY = y;
-        applyMovement();
+        calculateMovement();
     }
 
-    protected void applyMovement() {}
+    protected void calculateMovement() {}
 
-    protected void collisions() {
+    public void handleCollisions() {
 
         double[] sides = new double[4];
 
@@ -47,10 +47,10 @@ public abstract class DynamicEntity extends Entity {
         sides[Side.LEFT.num()] = (getHitboxX() - getHitboxWidth() / 2) - (room.getHitboxX() - room.getHitboxWidth() / 2);
         sides[Side.RIGHT.num()] = (room.getHitboxX() + room.getHitboxWidth() / 2) - (getHitboxX() + getHitboxWidth() / 2);
         for (int i = 0; i < 4; i++) {
-            if (sides[i] < 0)
+            if (sides[i] <= 0)
                 collisions.add(new Collision(EntityType.ROOM, Side.getSide(i), sides[i]));
         }
-        super.collisions();
+        super.handleCollisions();
     }
 
     public void render(Graphics g) {

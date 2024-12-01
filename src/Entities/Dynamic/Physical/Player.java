@@ -1,11 +1,12 @@
 package Entities.Dynamic.Physical;
 
 import Engine.Wrap;
-import Entities.Entity;
 import Entities.Dynamic.Projectiles.Fireball;
+import Map.Room;
 import Enums.EntityType;
 import Enums.Side;
 import Tools.Collision;
+import Tools.EntityList;
 
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ public class Player extends PhysicalEntity {
     private int firingTime;
     private int fireCounter;
 
-    public Player(Wrap wrap, ArrayList<Entity> entities, Entity room) {
+    public Player(Wrap wrap, EntityList entities, Room room) {
         super(wrap, entities, room, EntityType.PLAYER, "resource/character.png", 3, 4, 1920/2.0, 1080/2.0, 150, 150, 0.5, 0.5, 0, 0.3);
         firingSpeed = 2;
         shotSpeed = 8;
@@ -30,7 +31,7 @@ public class Player extends PhysicalEntity {
         fireCounter = firingTime;
     }
 
-    protected void applyBehavior() {
+    public void applyBehavior() {
 
         int playerX = 0;
         int playerY = 0;
@@ -55,13 +56,6 @@ public class Player extends PhysicalEntity {
         move(playerX, playerY);
     }
 
-    protected void applyMovement() {
-        x += velocityX;
-        y += velocityY;
-        velocityX *= slideFactor;
-        velocityY *= slideFactor;
-    }
-
     protected void applyCollision(Collision collision) {
         switch (collision.entityType()) {
             case ROOM -> applySolidCollision(collision);
@@ -69,7 +63,7 @@ public class Player extends PhysicalEntity {
         }
     }
 
-    protected void animate() {
+    public void animate() {
         int numFrame = (int) (animationCounter / (10.0 / speed) / (width / 150.0) % 4);
         int column = numFrame == 3 ? 1 : numFrame;
         int row;
@@ -131,7 +125,7 @@ public class Player extends PhysicalEntity {
         int angle = (int)(rad * (180 / Math.PI));
         if (angle < 0)
             angle += 360;
-        entities.add(new Fireball(wrap, entities, room, x, y, 100, 100, shotSpeed, velocityX, velocityY, angle));
+        entities.addEntity(new Fireball(wrap, entities, room, x, y, 100, 100, shotSpeed, velocityX, velocityY, angle));
     }
 
     private void move(int x, int y) {
