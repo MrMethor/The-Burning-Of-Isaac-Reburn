@@ -1,2 +1,1 @@
-fullscreen true
-debug true
+width 1280

@@ -4,8 +4,12 @@ import Engine.Wrap;
 import Enums.EntityType;
 import Tools.EntityList;
 
+import java.util.Random;
+
 public class Rock extends Entity {
-    public Rock(Wrap wrap, EntityList entities, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
-        super(wrap, entities, type, texturePath, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
+    public Rock(Wrap wrap, EntityList entities, double x, double y) {
+        super(wrap, entities, EntityType.OBSTACLE, "resource/spriteSheets/rocks.png", 2, 1, x, y, 130, 130, 0.8, 0.8, 0, 0);
+        Random random = new Random();
+        swapTexture(random.nextInt(2), 0);
     }
 }

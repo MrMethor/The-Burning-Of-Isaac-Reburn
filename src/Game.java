@@ -1,24 +1,21 @@
 import Engine.Wrap;
 import Entities.Dynamic.Physical.Player;
-import Map.Room;
+import Map.Map;
 import Enums.GameState;
 import Engine.Component;
-import Tools.EntityList;
 
 import java.awt.Graphics;
 
 public class Game implements Component {
 
     private final Wrap wrap;
-    private Room room;
+    private Map map;
     private Player player;
 
     public Game(Wrap wrap) {
         this.wrap = wrap;
-        EntityList entities = new EntityList();
-        room = new Room(wrap, entities);
-        player = new Player(wrap, entities, room);
-        entities.addEntity(player);
+        player = new Player(wrap);
+        map = new Map(wrap, player, 1, true);
     }
 
     public void update() {
@@ -28,10 +25,12 @@ public class Game implements Component {
             }
             wrap.getControls().removeCommand(wrap.getCommands().get(i));
         }
-        room.update();
+        if (player.hasEntities())
+            map.currentRoom().update();
     }
 
     public void render(Graphics g) {
-        room.render(g);
+        if (player.hasEntities())
+            map.currentRoom().render(g);
     }
 }

@@ -11,7 +11,7 @@ public class Settings extends MenuType {
     private boolean hitbox;
 
     public Settings(Wrap wrap) {
-        super(wrap, "resource/menu.jpg");
+        super(wrap, "resource/textures/menu.jpg");
         fullscreen = wrap.isFullscreen();
         debug = wrap.isDebug();
         hitbox = wrap.isHitboxes();

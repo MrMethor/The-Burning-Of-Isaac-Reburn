@@ -2,12 +2,12 @@ package Entities.Dynamic.Physical;
 
 import Engine.Wrap;
 import Entities.Dynamic.Projectiles.Fireball;
-import Map.Room;
 import Enums.EntityType;
 import Enums.Side;
 import Tools.Collision;
 import Tools.EntityList;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Player extends PhysicalEntity {
@@ -17,18 +17,33 @@ public class Player extends PhysicalEntity {
 
     private double firingSpeed;
     private double shotSpeed;
+    private double shotSize;
 
     private final ArrayList<Integer> firingOrder = new ArrayList<>();
     private Side facing = null;
     private int firingTime;
     private int fireCounter;
 
-    public Player(Wrap wrap, EntityList entities, Room room) {
-        super(wrap, entities, room, EntityType.PLAYER, "resource/character.png", 3, 4, 1920/2.0, 1080/2.0, 150, 150, 0.5, 0.5, 0, 0.3);
-        firingSpeed = 2;
+    private int health;
+    private int gracePeriod = 60;
+    private int gracePeriodCounter = 0;
+
+    public Player(Wrap wrap) {
+        super(wrap, null, EntityType.PLAYER, "resource/spriteSheets/character.png", 3, 4, 1920/2.0, 1080/2.0, 150, 150, 0.4, 0.5, 0, 0.3);
+        firingSpeed = 5;
+        health = 6;
+        shotSize = 1;
         shotSpeed = 8;
         firingTime = (int)(60 / firingSpeed);
         fireCounter = firingTime;
+    }
+
+    public void referenceEntities(EntityList e) {
+        entities = e;
+    }
+
+    public boolean hasEntities() {
+        return entities != null;
     }
 
     public void applyBehavior() {
@@ -54,12 +69,18 @@ public class Player extends PhysicalEntity {
         facingDirection(new boolean[]{fireUp, fireDown, fireLeft, fireRight});
         fireCheck();
         move(playerX, playerY);
+        if (gracePeriodCounter > 0)
+            gracePeriodCounter--;
     }
 
     protected void applyCollision(Collision collision) {
         switch (collision.entityType()) {
-            case ROOM -> applySolidCollision(collision);
-            case ITEM, ENEMY -> applyRelativeCollision(collision);
+            case ROOM, OBSTACLE -> applySolidCollision(collision);
+            case ITEM -> applyRelativeCollision(collision);
+            case ENEMY -> {
+                applyRelativeCollision(collision);
+                hit();
+            }
         }
     }
 
@@ -88,8 +109,21 @@ public class Player extends PhysicalEntity {
         animationCounter++;
     }
 
+    public void render(Graphics g) {
+        if (gracePeriodCounter != 0 && gracePeriodCounter / 5 % 2 == 1)
+            return;
+        super.render(g);
+    }
+
 
     // Help methods
+    private void hit() {
+        if (gracePeriodCounter == 0) {
+            health--;
+            gracePeriodCounter = gracePeriod;
+        }
+    }
+
     private void facingDirection(boolean[] sides) {
         for (int i = 0; i < sides.length; i++) {
             if (sides[i] && !firingOrder.contains(i))
@@ -125,7 +159,7 @@ public class Player extends PhysicalEntity {
         int angle = (int)(rad * (180 / Math.PI));
         if (angle < 0)
             angle += 360;
-        entities.addEntity(new Fireball(wrap, entities, room, x, y, 100, 100, shotSpeed, velocityX, velocityY, angle));
+        entities.addEntity(new Fireball(wrap, entities, x, y + height / 10, (int)(100 * shotSize), (int)(100 * shotSize), shotSpeed, velocityX, velocityY, angle));
     }
 
     private void move(int x, int y) {

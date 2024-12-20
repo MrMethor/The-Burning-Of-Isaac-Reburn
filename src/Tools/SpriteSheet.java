@@ -12,11 +12,11 @@ public class SpriteSheet extends Image{
     private BufferedImage spriteSheet;
     private int spriteWidth;
     private int spriteHeight;
-    private int currentColumn;
-    private int currentRow;
+    private int currentColumn = 500;
+    private int currentRow = 500;
 
     public SpriteSheet(Wrap wrap, String path, double x, double y, double width, double height, int spriteNumColumn, int spriteNumRow) {
-        super(wrap, "resource/blank.png", x, y);
+        super(wrap, "resource/spriteSheets/blank.png", x, y);
         try {
             spriteSheet = ImageIO.read(new File(path));
         } catch (IOException e) {

@@ -2,7 +2,6 @@ package Entities.Dynamic.Physical.Enemies;
 
 import Engine.Wrap;
 import Entities.Entity;
-import Map.Room;
 import Enums.EntityType;
 import Tools.EntityList;
 
@@ -10,9 +9,10 @@ public class Fly extends Enemy {
 
     private Entity player;
 
-    public Fly(Wrap wrap, EntityList entities, Room room, double x, double y) {
-        super(wrap, entities, room, EntityType.ENEMY, "resource/fly.png", 2, 2, x, y, 100, 100, .7, .7, 0, 0);
+    public Fly(Wrap wrap, EntityList entities, double x, double y) {
+        super(wrap, entities, EntityType.ENEMY, "resource/spriteSheets/fly.png", 2, 2, x, y, 100, 100, .7, .7, 0, 0);
         changeSpeed(.5);
+        flying = true;
     }
 
     public void applyBehavior() {

@@ -2,11 +2,34 @@ package Entities;
 
 import Engine.Wrap;
 import Enums.EntityType;
+import Tools.Collision;
 import Tools.EntityList;
+
+import java.util.Random;
 
 public class Fire extends Entity {
 
-    public Fire(Wrap wrap, EntityList entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
-        super(wrap, entities, type, spriteSheetPath, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
+    private int health = 30;
+
+    public Fire(Wrap wrap, EntityList entities, double x, double y) {
+        super(wrap, entities, EntityType.ENEMY, "resource/spriteSheets/fire.png", 7, 1, x, y, 130, 130, .3, .3, 0, .2);
+    }
+
+    protected void applyCollision(Collision collision) {
+        if (health <= 0){
+            return;
+        }
+        if (collision.entityType() == EntityType.FRIENDLY_PROJECTILE){
+            Random rand = new Random();
+            health -= rand.nextInt(5) + 3;
+            if (health <= 0)
+                destroy();
+        }
+    }
+
+    public void animate() {
+        int column = (int) (animationCounter / 10.0 % 7);
+        swapTexture(column, 0);
+        animationCounter++;
     }
 }

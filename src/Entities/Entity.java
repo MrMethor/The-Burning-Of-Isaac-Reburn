@@ -1,6 +1,5 @@
 package Entities;
 
-import Engine.Component;
 import Engine.Wrap;
 import Enums.EntityType;
 import Enums.Side;
@@ -63,6 +62,8 @@ public abstract class Entity implements Comparable<Entity> {
         texture = new SpriteSheet(wrap, spriteSheetPath, x - width / 2.0, y - height / 2.0, width, height, column, row);
     }
 
+    public void applyBehavior() {}
+
     public void handleCollisions() {
         for (Entity entity : entities.getEntities()) {
             if (entity != this)
@@ -72,6 +73,8 @@ public abstract class Entity implements Comparable<Entity> {
             applyCollision(collision);
         resetCollisions();
     }
+
+    public void animate() {}
 
     private void collision(Entity other) {
 
@@ -100,22 +103,15 @@ public abstract class Entity implements Comparable<Entity> {
         collisions.clear();
     }
 
-    public void applyBehavior() {}
-
-    public void animate() {}
-
     public void render(Graphics g) {
         texture.draw(g);
         if (wrap.isHitboxes())
             drawHitbox(g);
     }
 
-    private void drawHitbox(Graphics g) {
+    protected void drawHitbox(Graphics g) {
         Color c = g.getColor();
-        if (type == EntityType.ROOM)
-            g.setColor(new Color(0f,1f,0f,.2f));
-        else
-            g.setColor(new Color(1f,0f,0f,.2f));
+        g.setColor(new Color(1f,0f,0f,.2f));
         g.fillRect((int)((getHitboxX() - getHitboxWidth() / 2) * wrap.getScale()), (int) ((getHitboxY() - getHitboxHeight() / 2) * wrap.getScale()), (int) (getHitboxWidth() * wrap.getScale()), (int) (getHitboxHeight() * wrap.getScale()));
         g.setColor(c);
     }
@@ -147,7 +143,7 @@ public abstract class Entity implements Comparable<Entity> {
 
     // Misc
     public int compareTo(Entity o) {
-        return (int)(o.y - y);
+        return (int)(o.getHitboxY() - getHitboxY());
     }
 
     public boolean isToDestroy() {

@@ -5,8 +5,7 @@ import Menus.Pause;
 import Menus.Settings;
 
 import java.awt.*;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
+import javax.swing.*;
 import java.awt.image.BufferStrategy;
 
 public class Main extends Canvas implements Runnable {
@@ -134,8 +133,8 @@ public class Main extends Canvas implements Runnable {
         Dimension screenSize = new Dimension(wrap.getWidth(), wrap.getHeight());
         setPreferredSize(screenSize);
         if (wrap.isFullscreen()) {
+            //fullscreen thing here
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-            frame.setUndecorated(true);
         }
         frame.setTitle("The Burning Of Isaac: Reburn");
         frame.setResizable(false);
