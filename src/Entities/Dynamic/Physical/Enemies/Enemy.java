@@ -18,6 +18,10 @@ public abstract class Enemy extends PhysicalEntity {
         switch (collision.entityType()) {
             case ROOM -> applySolidCollision(collision);
             case PLAYER, ENEMY -> applyRelativeCollision(collision);
+            case SPIKE -> {
+                if (!flying)
+                    health -= 0.1;
+            }
             case FRIENDLY_PROJECTILE -> {
                 health--;
                 switch(collision.side()) {

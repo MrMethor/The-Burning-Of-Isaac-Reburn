@@ -32,6 +32,7 @@ public class Controls implements MouseListener, KeyListener, MouseMotionListener
         }
         switch (e.getKeyCode()) {
             case KeyEvent.VK_ESCAPE: addCommand(Commands.escape, 0, 0); break;
+            case KeyEvent.VK_SPACE: addCommand(Commands.space, 0, 0); break;
         }
     }
 

@@ -6,11 +6,14 @@ import Enums.EntityType;
 import Enums.Side;
 import Tools.Collision;
 import Tools.EntityList;
+import Map.Map;
 
 import java.awt.*;
 import java.util.ArrayList;
 
 public class Player extends PhysicalEntity {
+
+    private Map map;
 
     private int movingX;
     private int movingY;
@@ -29,7 +32,7 @@ public class Player extends PhysicalEntity {
     private int gracePeriodCounter = 0;
 
     public Player(Wrap wrap) {
-        super(wrap, null, EntityType.PLAYER, "resource/spriteSheets/character.png", 3, 4, 1920/2.0, 1080/2.0, 150, 150, 0.4, 0.5, 0, 0.3);
+        super(wrap, null, EntityType.PLAYER, "resource/spriteSheets/character.png", 3, 4, 1920/2.0, 1080/2.0, 150, 150, 0.4, 0.4, 0, 0.3);
         firingSpeed = 5;
         health = 6;
         shotSize = 1;
@@ -40,6 +43,10 @@ public class Player extends PhysicalEntity {
 
     public void referenceEntities(EntityList e) {
         entities = e;
+    }
+
+    public void referenceMap(Map m) {
+        map = m;
     }
 
     public boolean hasEntities() {
@@ -66,6 +73,16 @@ public class Player extends PhysicalEntity {
             }
         }
 
+        for (int i = 0; i < wrap.getCommands().size(); i++) {
+            switch (wrap.getCommands().get(i).command()) {
+                case space -> map.tryChangeRoom();
+                default -> {
+                    continue;
+                }
+            }
+            wrap.getControls().removeCommand(wrap.getCommands().get(i));
+        }
+
         facingDirection(new boolean[]{fireUp, fireDown, fireLeft, fireRight});
         fireCheck();
         move(playerX, playerY);
@@ -79,8 +96,9 @@ public class Player extends PhysicalEntity {
             case ITEM -> applyRelativeCollision(collision);
             case ENEMY -> {
                 applyRelativeCollision(collision);
-                hit();
+                hit(1);
             }
+            case SPIKE -> hit(2);
         }
     }
 
@@ -115,11 +133,28 @@ public class Player extends PhysicalEntity {
         super.render(g);
     }
 
+    public void changeRoom(Side side) {
+        int halfARoomHeight = 680;
+        int halfARoomWidth = 1265;
+        switch (side) {
+            case UP -> y = previousY = y + halfARoomHeight;
+            case DOWN -> y = previousY = y - halfARoomHeight;
+            case LEFT -> x = previousX = x + halfARoomWidth;
+            case RIGHT -> x = previousX = x - halfARoomWidth;
+        }
+        switch (side) {
+            case UP, DOWN -> x = previousX = 1920 / 2.0;
+            case LEFT, RIGHT -> y = previousY = 1080 / 2.0 - 40;
+        }
+        velocityX = 0;
+        velocityY = 0;
+    }
+
 
     // Help methods
-    private void hit() {
+    private void hit(int damage) {
         if (gracePeriodCounter == 0) {
-            health--;
+            health -= damage;
             gracePeriodCounter = gracePeriod;
         }
     }

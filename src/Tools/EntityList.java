@@ -1,7 +1,9 @@
 package Tools;
 
 import Entities.Dynamic.DynamicEntity;
+import Entities.Dynamic.Physical.Enemies.Enemy;
 import Entities.Dynamic.Physical.Player;
+import Entities.Dynamic.Projectiles.Projectile;
 import Entities.Entity;
 import Enums.EntityType;
 
@@ -36,7 +38,7 @@ public class EntityList {
 
     public void renderTiles(Graphics g) {
         for (Entity entity : entities)
-            if (entity.getType() == EntityType.OBSTACLE || entity.getType() == EntityType.VISUAL)
+            if (entity.getType() == EntityType.OBSTACLE || entity.getType() == EntityType.VISUAL || entity.getType() == EntityType.SPIKE)
                 entity.render(g);
     }
 
@@ -63,5 +65,17 @@ public class EntityList {
 
     public void removePlayer() {
         entities.removeIf(e -> e instanceof Player);
+    }
+
+    public void removeProjectiles() {
+        entities.removeIf(e -> e instanceof Projectile);
+    }
+
+    public boolean hasEnemies() {
+        for (Entity entity : entities) {
+            if (entity instanceof Enemy)
+                return true;
+        }
+        return false;
     }
 }

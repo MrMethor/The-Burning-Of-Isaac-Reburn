@@ -133,8 +133,8 @@ public class Main extends Canvas implements Runnable {
         Dimension screenSize = new Dimension(wrap.getWidth(), wrap.getHeight());
         setPreferredSize(screenSize);
         if (wrap.isFullscreen()) {
-            //fullscreen thing here
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            //frame.setUndecorated(true);
         }
         frame.setTitle("The Burning Of Isaac: Reburn");
         frame.setResizable(false);

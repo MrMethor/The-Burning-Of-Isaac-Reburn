@@ -2,10 +2,13 @@ package Map;
 
 import Engine.Component;
 import Engine.Wrap;
+import Entities.*;
+import Entities.Dynamic.DynamicEntity;
 import Entities.Dynamic.Physical.Enemies.Fly;
-import Entities.Fire;
-import Entities.Poop;
-import Entities.Rock;
+import Enums.DoorType;
+import Enums.FloorType;
+import Enums.RoomType;
+import Enums.Side;
 import Tools.EntityList;
 import Tools.Image;
 
@@ -16,28 +19,33 @@ import java.util.Scanner;
 
 public class Room implements Component {
 
-    protected Wrap wrap;
+    private Wrap wrap;
 
-    protected EntityList entities = new EntityList();
+    private EntityList entities = new EntityList();
 
-    protected double x;
-    protected double y;
-    protected double width;
-    protected double height;
+    private boolean completed = false;
 
-    public final int maxWidthTiles = 13;
-    public final int maxHeightTiles = 7;
+    private final double x = 1920 / 2.0;
+    private final double y = 1080 / 2.0;
+    private double width = 1920;
+    private double height = 1080;
 
-    protected Image background;
-    protected Image shade;
+    private RoomType roomType;
+    private FloorType floorType;
 
-    public Room(Wrap wrap, String mapPath) {
+    private Door[] doors = new Door[4];
+
+    private final int maxWidthTiles = 13;
+    private final int maxHeightTiles = 7;
+
+    private Image background;
+    private Image shade;
+
+    public Room(Wrap wrap, String mapPath, RoomType roomType, FloorType floorType) {
         this.wrap = wrap;
-        this.x = 1920/2.0;
-        this.y = 1080/2.0;
-        this.width = 1920;
-        this.height = 1080;
-        background = new Image(wrap, "resource/textures/room.png", x - width / 2.0, y - height / 2.0, width, height);
+        this.roomType = roomType;
+        this.floorType = floorType;
+        background = new Image(wrap, "resource/textures/" + getRoomType() + ".png", x - width / 2.0, y - height / 2.0, width, height);
         shade = new Image(wrap, "resource/textures/roomShade.png", x - width / 2.0, y - height / 2.0, width, height);
         String content = "";
         try {
@@ -58,16 +66,47 @@ public class Room implements Component {
         }
     }
 
+    public void setupDoors(DoorType up, DoorType down, DoorType left, DoorType right) {
+        DoorType[] doors = {up, down, left, right};
+        for (int i = 0; i < doors.length; i++) {
+            if (doors[i] != null) {
+                switch (roomType) {
+                    case GOLDEN -> this.doors[i] = new Door(wrap, Side.getSide(i), DoorType.GOLDEN);
+                    case DEFAULT -> this.doors[i] = new Door(wrap, Side.getSide(i), doors[i]);
+                }
+            }
+        }
+    }
+
     public void update() {
         entities.update();
+        if (!completed && !entities.hasEnemies()) {
+            completed = true;
+            for (Door door : doors)
+                if (door != null)
+                    door.openDoor();
+        }
     }
 
     public void render(Graphics g) {
         renderBackground(g);
         entities.renderTiles(g);
+        for (Door door : doors)
+            if (door != null)
+                door.render(g);
         renderShade(g);
         entities.renderDynamic(g);
         entities.renderProjectiles(g);
+    }
+
+    private String getRoomType() {
+        if (roomType == RoomType.GOLDEN)
+            return "golden";
+        return switch (floorType) {
+            case BASEMENT -> "basement";
+            case CAVES -> "caves";
+            case DEPTHS -> "depths";
+        };
     }
 
     private void renderBackground(Graphics g) {
@@ -92,9 +131,10 @@ public class Room implements Component {
         int y = yTile * 107 + 215;
         switch (type) {
             case 'R' -> entities.addEntity(new Rock(wrap, entities, x, y));
-            case 'F' -> entities.addEntity(new Fly(wrap, entities, x, y));
+            case 'f' -> entities.addEntity(new Fly(wrap, entities, x, y));
             case 'P' -> entities.addEntity(new Poop(wrap, entities, x, y));
-            case 'f' -> entities.addEntity(new Fire(wrap, entities, x, y));
+            case 'F' -> entities.addEntity(new Fire(wrap, entities, x, y));
+            case 'S' -> entities.addEntity(new Spikes(wrap, entities, x, y));
         }
     }
 
@@ -104,5 +144,21 @@ public class Room implements Component {
 
     public static double getHitboxHeight() {
         return 1080 - 325;
+    }
+
+    public Door[] getDoors() {
+        return doors;
+    }
+
+    public EntityList getEntities() {
+        return entities;
+    }
+
+    public RoomType getType() {
+        return roomType;
+    }
+
+    public boolean isCompleted() {
+        return completed;
     }
 }

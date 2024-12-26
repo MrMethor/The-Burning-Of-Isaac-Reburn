@@ -22,10 +22,10 @@ public abstract class Entity implements Comparable<Entity> {
     protected double width;
     protected double height;
 
-    private double hitboxWidthScale;
-    private double hitboxHeightScale;
-    private double hitboxOffsetX;
-    private double hitboxOffsetY;
+    protected double hitboxWidthScale;
+    protected double hitboxHeightScale;
+    protected double hitboxOffsetX;
+    protected double hitboxOffsetY;
 
     protected Image texture;
     protected long animationCounter;

@@ -8,5 +8,5 @@ public enum EntityType {
     ITEM,
     OBSTACLE,
     VISUAL,
-    ROOM
+    SPIKE, ROOM
 }
