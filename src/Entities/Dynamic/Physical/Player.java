@@ -5,8 +5,9 @@ import Entities.Dynamic.Projectiles.Fireball;
 import Enums.EntityType;
 import Enums.Side;
 import Tools.Collision;
-import Tools.EntityList;
+import Tools.EntityManager;
 import Map.Map;
+import Hud.Hud;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -14,6 +15,9 @@ import java.util.ArrayList;
 public class Player extends PhysicalEntity {
 
     private Map map;
+    private Hud hud;
+
+    boolean dead = false;
 
     private int movingX;
     private int movingY;
@@ -27,30 +31,24 @@ public class Player extends PhysicalEntity {
     private int firingTime;
     private int fireCounter;
 
-    private int health;
+    private int redHearts;
+    private int redContainers;
+    private int soulHearts;
+
+    public final int MAX_HEALTH = 24;
+
     private int gracePeriod = 60;
     private int gracePeriodCounter = 0;
 
-    public Player(Wrap wrap) {
+    public Player(Wrap wrap, Hud hud) {
         super(wrap, null, EntityType.PLAYER, "resource/spriteSheets/character.png", 3, 4, 1920/2.0, 1080/2.0, 150, 150, 0.4, 0.4, 0, 0.3);
+        this.hud = hud;
         firingSpeed = 5;
-        health = 6;
+        setupBaseHealth(0, 0, 0);
         shotSize = 1;
         shotSpeed = 8;
         firingTime = (int)(60 / firingSpeed);
         fireCounter = firingTime;
-    }
-
-    public void referenceEntities(EntityList e) {
-        entities = e;
-    }
-
-    public void referenceMap(Map m) {
-        map = m;
-    }
-
-    public boolean hasEntities() {
-        return entities != null;
     }
 
     public void applyBehavior() {
@@ -72,17 +70,6 @@ public class Player extends PhysicalEntity {
                 case fireRight -> fireRight = true;
             }
         }
-
-        for (int i = 0; i < wrap.getCommands().size(); i++) {
-            switch (wrap.getCommands().get(i).command()) {
-                case space -> map.tryChangeRoom();
-                default -> {
-                    continue;
-                }
-            }
-            wrap.getControls().removeCommand(wrap.getCommands().get(i));
-        }
-
         facingDirection(new boolean[]{fireUp, fireDown, fireLeft, fireRight});
         fireCheck();
         move(playerX, playerY);
@@ -92,13 +79,15 @@ public class Player extends PhysicalEntity {
 
     protected void applyCollision(Collision collision) {
         switch (collision.entityType()) {
-            case ROOM, OBSTACLE -> applySolidCollision(collision);
+            case WALL, OBSTACLE -> applySolidCollision(collision);
             case ITEM -> applyRelativeCollision(collision);
             case ENEMY -> {
                 applyRelativeCollision(collision);
                 hit(1);
             }
+            case DOOR -> map.queueChangeRoom(collision.side());
             case SPIKE -> hit(2);
+            case TRAP_DOOR -> map.tryChangeLevel();
         }
     }
 
@@ -150,13 +139,55 @@ public class Player extends PhysicalEntity {
         velocityY = 0;
     }
 
+    public void referenceEntities(EntityManager e) {
+        entities = e;
+    }
+
+    public void referenceMap(Map m) {
+        map = m;
+    }
+
+    public boolean hasEntities() {
+        return entities != null;
+    }
+
+    public boolean isDead() {
+        return dead;
+    }
+
+    public void resetPosition() {
+        x = previousX = 1920 / 2.0;
+        y = previousY = 1080 / 2.0;
+    }
+
 
     // Help methods
     private void hit(int damage) {
         if (gracePeriodCounter == 0) {
-            health -= damage;
+            if (soulHearts > 0)
+                soulHearts -= damage;
+            else
+                redHearts -= damage;
+
             gracePeriodCounter = gracePeriod;
         }
+        hud.updateHearts(redHearts, redContainers, soulHearts);
+        if (redHearts + soulHearts <= 0)
+            dead = true;
+    }
+
+    private void setupBaseHealth(int redHearts, int soulHearts, int emptyContainers) {
+        if (emptyContainers % 2 != 0)
+            emptyContainers++;
+        if (redHearts + soulHearts > MAX_HEALTH)
+            soulHearts -= redHearts + soulHearts - MAX_HEALTH;
+        soulHearts = Math.max(soulHearts, 0);
+        if (redHearts + soulHearts > MAX_HEALTH)
+            redHearts -= redHearts + soulHearts - MAX_HEALTH;
+        this.soulHearts = soulHearts;
+        this.redHearts = redContainers = redHearts;
+        this.redContainers += emptyContainers;
+        hud.updateHearts(this.redHearts, this.redContainers, this.soulHearts);
     }
 
     private void facingDirection(boolean[] sides) {

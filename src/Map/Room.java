@@ -3,13 +3,9 @@ package Map;
 import Engine.Component;
 import Engine.Wrap;
 import Entities.*;
-import Entities.Dynamic.DynamicEntity;
 import Entities.Dynamic.Physical.Enemies.Fly;
-import Enums.DoorType;
-import Enums.FloorType;
-import Enums.RoomType;
-import Enums.Side;
-import Tools.EntityList;
+import Enums.*;
+import Tools.EntityManager;
 import Tools.Image;
 
 import java.awt.*;
@@ -21,7 +17,7 @@ public class Room implements Component {
 
     private Wrap wrap;
 
-    private EntityList entities = new EntityList();
+    private EntityManager entities = new EntityManager();
 
     private boolean completed = false;
 
@@ -33,7 +29,7 @@ public class Room implements Component {
     private RoomType roomType;
     private FloorType floorType;
 
-    private Door[] doors = new Door[4];
+    private DoorType[] doors;
 
     private final int maxWidthTiles = 13;
     private final int maxHeightTiles = 7;
@@ -67,13 +63,15 @@ public class Room implements Component {
     }
 
     public void setupDoors(DoorType up, DoorType down, DoorType left, DoorType right) {
-        DoorType[] doors = {up, down, left, right};
+        doors = new DoorType[]{up, down, left, right};
         for (int i = 0; i < doors.length; i++) {
-            if (doors[i] != null) {
-                switch (roomType) {
-                    case GOLDEN -> this.doors[i] = new Door(wrap, Side.getSide(i), DoorType.GOLDEN);
-                    case DEFAULT -> this.doors[i] = new Door(wrap, Side.getSide(i), doors[i]);
-                }
+            addWall(Side.getSide(i));
+            if (doors[i] == null)
+                continue;
+            switch (roomType) {
+                case BOSS -> entities.addEntity(new Door(wrap, entities, Side.getSide(i), DoorType.BOSS));
+                case GOLDEN -> entities.addEntity(new Door(wrap, entities, Side.getSide(i), DoorType.GOLDEN));
+                case DEFAULT -> entities.addEntity(new Door(wrap, entities, Side.getSide(i), doors[i]));
             }
         }
     }
@@ -82,18 +80,14 @@ public class Room implements Component {
         entities.update();
         if (!completed && !entities.hasEnemies()) {
             completed = true;
-            for (Door door : doors)
-                if (door != null)
-                    door.openDoor();
+            openDoors();
         }
     }
 
     public void render(Graphics g) {
         renderBackground(g);
+        entities.renderDoors(g);
         entities.renderTiles(g);
-        for (Door door : doors)
-            if (door != null)
-                door.render(g);
         renderShade(g);
         entities.renderDynamic(g);
         entities.renderProjectiles(g);
@@ -102,6 +96,8 @@ public class Room implements Component {
     private String getRoomType() {
         if (roomType == RoomType.GOLDEN)
             return "golden";
+        if (roomType == RoomType.BOSS)
+            return "boss";
         return switch (floorType) {
             case BASEMENT -> "basement";
             case CAVES -> "caves";
@@ -111,19 +107,10 @@ public class Room implements Component {
 
     private void renderBackground(Graphics g) {
         background.draw(g);
-        if (wrap.isHitboxes())
-            drawHitbox(g);
     }
 
     private void renderShade(Graphics g) {
         shade.draw(g);
-    }
-
-    private void drawHitbox(Graphics g) {
-        Color c = g.getColor();
-        g.setColor(new Color(0f,1f,0f,.2f));
-        g.fillRect((int)((1920/2 - getHitboxWidth() / 2) * wrap.getScale()), (int) ((1080/2 - getHitboxHeight() / 2) * wrap.getScale()), (int) (getHitboxWidth() * wrap.getScale()), (int) (getHitboxHeight() * wrap.getScale()));
-        g.setColor(c);
     }
 
     private void addEntity(char type, int xTile, int yTile) {
@@ -135,22 +122,72 @@ public class Room implements Component {
             case 'P' -> entities.addEntity(new Poop(wrap, entities, x, y));
             case 'F' -> entities.addEntity(new Fire(wrap, entities, x, y));
             case 'S' -> entities.addEntity(new Spikes(wrap, entities, x, y));
+            case 'T' -> entities.addEntity(new TrapDoor(wrap, entities, x, y));
         }
     }
 
-    public static double getHitboxWidth() {
-        return 1920 - 595;
+    private void addWall(Side side) {
+        int width, height, x, y;
+        if (side == Side.UP || side == Side.DOWN) {
+            width = 1920;
+            height = 200;
+            x = 1920 / 2;
+            if (side == Side.UP)
+                y = 75;
+            else
+                y = 1080 - 75;
+        }
+        else {
+            width = 200;
+            height = 1080;
+            y = 1080 / 2;
+            if (side == Side.LEFT)
+                x = 200;
+            else
+                x = 1920 - 200;
+        }
+        entities.addEntity(new Wall(wrap, entities, x, y, width, height));
     }
 
-    public static double getHitboxHeight() {
-        return 1080 - 325;
+    private void addDoorWall(Side side) {
+        int width1, height1, x1, y1;
+        int width2, height2, x2, y2;
+        if (side == Side.UP || side == Side.DOWN) {
+            width1 = width2 = 1920 / 2 - 125;
+            height1 = height2 = 200;
+            x1 = 1920 / 4;
+            x2 = 1920 / 4 * 3;
+            if (side == Side.UP)
+                y1 = y2 = 63;
+            else
+                y1 = y2 = 1080 - 63;
+        }
+        else {
+            width1 = width2 = 200;
+            height1 = height2 = 1080 / 2 - 125;
+            y1 = 1080 / 4;
+            y2 = 1080 / 4 * 3;
+            if (side == Side.LEFT)
+                x1 = x2 = 200;
+            else
+                x1 = x2 = 1920 - 200;
+        }
+        entities.addEntity(new Wall(wrap, entities, x1, y1, width1, height1));
+        entities.addEntity(new Wall(wrap, entities, x2, y2, width2, height2));
     }
 
-    public Door[] getDoors() {
-        return doors;
+    private void openDoors() {
+        entities.openDoors();
+        for (int i = 0; i < doors.length; i++) {
+            if (doors[i] == null) {
+                addWall(Side.getSide(i));
+                continue;
+            }
+            addDoorWall(Side.getSide(i));
+        }
     }
 
-    public EntityList getEntities() {
+    public EntityManager getEntities() {
         return entities;
     }
 

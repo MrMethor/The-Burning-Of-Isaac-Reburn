@@ -7,7 +7,10 @@ public enum StateTransition {
     EXIT_GAME,
     PAUSE_GAME,
     MENU_TO_SETTINGS,
-    SETTINGS_TO_MENU;
+    SETTINGS_TO_MENU,
+    DEATH,
+    EXIT_DEATH,
+    RESTART;
 
     public static StateTransition getTransition(GameState previous, GameState next) {
         if (previous == GameState.MENU && next == GameState.GAME)
@@ -24,6 +27,12 @@ public enum StateTransition {
             return MENU_TO_SETTINGS;
         if (previous == GameState.SETTINGS && next == GameState.MENU)
             return SETTINGS_TO_MENU;
+        if (previous == GameState.GAME && next == GameState.DEATH)
+            return DEATH;
+        if (previous == GameState.DEATH && next == GameState.MENU)
+            return EXIT_DEATH;
+        if (previous == GameState.DEATH && next == GameState.GAME)
+            return RESTART;
         return null;
     }
 }

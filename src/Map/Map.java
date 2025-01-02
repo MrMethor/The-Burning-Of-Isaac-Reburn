@@ -16,6 +16,8 @@ public class Map {
 
     private Side changeRoom = null;
 
+    private boolean changeLevel = false;
+
     private final int POSSIBLE_ROOMS = 2;
     private final int POSSIBLE_GOLDEN_ROOMS = 2;
 
@@ -25,8 +27,8 @@ public class Map {
     private Room[][] rooms = new Room[size][size];
     private int roomCount;
     private boolean hasGolden;
-    private int currentX = 5;
-    private int currentY = 5;
+    private int currentX = 4;
+    private int currentY = 4;
 
     public Map(Wrap wrap, Player player, int floor, boolean isGolden) {
         this.wrap = wrap;
@@ -59,6 +61,8 @@ public class Map {
 
         if (hasGolden)
             generateGoldenRoom(floor);
+
+        generateBossRoom(floor);
 
         setupDoors();
 
@@ -113,6 +117,32 @@ public class Map {
             }
             failState--;
         }
+        System.out.println("Golden room generation failed");
+    }
+
+    private void generateBossRoom(FloorType floor) {
+        Random rand = new Random();
+        int failState = 10;
+        while (failState != 0) {
+            for (int y = 0; y < size; y++) {
+                for (int x = 0; x < size; x++) {
+                    if (rooms[x][y] != null)
+                        continue;
+
+                    int nearbyRoomsCount = nearbyRoomsCount(x, y);
+
+                    if (x >= 3 && x <= 6 && y >= 3 && y <= 6)
+                        continue;
+
+                    if (nearbyRoomsCount == 1 && rand.nextInt(4) < 1) {
+                        rooms[x][y] = new Room(wrap, "resource/rooms/bossRoom.txt", RoomType.BOSS, floor);
+                        return;
+                    }
+                }
+            }
+            failState--;
+        }
+        System.out.println("Boss room generation failed");
     }
 
     private void setupDoors() {
@@ -140,6 +170,8 @@ public class Map {
     private DoorType getDoorType(RoomType roomType, FloorType floorType) {
         if (roomType == RoomType.GOLDEN)
             return DoorType.GOLDEN;
+        else if (roomType == RoomType.BOSS)
+            return DoorType.BOSS;
         switch (floorType) {
             case BASEMENT, CAVES -> {
                 return DoorType.BASEMENT;
@@ -153,22 +185,25 @@ public class Map {
 
     private int nearbyRoomsCount(int x, int y) {
         int nearRoomCount = 0;
-        if (x - 1 >= 0 && rooms[x - 1][y] != null)
+        if (x - 1 >= 0 && rooms[x - 1][y] != null && rooms[x - 1][y].getType() == RoomType.DEFAULT)
             nearRoomCount++;
-        if (x + 1 < size && rooms[x + 1][y] != null)
+        if (x + 1 < size && rooms[x + 1][y] != null && rooms[x + 1][y].getType() == RoomType.DEFAULT)
             nearRoomCount++;
-        if (y - 1 >= 0 && rooms[x][y - 1] != null)
+        if (y - 1 >= 0 && rooms[x][y - 1] != null && rooms[x][y - 1].getType() == RoomType.DEFAULT)
             nearRoomCount++;
-        if (y + 1 < size && rooms[x][y + 1] != null)
+        if (y + 1 < size && rooms[x][y + 1] != null && rooms[x][y + 1].getType() == RoomType.DEFAULT)
             nearRoomCount++;
         return nearRoomCount;
     }
 
-    public void tryChangeRoom() {
-        for (int i = 0; i < 4; i++) {
-            if (currentRoom().getDoors()[i] != null && currentRoom().getDoors()[i].isCollided(player))
-                changeRoom = Side.getSide(i);
-        }
+    public void queueChangeRoom(Side side) {
+        changeRoom = side;
+    }
+
+    public void tryChangeLevel() {
+        if (!currentRoom().isCompleted())
+            return;
+        this.changeLevel = true;
     }
 
     private void changeRoom(Side side) {
@@ -190,5 +225,9 @@ public class Map {
 
     public Room currentRoom() {
         return rooms[currentX][currentY];
+    }
+
+    public boolean changeLevelRequest() {
+        return changeLevel;
     }
 }

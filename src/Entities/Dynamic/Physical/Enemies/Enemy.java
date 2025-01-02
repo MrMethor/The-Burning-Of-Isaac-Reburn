@@ -4,19 +4,19 @@ import Engine.Wrap;
 import Entities.Dynamic.Physical.PhysicalEntity;
 import Enums.EntityType;
 import Tools.Collision;
-import Tools.EntityList;
+import Tools.EntityManager;
 
 public abstract class Enemy extends PhysicalEntity {
 
     protected double health = 10;
 
-    public Enemy(Wrap wrap, EntityList entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+    public Enemy(Wrap wrap, EntityManager entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         super(wrap, entities, type, spriteSheetPath, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
     }
 
     protected void applyCollision(Collision collision) {
         switch (collision.entityType()) {
-            case ROOM -> applySolidCollision(collision);
+            case WALL -> applySolidCollision(collision);
             case PLAYER, ENEMY -> applyRelativeCollision(collision);
             case SPIKE -> {
                 if (!flying)

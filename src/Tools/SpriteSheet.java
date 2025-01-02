@@ -20,7 +20,7 @@ public class SpriteSheet extends Image{
         try {
             spriteSheet = ImageIO.read(new File(path));
         } catch (IOException e) {
-            System.out.println("Couldn't find the file");
+            System.out.println("Couldn't find the file: " + path);
         }
         spriteWidth = spriteSheet.getWidth() / spriteNumColumn;
         spriteHeight = spriteSheet.getHeight() / spriteNumRow;
@@ -33,5 +33,9 @@ public class SpriteSheet extends Image{
         currentColumn = column;
         currentRow = row;
         image = spriteSheet.getSubimage(column * spriteWidth, row * spriteHeight, spriteWidth, spriteHeight);
+    }
+
+    public BufferedImage getImage(int column, int row) {
+        return spriteSheet.getSubimage(column * spriteWidth, row * spriteHeight, spriteWidth, spriteHeight);
     }
 }

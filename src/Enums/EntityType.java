@@ -8,5 +8,8 @@ public enum EntityType {
     ITEM,
     OBSTACLE,
     VISUAL,
-    SPIKE, ROOM
+    SPIKE,
+    DOOR,
+    TRAP_DOOR,
+    WALL
 }

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public abstract class Entity implements Comparable<Entity> {
 
     protected Wrap wrap;
-    protected EntityList entities;
+    protected EntityManager entities;
     protected EntityType type;
 
     protected boolean toDestroy = false;
@@ -32,7 +32,7 @@ public abstract class Entity implements Comparable<Entity> {
 
     protected final ArrayList<Collision> collisions = new ArrayList<>();
 
-    public Entity(Wrap wrap, EntityList entities, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+    public Entity(Wrap wrap, EntityManager entities, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         this.wrap = wrap;
         this.entities = entities;
         this.type = type;
@@ -47,7 +47,7 @@ public abstract class Entity implements Comparable<Entity> {
         texture = new Image(wrap, texturePath, x - width / 2.0, y - height / 2.0, width, height);
     }
 
-    public Entity(Wrap wrap, EntityList entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+    public Entity(Wrap wrap, EntityManager entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         this.wrap = wrap;
         this.entities = entities;
         this.type = type;

@@ -3,13 +3,13 @@ package Entities.Dynamic.Physical.Enemies;
 import Engine.Wrap;
 import Entities.Entity;
 import Enums.EntityType;
-import Tools.EntityList;
+import Tools.EntityManager;
 
 public class Fly extends Enemy {
 
     private Entity player;
 
-    public Fly(Wrap wrap, EntityList entities, double x, double y) {
+    public Fly(Wrap wrap, EntityManager entities, double x, double y) {
         super(wrap, entities, EntityType.ENEMY, "resource/spriteSheets/fly.png", 2, 2, x, y, 100, 100, .7, .7, 0, 0);
         changeSpeed(.5);
         flying = true;

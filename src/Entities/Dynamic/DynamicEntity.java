@@ -3,10 +3,7 @@ package Entities.Dynamic;
 import Engine.Wrap;
 import Entities.Entity;
 import Enums.EntityType;
-import Enums.Side;
-import Map.Room;
-import Tools.Collision;
-import Tools.EntityList;
+import Tools.EntityManager;
 
 import java.awt.*;
 
@@ -16,12 +13,12 @@ public abstract class DynamicEntity extends Entity {
     protected double previousY;
     protected double speed;
 
-    public DynamicEntity(Wrap wrap, EntityList entities, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+    public DynamicEntity(Wrap wrap, EntityManager entities, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         super (wrap, entities, type, texturePath, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         speed = 1;
     }
 
-    public DynamicEntity(Wrap wrap, EntityList entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+    public DynamicEntity(Wrap wrap, EntityManager entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         super (wrap, entities, type, spriteSheetPath, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         speed = 1;
     }
@@ -33,25 +30,6 @@ public abstract class DynamicEntity extends Entity {
     }
 
     protected void calculateMovement() {}
-
-    public void handleCollisions() {
-
-        double[] sides = new double[4];
-
-        double roomWidth = Room.getHitboxWidth();
-        double roomHeight = Room.getHitboxHeight();
-        double roomX = 1920 / 2, roomY = 1080 / 2;
-
-        sides[Side.UP.num()] = (getHitboxY() - getHitboxHeight() / 2) - (roomY - roomHeight / 2);
-        sides[Side.DOWN.num()] = (roomY + roomHeight / 2) - (getHitboxY() + getHitboxHeight() / 2);
-        sides[Side.LEFT.num()] = (getHitboxX() - getHitboxWidth() / 2) - (roomX - roomWidth / 2);
-        sides[Side.RIGHT.num()] = (roomX + roomWidth / 2) - (getHitboxX() + getHitboxWidth() / 2);
-        for (int i = 0; i < 4; i++) {
-            if (sides[i] <= 0)
-                collisions.add(new Collision(EntityType.ROOM, Side.getSide(i), sides[i]));
-        }
-        super.handleCollisions();
-    }
 
     public void render(Graphics g) {
         double renderedX = wrap.interpolate(previousX, x) - width / 2.0;

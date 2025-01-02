@@ -5,5 +5,6 @@ public enum GameState {
     GAME,
     PAUSE,
     SETTINGS,
+    DEATH,
     EXIT
 }

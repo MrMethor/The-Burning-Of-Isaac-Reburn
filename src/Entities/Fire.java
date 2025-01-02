@@ -3,7 +3,7 @@ package Entities;
 import Engine.Wrap;
 import Enums.EntityType;
 import Tools.Collision;
-import Tools.EntityList;
+import Tools.EntityManager;
 
 import java.util.Random;
 
@@ -11,7 +11,7 @@ public class Fire extends Entity {
 
     private int health = 30;
 
-    public Fire(Wrap wrap, EntityList entities, double x, double y) {
+    public Fire(Wrap wrap, EntityManager entities, double x, double y) {
         super(wrap, entities, EntityType.ENEMY, "resource/spriteSheets/fire.png", 7, 1, x, y, 130, 130, .3, .3, 0, .2);
     }
 

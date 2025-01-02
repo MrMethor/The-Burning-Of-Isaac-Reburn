@@ -1,5 +1,6 @@
 import Enums.StateTransition;
 import Engine.Wrap;
+import Menus.DeathScreen;
 import Menus.Menu;
 import Menus.Pause;
 import Menus.Settings;
@@ -19,6 +20,7 @@ public class Main extends Canvas implements Runnable {
     private Game game;
     private Pause pause;
     private Settings settings;
+    private DeathScreen deathScreen;
 
     public Main() {
         setFocusable(true);
@@ -65,10 +67,11 @@ public class Main extends Canvas implements Runnable {
             wrap.updateDebug();
 
         switch (wrap.getGameState()) {
-            case MENU: menu.update(); break;
-            case GAME: game.update(); break;
-            case PAUSE: pause.update(); break;
-            case SETTINGS: settings.update(); break;
+            case MENU -> menu.update();
+            case GAME -> game.update();
+            case PAUSE -> pause.update();
+            case SETTINGS -> settings.update();
+            case DEATH -> deathScreen.update();
         }
 
         frame.setCursor(wrap.getCursor());
@@ -84,10 +87,11 @@ public class Main extends Canvas implements Runnable {
         //#############################################
 
         switch (wrap.getGameState()) {
-            case MENU: menu.render(g); break;
-            case GAME: game.render(g); break;
-            case PAUSE: pause.render(g); break;
-            case SETTINGS: settings.render(g); break;
+            case MENU -> menu.render(g);
+            case GAME -> game.render(g);
+            case PAUSE -> pause.render(g);
+            case SETTINGS -> settings.render(g);
+            case DEATH -> deathScreen.render(g);
         }
 
         if (wrap.isDebug())
@@ -107,6 +111,16 @@ public class Main extends Canvas implements Runnable {
             }
             case PAUSE_GAME -> pause = new Pause(wrap);
             case RESUME_GAME -> pause = null;
+            case DEATH -> deathScreen = new DeathScreen(wrap);
+            case EXIT_DEATH -> {
+                menu = new Menu(wrap);
+                deathScreen = null;
+                game = null;
+            }
+            case RESTART -> {
+                game = new Game(wrap);
+                deathScreen = null;
+            }
             case BACK_TO_MENU -> {
                 menu = new Menus.Menu(wrap);
                 game = null;
@@ -134,7 +148,7 @@ public class Main extends Canvas implements Runnable {
         setPreferredSize(screenSize);
         if (wrap.isFullscreen()) {
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-            //frame.setUndecorated(true);
+            frame.setUndecorated(true);
         }
         frame.setTitle("The Burning Of Isaac: Reburn");
         frame.setResizable(false);

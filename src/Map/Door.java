@@ -1,86 +1,71 @@
 package Map;
 
 import Engine.Wrap;
-import Entities.Dynamic.Physical.Player;
+import Entities.Entity;
 import Enums.DoorType;
 import Enums.Side;
-import Tools.SpriteSheet;
-
-import java.awt.*;
+import Enums.EntityType;
+import Tools.EntityManager;
 
 enum DoorState {
     CLOSED,
     OPENED
 }
 
-public class Door {
+public class Door extends Entity {
 
     private Wrap wrap;
-
     private Side side;
-    private double size = 175;
-    private int x;
-    private int y;
 
-    private SpriteSheet spriteSheet;
-
-    public Door(Wrap wrap, Side side, DoorType type) {
+    public Door(Wrap wrap, EntityManager entities, Side side, DoorType type) {
+        super(wrap, entities, EntityType.DOOR, getPath(type), 4, 2, Door.getX(side), Door.getY(side), 175, 175, 0.3, 0.3, 0,0);
         this.wrap = wrap;
         this.side = side;
+        swapTexture(side.num(), DoorState.CLOSED.ordinal());
+    }
+
+    public void openDoor() {
+        swapTexture(side.num(), DoorState.OPENED.ordinal());
+    }
+
+    private static int getX(Side side) {
         switch (side) {
             case LEFT -> {
-                x = 238;
-                y = 1080 / 2;
+                return 238;
             }
             case RIGHT -> {
-                x = 1682;
-                y = 1080 / 2;
+                return 1682;
             }
-            case UP -> {
-                x = 1920 / 2;
-                y = 105;
-            }
-            case DOWN -> {
-                x = 1920 / 2;
-                y = 975;
+            case UP, DOWN -> {
+                return 1920 / 2;
             }
         }
+        return 0;
+    }
+
+    private static int getY(Side side) {
+        switch (side) {
+            case LEFT, RIGHT -> {
+                return 1080 / 2;
+            }
+            case UP -> {
+                return 105;
+            }
+            case DOWN -> {
+                return 975;
+            }
+        }
+        return 0;
+    }
+
+    private static String getPath(DoorType type) {
         String typeString = "";
         switch (type) {
+            case BOSS -> typeString = "boss";
             case BASEMENT -> typeString = "basement";
             case DEPTHS -> typeString = "depths";
             case GOLDEN -> typeString = "golden";
         }
-        String path = "resource/doors/" + typeString + ".png";
-        spriteSheet = new SpriteSheet(wrap, path, x - size / 2, y - size / 2, size, size, 4, 2);
-        spriteSheet.swapImage(side.num(), DoorState.CLOSED.ordinal());
-    }
-
-    public boolean isCollided(Player player) {
-        double[] sides = new double[4];
-
-        sides[Side.UP.num()] = (y - size / 2) - (player.getHitboxY() + player.getHitboxHeight() / 2);
-        sides[Side.DOWN.num()] = (player.getHitboxY() - player.getHitboxHeight() / 2) - (y + size / 2);
-        sides[Side.LEFT.num()] = (x - size / 2) - (player.getHitboxX() + player.getHitboxWidth() / 2);
-        sides[Side.RIGHT.num()] = (player.getHitboxX() - player.getHitboxWidth() / 2) - (x + size / 2);
-
-        return (sides[Side.UP.num()] < 0 && sides[Side.DOWN.num()] < 0) && (sides[Side.LEFT.num()] < 0 && sides[Side.RIGHT.num()] < 0);
-    }
-
-    public void render(Graphics g) {
-        spriteSheet.draw(g);
-        if (wrap.isHitboxes())
-            drawHitbox(g);
-    }
-
-    private void drawHitbox(Graphics g) {
-        Color c = g.getColor();
-        g.setColor(new Color(0f,0f,1f,.2f));
-        g.fillRect((int)((x - size / 2.0) * wrap.getScale()), (int) ((y - size / 2.0) * wrap.getScale()), (int) (size * wrap.getScale()), (int) (size * wrap.getScale()));
-        g.setColor(c);
-    }
-
-    public void openDoor() {
-        spriteSheet.swapImage(side.num(), DoorState.OPENED.ordinal());
+        return "resource/doors/" + typeString + ".png";
     }
 }
