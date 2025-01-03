@@ -62,54 +62,36 @@ public abstract class Entity implements Comparable<Entity> {
         texture = new SpriteSheet(wrap, spriteSheetPath, x - width / 2.0, y - height / 2.0, width, height, column, row);
     }
 
+    // Overridable methods
+    //====================================
     public void applyBehavior() {}
-
-    public void handleCollisions() {
-        for (Entity entity : entities.getEntities()) {
-            if (entity != this)
-                collision(entity);
-        }
-        for (Collision collision : collisions)
-            applyCollision(collision);
-        resetCollisions();
-    }
-
-    public void animate() {}
-
-    private void collision(Entity other) {
-
-        double[] sides = new double[4];
-
-        sides[Side.UP.num()] = (getHitboxY() - getHitboxHeight() / 2) - (other.getHitboxY() + other.getHitboxHeight() / 2);
-        sides[Side.DOWN.num()] = (other.getHitboxY() - other.getHitboxHeight() / 2) - (getHitboxY() + getHitboxHeight() / 2);
-        sides[Side.LEFT.num()] = (getHitboxX() - getHitboxWidth() / 2) - (other.getHitboxX() + other.getHitboxWidth() / 2);
-        sides[Side.RIGHT.num()] = (other.getHitboxX() - other.getHitboxWidth() / 2) - (getHitboxX() + getHitboxWidth() / 2);
-        if ((sides[Side.UP.num()] < 0 && sides[Side.DOWN.num()] < 0) && (sides[Side.LEFT.num()] < 0 && sides[Side.RIGHT.num()] < 0)) {
-            double penetration = -1920;
-            Side sideOut = null;
-            for (int i = 0; i < 4; i++) {
-                if (sides[i] <= 0 && penetration < sides[i]) {
-                    penetration = sides[i];
-                    sideOut = Side.getSide(i);
-                }
-            }
-            collisions.add(new Collision(other.type, sideOut, penetration));
-        }
-    }
 
     protected void applyCollision(Collision collision) {}
 
-    private void resetCollisions() {
-        collisions.clear();
-    }
+    public void animate() {}
 
     public void render(Graphics g) {
         texture.draw(g);
         if (wrap.isHitboxes())
             drawHitbox(g);
     }
+    //====================================
 
-    protected void drawHitbox(Graphics g) {
+    public void applyCollisions() {
+        for (Collision collision : collisions)
+            applyCollision(collision);
+        resetCollisions();
+    }
+
+    public void addCollision(Side side, double penetration, Entity entity) {
+        collisions.add(new Collision(side, penetration, entity));
+    }
+
+    private void resetCollisions() {
+        collisions.clear();
+    }
+
+    private void drawHitbox(Graphics g) {
         Color c = g.getColor();
         g.setColor(new Color(1f,0f,0f,.2f));
         g.fillRect((int)((getHitboxX() - getHitboxWidth() / 2) * wrap.getScale()), (int) ((getHitboxY() - getHitboxHeight() / 2) * wrap.getScale()), (int) (getHitboxWidth() * wrap.getScale()), (int) (getHitboxHeight() * wrap.getScale()));
@@ -117,6 +99,16 @@ public abstract class Entity implements Comparable<Entity> {
     }
 
     protected void changeSize(int width, int height) {
+        this.width = width;
+        this.height = height;
+        texture.changeSize(width, height);
+    }
+
+    protected void changeTextureSize(int width, int height) {
+        double widthScale = width / this.width;
+        double heightScale = height / this.height;
+        this.hitboxWidthScale *= widthScale;
+        this.hitboxHeightScale *= heightScale;
         this.width = width;
         this.height = height;
         texture.changeSize(width, height);
@@ -135,7 +127,7 @@ public abstract class Entity implements Comparable<Entity> {
             ((SpriteSheet) texture).swapImage(column, row);
     }
 
-    protected void destroy() {
+    public void destroy() {
         toDestroy = true;
     }
 
@@ -144,6 +136,10 @@ public abstract class Entity implements Comparable<Entity> {
     // Misc
     public int compareTo(Entity o) {
         return (int)(o.getHitboxY() - getHitboxY());
+    }
+
+    public double getWeight() {
+        return getHitboxWidth() * getHitboxHeight();
     }
 
     public boolean isToDestroy() {

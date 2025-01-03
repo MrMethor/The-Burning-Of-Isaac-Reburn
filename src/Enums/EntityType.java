@@ -11,5 +11,8 @@ public enum EntityType {
     SPIKE,
     DOOR,
     TRAP_DOOR,
-    WALL
+    WALL,
+    FULL_HEART,
+    HALF_HEART,
+    SOUL_HEART
 }

@@ -61,14 +61,14 @@ public class Image {
         this.height = (int)((double)image.getHeight() * wrap.getScale());
     }
 
-    public void changePosition(int x, int y) {
+    public void changePosition(double x, double y) {
         this.x = (int)(x * wrap.getScale());
         this.y = (int)(y * wrap.getScale());
     }
 
-    public void changeSize(int width, int height) {
-        this.width = (int)((double)width * wrap.getScale());
-        this.height = (int)((double)height * wrap.getScale());
+    public void changeSize(double width, double height) {
+        this.width = (int)(width * wrap.getScale());
+        this.height = (int)(height * wrap.getScale());
     }
 
     public void changeImage(String path) {

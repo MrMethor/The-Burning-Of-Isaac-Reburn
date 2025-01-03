@@ -13,7 +13,7 @@ public class Item extends PhysicalEntity {
     }
 
     protected void applyCollision(Collision collision) {
-        switch (collision.entityType()) {
+        switch (collision.entity().getType()) {
             case PLAYER -> applyRelativeCollision(collision);
         }
     }

@@ -1,7 +1,7 @@
 package Tools;
 
-import Enums.EntityType;
+import Entities.Entity;
 import Enums.Side;
 
-public record Collision(EntityType entityType, Side side, double penetration) {
+public record Collision(Side side, double penetration, Entity entity) {
 }

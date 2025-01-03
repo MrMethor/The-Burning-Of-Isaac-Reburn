@@ -19,7 +19,7 @@ public class Fire extends Entity {
         if (health <= 0){
             return;
         }
-        if (collision.entityType() == EntityType.FRIENDLY_PROJECTILE){
+        if (collision.entity().getType() == EntityType.FRIENDLY_PROJECTILE){
             Random rand = new Random();
             health -= rand.nextInt(5) + 3;
             if (health <= 0)

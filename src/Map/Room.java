@@ -4,6 +4,7 @@ import Engine.Component;
 import Engine.Wrap;
 import Entities.*;
 import Entities.Dynamic.Physical.Enemies.Fly;
+import Entities.Dynamic.Physical.PickUp;
 import Enums.*;
 import Tools.EntityManager;
 import Tools.Image;
@@ -17,7 +18,7 @@ public class Room implements Component {
 
     private Wrap wrap;
 
-    private EntityManager entities = new EntityManager();
+    private EntityManager entities;
 
     private boolean completed = false;
 
@@ -41,6 +42,7 @@ public class Room implements Component {
         this.wrap = wrap;
         this.roomType = roomType;
         this.floorType = floorType;
+        this.entities = new EntityManager(wrap);
         background = new Image(wrap, "resource/textures/" + getRoomType() + ".png", x - width / 2.0, y - height / 2.0, width, height);
         shade = new Image(wrap, "resource/textures/roomShade.png", x - width / 2.0, y - height / 2.0, width, height);
         String content = "";
@@ -90,7 +92,6 @@ public class Room implements Component {
         entities.renderTiles(g);
         renderShade(g);
         entities.renderDynamic(g);
-        entities.renderProjectiles(g);
     }
 
     private String getRoomType() {
@@ -123,6 +124,9 @@ public class Room implements Component {
             case 'F' -> entities.addEntity(new Fire(wrap, entities, x, y));
             case 'S' -> entities.addEntity(new Spikes(wrap, entities, x, y));
             case 'T' -> entities.addEntity(new TrapDoor(wrap, entities, x, y));
+            case 'H' -> entities.addEntity(new PickUp(wrap, entities, EntityType.FULL_HEART, x, y));
+            case 'N' -> entities.addEntity(new PickUp(wrap, entities, EntityType.HALF_HEART, x, y));
+            case 'O' -> entities.addEntity(new PickUp(wrap, entities, EntityType.SOUL_HEART, x, y));
         }
     }
 

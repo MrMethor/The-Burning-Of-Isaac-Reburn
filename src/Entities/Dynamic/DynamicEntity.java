@@ -23,12 +23,8 @@ public abstract class DynamicEntity extends Entity {
         speed = 1;
     }
 
-    public void applyMovement() {
-        previousX = x;
-        previousY = y;
-        calculateMovement();
-    }
-
+    // Overridable methods
+    //====================================
     protected void calculateMovement() {}
 
     public void render(Graphics g) {
@@ -36,6 +32,13 @@ public abstract class DynamicEntity extends Entity {
         double renderedY = wrap.interpolate(previousY, y) - height / 2.0;
         texture.changePosition((int)renderedX, (int)renderedY);
         super.render(g);
+    }
+    //==================================
+
+    public void applyMovement() {
+        previousX = x;
+        previousY = y;
+        calculateMovement();
     }
 
     // Setup options

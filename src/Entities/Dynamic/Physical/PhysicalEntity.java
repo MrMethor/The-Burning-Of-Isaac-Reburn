@@ -37,46 +37,47 @@ public abstract class PhysicalEntity extends DynamicEntity {
     }
 
     protected void applyRelativeCollision(Collision collision) {
+        double force = collision.entity().getWeight() / getWeight();
         switch (collision.side()) {
-            case UP -> velocityY += 1;
-            case DOWN -> velocityY -= 1;
-            case LEFT -> velocityX += 1;
-            case RIGHT -> velocityX -= 1;
+            case UP -> velocityY += force;
+            case DOWN -> velocityY -= force;
+            case LEFT -> velocityX += force;
+            case RIGHT -> velocityX -= force;
         }
     }
 
     protected void applySolidCollision(Collision collision) {
-        if (flying && collision.entityType() != EntityType.WALL)
+        if (flying && collision.entity().getType() != EntityType.WALL)
             return;
         switch (collision.side()) {
             case UP -> {
-                if (velocityY < 0){
-                    y -= collision.penetration();
+                y -= collision.penetration();
+                if (velocityY < 0)
                     velocityY = 0;
-                }
             }
             case DOWN -> {
-                if (velocityY > 0){
-                    y += collision.penetration();
+                y += collision.penetration();
+                if (velocityY > 0)
                     velocityY = 0;
-                }
             }
             case LEFT -> {
-                if (velocityX < 0){
-                    x -= collision.penetration();
+                x -= collision.penetration();
+                if (velocityX < 0)
                     velocityX = 0;
-                }
             }
             case RIGHT -> {
-                if (velocityX > 0){
-                    x += collision.penetration();
+                x += collision.penetration();
+                if (velocityX > 0)
                     velocityX = 0;
-                }
             }
         }
     }
 
     protected void changeSlideFactor(double factor) {
         this.slideFactor = factor;
+    }
+
+    public boolean canFly() {
+        return flying;
     }
 }

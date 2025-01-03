@@ -19,7 +19,6 @@ public class Map {
     private boolean changeLevel = false;
 
     private final int POSSIBLE_ROOMS = 2;
-    private final int POSSIBLE_GOLDEN_ROOMS = 2;
 
     private FloorType floor;
 
@@ -85,12 +84,12 @@ public class Map {
                     switch (nearbyRoomsCount) {
                         case 1 -> randomFactor = 5;
                         case 2 -> randomFactor = 20;
-                        case 3 -> randomFactor = 80;
-                        case 4 -> randomFactor = 160;
+                        case 3 -> randomFactor = 60;
+                        case 4 -> randomFactor = 120;
                     }
 
                     if (randomFactor != 0 && rand.nextInt(randomFactor) == 0 && roomCount > 0) {
-                        rooms[x][y] = new Room(wrap, "resource/rooms/room" + (rand.nextInt(POSSIBLE_ROOMS - 1) + 1) + ".txt", RoomType.DEFAULT, floor);
+                        rooms[x][y] = new Room(wrap, "resource/rooms/room" + (rand.nextInt(POSSIBLE_ROOMS) + 1) + ".txt", RoomType.DEFAULT, floor);
                         roomCount--;
                     }
                 }
@@ -110,7 +109,7 @@ public class Map {
                     int nearbyRoomsCount = nearbyRoomsCount(x, y);
 
                     if (nearbyRoomsCount == 1 && rand.nextInt(4) < 1) {
-                        rooms[x][y] = new Room(wrap, "resource/rooms/goldenRoom" + (rand.nextInt(POSSIBLE_GOLDEN_ROOMS) + 1) + ".txt", RoomType.GOLDEN, floor);
+                        rooms[x][y] = new Room(wrap, "resource/rooms/goldenRoom.txt", RoomType.GOLDEN, floor);
                         return;
                     }
                 }

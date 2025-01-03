@@ -44,7 +44,7 @@ public class Player extends PhysicalEntity {
         super(wrap, null, EntityType.PLAYER, "resource/spriteSheets/character.png", 3, 4, 1920/2.0, 1080/2.0, 150, 150, 0.4, 0.4, 0, 0.3);
         this.hud = hud;
         firingSpeed = 5;
-        setupBaseHealth(0, 0, 0);
+        setupBaseHealth(6, 6, 6);
         shotSize = 1;
         shotSpeed = 8;
         firingTime = (int)(60 / firingSpeed);
@@ -52,7 +52,6 @@ public class Player extends PhysicalEntity {
     }
 
     public void applyBehavior() {
-
         int playerX = 0;
         int playerY = 0;
         boolean fireUp = false, fireDown = false, fireLeft = false, fireRight = false;
@@ -78,7 +77,7 @@ public class Player extends PhysicalEntity {
     }
 
     protected void applyCollision(Collision collision) {
-        switch (collision.entityType()) {
+        switch (collision.entity().getType()) {
             case WALL, OBSTACLE -> applySolidCollision(collision);
             case ITEM -> applyRelativeCollision(collision);
             case ENEMY -> {
@@ -88,6 +87,14 @@ public class Player extends PhysicalEntity {
             case DOOR -> map.queueChangeRoom(collision.side());
             case SPIKE -> hit(2);
             case TRAP_DOOR -> map.tryChangeLevel();
+            case FULL_HEART, SOUL_HEART, HALF_HEART -> {
+                if (consumeHeart(collision.entity().getType())){
+                    collision.entity().destroy();
+                    hud.updateHearts(redHearts, redContainers, soulHearts);
+                }
+                else
+                    applyRelativeCollision(collision);
+            }
         }
     }
 
@@ -123,8 +130,8 @@ public class Player extends PhysicalEntity {
     }
 
     public void changeRoom(Side side) {
-        int halfARoomHeight = 680;
-        int halfARoomWidth = 1265;
+        int halfARoomHeight = 725;
+        int halfARoomWidth = 1290;
         switch (side) {
             case UP -> y = previousY = y + halfARoomHeight;
             case DOWN -> y = previousY = y - halfARoomHeight;
@@ -176,6 +183,32 @@ public class Player extends PhysicalEntity {
             dead = true;
     }
 
+    private boolean consumeHeart(EntityType type) {
+        switch (type) {
+            case FULL_HEART -> {
+                if (redHearts >= redContainers)
+                    return false;
+                redHearts += 2;
+                if (redHearts > redContainers)
+                    redContainers--;
+                return true;
+            }
+            case HALF_HEART -> {
+                if (redHearts >= redContainers)
+                    return false;
+                redHearts++;
+                return true;
+            }
+            case SOUL_HEART -> {
+                if (soulHearts + redContainers >= MAX_HEALTH)
+                    return false;
+                soulHearts += 2;
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void setupBaseHealth(int redHearts, int soulHearts, int emptyContainers) {
         if (emptyContainers % 2 != 0)
             emptyContainers++;
@@ -215,17 +248,30 @@ public class Player extends PhysicalEntity {
     private void fire() {
         int fireX = 0;
         int fireY = 0;
+        double x = this.x;
+        double y = this.y;
         switch (facing) {
-            case UP -> fireY = 1;
-            case DOWN -> fireY = -1;
-            case LEFT -> fireX = -1;
-            case RIGHT -> fireX = 1;
+            case UP -> {
+                fireY = 1;
+                y -= height / 4;
+            }
+            case DOWN -> {
+                fireY = -1;
+                y += height / 4;
+            }
+            case LEFT -> {
+                fireX = -1;
+                x -= width / 4;
+            }
+            case RIGHT -> {
+                fireX = 1;
+                x += width / 4;
+            }
         }
         var rad = Math.atan2(fireY, fireX);
         int angle = (int)(rad * (180 / Math.PI));
-        if (angle < 0)
-            angle += 360;
-        entities.addEntity(new Fireball(wrap, entities, x, y + height / 10, (int)(100 * shotSize), (int)(100 * shotSize), shotSpeed, velocityX, velocityY, angle));
+        angle = angle < 0 ? angle + 360 : angle;
+        entities.addEntity(new Fireball(wrap, entities, x, y + 15, (int)(100 * shotSize), (int)(100 * shotSize), shotSpeed, velocityX, velocityY, angle));
     }
 
     private void move(int x, int y) {

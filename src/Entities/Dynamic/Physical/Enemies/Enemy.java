@@ -15,9 +15,13 @@ public abstract class Enemy extends PhysicalEntity {
     }
 
     protected void applyCollision(Collision collision) {
-        switch (collision.entityType()) {
+        switch (collision.entity().getType()) {
             case WALL -> applySolidCollision(collision);
             case PLAYER, ENEMY -> applyRelativeCollision(collision);
+            case HALF_HEART, FULL_HEART, SOUL_HEART -> {
+                if (!flying)
+                    applyRelativeCollision(collision);
+            }
             case SPIKE -> {
                 if (!flying)
                     health -= 0.1;

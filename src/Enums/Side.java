@@ -27,4 +27,12 @@ public enum Side {
         };
     }
 
+    public static Side getOpposite(Side side) {
+        return switch (side) {
+            case UP -> DOWN;
+            case DOWN -> UP;
+            case LEFT -> RIGHT;
+            case RIGHT -> LEFT;
+        };
+    }
 }

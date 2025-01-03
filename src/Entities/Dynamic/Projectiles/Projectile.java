@@ -31,7 +31,7 @@ public abstract class Projectile extends DynamicEntity {
     }
 
     protected void applyCollision(Collision collision) {
-        switch (collision.entityType()) {
+        switch (collision.entity().getType()) {
             case ENEMY, WALL, OBSTACLE -> destroy();
         }
     }

@@ -1,5 +1,6 @@
 package Tools;
 
+import Engine.Wrap;
 import Entities.Dynamic.DynamicEntity;
 import Entities.Dynamic.Physical.Enemies.Enemy;
 import Entities.Dynamic.Physical.Player;
@@ -8,6 +9,7 @@ import Entities.Entity;
 import Entities.TrapDoor;
 import Entities.Wall;
 import Enums.EntityType;
+import Enums.Side;
 import Map.Door;
 
 import java.awt.*;
@@ -15,9 +17,15 @@ import java.util.ArrayList;
 
 public class EntityManager {
 
+    private Wrap wrap;
+
     private ArrayList<Entity> entities = new ArrayList<>();
     private ArrayList<Entity> entitiesToAdd = new ArrayList<>();
     private ArrayList<Entity> entitiesToRemove = new ArrayList<>();
+
+    public EntityManager(Wrap wrap) {
+        this.wrap = wrap;
+    }
 
     public ArrayList<Entity> getEntities() {
         return entities;
@@ -28,6 +36,7 @@ public class EntityManager {
         entities.removeAll(entitiesToRemove);
         entities.addAll(entitiesToAdd);
         entitiesToAdd.clear();
+        entitiesToRemove.clear();
         entities.sort((a, b) -> -1 * a.compareTo(b));
         for (Entity entity : entities)
             entity.applyBehavior();
@@ -35,10 +44,43 @@ public class EntityManager {
             if (entity instanceof DynamicEntity)
                 ((DynamicEntity) entity).applyMovement();
         }
+        handleCollisions();
         for (Entity entity : entities)
-            entity.handleCollisions();
+            entity.applyCollisions();
         for (Entity entity : entities)
             entity.animate();
+        wrap.updateEntityCount(entities.size());
+    }
+
+    private void handleCollisions() {
+        for (int i = 0; i < entities.size(); i++) {
+            for (int j = i; j < entities.size(); j++) {
+                if (entities.get(i) == entities.get(j))
+                    continue;
+
+                double[] sides = new double[4];
+
+                Entity entity1 = entities.get(i);
+                Entity entity2 = entities.get(j);
+
+                sides[Side.UP.num()] = (entity1.getHitboxY() - entity1.getHitboxHeight() / 2) - (entity2.getHitboxY() + entity2.getHitboxHeight() / 2);
+                sides[Side.DOWN.num()] = (entity2.getHitboxY() - entity2.getHitboxHeight() / 2) - (entity1.getHitboxY() + entity1.getHitboxHeight() / 2);
+                sides[Side.LEFT.num()] = (entity1.getHitboxX() - entity1.getHitboxWidth() / 2) - (entity2.getHitboxX() + entity2.getHitboxWidth() / 2);
+                sides[Side.RIGHT.num()] = (entity2.getHitboxX() - entity2.getHitboxWidth() / 2) - (entity1.getHitboxX() + entity1.getHitboxWidth() / 2);
+                if ((sides[Side.UP.num()] <= 0 && sides[Side.DOWN.num()] <= 0) && (sides[Side.LEFT.num()] <= 0 && sides[Side.RIGHT.num()] <= 0)) {
+                    double penetration = -1920;
+                    Side sideOut = null;
+                    for (int k = 0; k < 4; k++) {
+                        if (sides[k] <= 0 && penetration < sides[k]) {
+                            penetration = sides[k];
+                            sideOut = Side.getSide(k);
+                        }
+                    }
+                    entity1.addCollision(sideOut, penetration, entity2);
+                    entity2.addCollision(Side.getOpposite(sideOut), penetration, entity1);
+                }
+            }
+        }
     }
 
     public void renderDoors(Graphics g) {
@@ -55,13 +97,7 @@ public class EntityManager {
 
     public void renderDynamic(Graphics g) {
         for (Entity entity : entities)
-            if (entity.getType() == EntityType.ENEMY || entity.getType() == EntityType.PLAYER || entity.getType() == EntityType.ITEM)
-                entity.render(g);
-    }
-
-    public void renderProjectiles(Graphics g) {
-        for (Entity entity : entities)
-            if (entity.getType() == EntityType.ENEMY_PROJECTILE || entity.getType() == EntityType.FRIENDLY_PROJECTILE)
+            if (entity instanceof DynamicEntity || entity.getType() == EntityType.ENEMY)
                 entity.render(g);
     }
 
