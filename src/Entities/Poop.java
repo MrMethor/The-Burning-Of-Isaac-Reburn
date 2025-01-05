@@ -12,7 +12,7 @@ public class Poop extends Entity {
     private int health = 30;
 
     public Poop(Wrap wrap, EntityManager entities, double x, double y) {
-        super(wrap, entities, EntityType.OBSTACLE, "resource/spriteSheets/poop.png", 5, 1, x, y, 130, 130, 0.8, 0.8, 0, 0);
+        super(wrap, entities, EntityType.OBSTACLE, "resource/entities/poop.png", 5, 1, x, y, 130, 130, 0.8, 0.8, 0, 0);
         swapTexture(0, 0);
     }
 

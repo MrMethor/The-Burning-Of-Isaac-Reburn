@@ -16,7 +16,7 @@ public class SpriteSheet extends Image{
     private int currentRow = 500;
 
     public SpriteSheet(Wrap wrap, String path, double x, double y, double width, double height, int spriteNumColumn, int spriteNumRow) {
-        super(wrap, "resource/spriteSheets/blank.png", x, y);
+        super(wrap, "resource/entities/blank.png", x, y);
         try {
             spriteSheet = ImageIO.read(new File(path));
         } catch (IOException e) {

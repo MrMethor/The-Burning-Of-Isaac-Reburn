@@ -7,7 +7,7 @@ import Tools.Button;
 public class DeathScreen extends MenuType {
 
     public DeathScreen(Wrap wrap) {
-        super(wrap, "resource/textures/deathScreen.png");
+        super(wrap, "resource/backgrounds/deathScreen.png");
     }
 
     protected void setupButtons() {

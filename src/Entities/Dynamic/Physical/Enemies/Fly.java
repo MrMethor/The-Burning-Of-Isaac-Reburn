@@ -10,7 +10,7 @@ public class Fly extends Enemy {
     private Entity player;
 
     public Fly(Wrap wrap, EntityManager entities, double x, double y) {
-        super(wrap, entities, EntityType.ENEMY, "resource/spriteSheets/fly.png", 2, 2, x, y, 100, 100, .7, .7, 0, 0);
+        super(wrap, entities, EntityType.ENEMY, 5, "resource/entities/fly.png", 2, 2, x, y, 100, 100, .7, .7, 0, 0);
         changeSpeed(.5);
         flying = true;
     }

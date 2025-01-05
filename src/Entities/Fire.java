@@ -9,10 +9,10 @@ import java.util.Random;
 
 public class Fire extends Entity {
 
-    private int health = 30;
+    private int health = 15;
 
     public Fire(Wrap wrap, EntityManager entities, double x, double y) {
-        super(wrap, entities, EntityType.ENEMY, "resource/spriteSheets/fire.png", 7, 1, x, y, 130, 130, .3, .3, 0, .2);
+        super(wrap, entities, EntityType.ENEMY, "resource/entities/fire.png", 7, 1, x, y, 130, 130, .3, .3, 0, .2);
     }
 
     protected void applyCollision(Collision collision) {

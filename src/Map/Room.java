@@ -12,6 +12,7 @@ import Tools.Image;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Room implements Component {
@@ -43,8 +44,8 @@ public class Room implements Component {
         this.roomType = roomType;
         this.floorType = floorType;
         this.entities = new EntityManager(wrap);
-        background = new Image(wrap, "resource/textures/" + getRoomType() + ".png", x - width / 2.0, y - height / 2.0, width, height);
-        shade = new Image(wrap, "resource/textures/roomShade.png", x - width / 2.0, y - height / 2.0, width, height);
+        background = new Image(wrap, "resource/rooms/" + getRoomType() + ".png", x - width / 2.0, y - height / 2.0, width, height);
+        shade = new Image(wrap, "resource/rooms/roomShade.png", x - width / 2.0, y - height / 2.0, width, height);
         String content = "";
         try {
             File file = new File(mapPath);
@@ -91,6 +92,7 @@ public class Room implements Component {
         entities.renderDoors(g);
         entities.renderTiles(g);
         renderShade(g);
+        entities.renderItems(g);
         entities.renderDynamic(g);
     }
 
@@ -117,6 +119,8 @@ public class Room implements Component {
     private void addEntity(char type, int xTile, int yTile) {
         int x = xTile * 102 + 350;
         int y = yTile * 107 + 215;
+        Random random = new Random();
+        int randomItem = random.nextInt(wrap.getNumOfItems() - 1);
         switch (type) {
             case 'R' -> entities.addEntity(new Rock(wrap, entities, x, y));
             case 'f' -> entities.addEntity(new Fly(wrap, entities, x, y));
@@ -127,6 +131,7 @@ public class Room implements Component {
             case 'H' -> entities.addEntity(new PickUp(wrap, entities, EntityType.FULL_HEART, x, y));
             case 'N' -> entities.addEntity(new PickUp(wrap, entities, EntityType.HALF_HEART, x, y));
             case 'O' -> entities.addEntity(new PickUp(wrap, entities, EntityType.SOUL_HEART, x, y));
+            case 'I' -> entities.addEntity(new Item(wrap, entities, randomItem, wrap.getItemFromRegistry(randomItem).path(), x, y));
         }
     }
 

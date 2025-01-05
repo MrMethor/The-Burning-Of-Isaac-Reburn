@@ -2,16 +2,21 @@ package Entities.Dynamic.Physical.Enemies;
 
 import Engine.Wrap;
 import Entities.Dynamic.Physical.PhysicalEntity;
+import Entities.Dynamic.Physical.PickUp;
+import Entities.Dynamic.Projectiles.Projectile;
 import Enums.EntityType;
 import Tools.Collision;
 import Tools.EntityManager;
 
+import java.util.Random;
+
 public abstract class Enemy extends PhysicalEntity {
 
-    protected double health = 10;
+    protected double health;
 
-    public Enemy(Wrap wrap, EntityManager entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+    public Enemy(Wrap wrap, EntityManager entities, EntityType type, double health, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         super(wrap, entities, type, spriteSheetPath, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
+        this.health = health;
     }
 
     protected void applyCollision(Collision collision) {
@@ -27,7 +32,7 @@ public abstract class Enemy extends PhysicalEntity {
                     health -= 0.1;
             }
             case FRIENDLY_PROJECTILE -> {
-                health--;
+                health -= ((Projectile) collision.entity()).getDamage();
                 switch(collision.side()) {
                     case LEFT -> velocityX += 10;
                     case RIGHT -> velocityX -= 10;
@@ -36,7 +41,16 @@ public abstract class Enemy extends PhysicalEntity {
                 }
             }
         }
-        if (health <= 0)
+        if (health <= 0){
+            dropRoll();
             destroy();
+        }
+    }
+
+    private void dropRoll() {
+        Random random = new Random();
+        int chance = random.nextInt(8);
+        if (chance == 0)
+            entities.addEntity(new PickUp(wrap, entities, EntityType.HALF_HEART, x, y));
     }
 }

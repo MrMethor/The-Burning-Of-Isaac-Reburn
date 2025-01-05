@@ -3,11 +3,13 @@ package Engine;
 import Enums.Actions;
 import Enums.GameState;
 import Tools.Coords;
+import Tools.ItemTemplate;
 import Tools.TextBox;
 
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -23,6 +25,7 @@ public class Wrap {
     private boolean hitboxes;
     private int entityCount;
     private Cursor cursor;
+    private ItemTemplate[] itemRegistry;
 
     private ArrayList<TextBox> debug = new ArrayList<>();
 
@@ -62,6 +65,39 @@ public class Wrap {
         entityCount = 0;
 
         setupDebug();
+
+        try {
+            File file = new File("resource/items/itemRegistry.txt");
+            Scanner itemCounter = new Scanner(file);
+            itemCounter.nextLine();
+            int itemCount = 0;
+            while (itemCounter.hasNextLine()) {
+                itemCounter.nextLine();
+                itemCount++;
+            }
+            itemRegistry = new ItemTemplate[itemCount];
+            Scanner itemReader = new Scanner(file);
+            itemReader.useLocale(Locale.US);
+            itemReader.nextLine();
+            while (itemReader.hasNextInt()) {
+                int id = itemReader.nextInt();
+                String itemPath = itemReader.next();
+                int redHearts = itemReader.nextInt();
+                int redContainers = itemReader.nextInt();
+                int soulHearts = itemReader.nextInt();
+                double damage = itemReader.nextDouble();
+                double range = itemReader.nextDouble();
+                double shotSpeed = itemReader.nextDouble();
+                double fireSpeed = itemReader.nextDouble();
+                double shotSize = itemReader.nextDouble();
+                double speed = itemReader.nextDouble();
+                int size = itemReader.nextInt();
+                boolean special = itemReader.nextInt() == 1;
+                itemRegistry[id] = new ItemTemplate(itemPath, redHearts, redContainers, soulHearts, damage, range, shotSpeed, fireSpeed, shotSize, speed, size, special);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Item registry not found.");
+        }
     }
 
     private void setupDebug() {
@@ -197,4 +233,11 @@ public class Wrap {
         this.cursor = cursor;
     }
 
+    public ItemTemplate getItemFromRegistry(int id) {
+        return itemRegistry[id];
+    }
+
+    public int getNumOfItems() {
+        return itemRegistry.length;
+    }
 }

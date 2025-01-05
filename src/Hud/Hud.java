@@ -15,7 +15,7 @@ public class Hud {
 
     public Hud(Wrap wrap) {
         this.wrap = wrap;
-        spriteSheet = new SpriteSheet(wrap, "resource/spriteSheets/hearts.png", 0, 0, 48, 32, 3, 2);
+        spriteSheet = new SpriteSheet(wrap, "resource/hud/hearts.png", 0, 0, 48, 32, 3, 2);
     }
 
     public void updateHearts(int redHearts, int containers, int soulHearts) {

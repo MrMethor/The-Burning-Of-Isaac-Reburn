@@ -57,7 +57,7 @@ public abstract class MenuType implements Component {
     }
 
     protected String buttonOn(boolean on) {
-        return on ? "resource/textures/onButton.png" : "resource/textures/offButton.png";
+        return on ? "resource/hud/onButton.png" : "resource/hud/offButton.png";
     }
 
     protected abstract void setupButtons();

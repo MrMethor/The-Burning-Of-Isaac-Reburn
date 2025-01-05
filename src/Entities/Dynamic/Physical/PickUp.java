@@ -8,7 +8,7 @@ import Tools.EntityManager;
 public class PickUp extends PhysicalEntity{
 
     public PickUp(Wrap wrap, EntityManager entities, EntityType type, double x, double y) {
-        super(wrap, entities, type, "resource/textures/" + getPath(type) + ".png", x, y, 50, 50, 0.9, 0.9, 0, 0);
+        super(wrap, entities, type, "resource/entities/" + getPath(type) + ".png", x, y, 50, 50, 0.9, 0.9, 0, 0);
         changeSlideFactor(0.92);
     }
 

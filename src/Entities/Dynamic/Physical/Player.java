@@ -17,11 +17,13 @@ public class Player extends PhysicalEntity {
     private Map map;
     private Hud hud;
 
-    boolean dead = false;
+    private boolean dead = false;
 
     private int movingX;
     private int movingY;
 
+    private double damage;
+    private double range;
     private double firingSpeed;
     private double shotSpeed;
     private double shotSize;
@@ -31,9 +33,9 @@ public class Player extends PhysicalEntity {
     private int firingTime;
     private int fireCounter;
 
-    private int redHearts;
-    private int redContainers;
-    private int soulHearts;
+    private int redHearts = 0;
+    private int redContainers = 0;
+    private int soulHearts = 0;
 
     public final int MAX_HEALTH = 24;
 
@@ -41,12 +43,14 @@ public class Player extends PhysicalEntity {
     private int gracePeriodCounter = 0;
 
     public Player(Wrap wrap, Hud hud) {
-        super(wrap, null, EntityType.PLAYER, "resource/spriteSheets/character.png", 3, 4, 1920/2.0, 1080/2.0, 150, 150, 0.4, 0.4, 0, 0.3);
+        super(wrap, null, EntityType.PLAYER, "resource/entities/character.png", 3, 4, 1920/2.0, 1080/2.0, 150, 150, 0.4, 0.4, 0, 0.3);
         this.hud = hud;
-        firingSpeed = 5;
-        setupBaseHealth(6, 6, 6);
+        firingSpeed = 2;
+        addHealth(6, 0, 0);
         shotSize = 1;
-        shotSpeed = 8;
+        shotSpeed = 6;
+        damage = 1;
+        range = 1.2;
         firingTime = (int)(60 / firingSpeed);
         fireCounter = firingTime;
     }
@@ -80,6 +84,7 @@ public class Player extends PhysicalEntity {
         switch (collision.entity().getType()) {
             case WALL, OBSTACLE -> applySolidCollision(collision);
             case ITEM -> applyRelativeCollision(collision);
+            case ENEMY_PROJECTILE -> hit(1);
             case ENEMY -> {
                 applyRelativeCollision(collision);
                 hit(1);
@@ -167,9 +172,45 @@ public class Player extends PhysicalEntity {
         y = previousY = 1080 / 2.0;
     }
 
+    public void addHealth(int redHearts, int redContainers, int soulHearts) {
+        if (redContainers % 2 != 0)
+            redContainers++;
+        this.redContainers += redContainers + redHearts;
+        this.redHearts += redHearts;
+        this.soulHearts += soulHearts;
+
+        if (this.redHearts > this.redContainers)
+            this.redHearts = this.redContainers;
+
+        if (this.soulHearts + this.redContainers > MAX_HEALTH) {
+            int excessHearts = this.soulHearts + this.redContainers - MAX_HEALTH;
+            if (this.soulHearts < excessHearts){
+                excessHearts -= this.soulHearts;
+                this.soulHearts = 0;
+            }
+            this.redContainers -= excessHearts;
+        }
+        hud.updateHearts(this.redHearts, this.redContainers, this.soulHearts);
+    }
+
+    public void addStats(double damage, double range, double shotSpeed, double fireSpeed, double shotSize, double speed, int size) {
+        this.damage += damage;
+        this.range += range;
+        this.shotSpeed += shotSpeed;
+        this.firingSpeed += fireSpeed;
+        this.shotSize += shotSize;
+        this.speed += speed;
+        this.width += size;
+        this.height += size;
+    }
+
+    public void addSpecial(int id) {
+
+    }
+
 
     // Help methods
-    private void hit(int damage) {
+    private void hit(double damage) {
         if (gracePeriodCounter == 0) {
             if (soulHearts > 0)
                 soulHearts -= damage;
@@ -203,24 +244,12 @@ public class Player extends PhysicalEntity {
                 if (soulHearts + redContainers >= MAX_HEALTH)
                     return false;
                 soulHearts += 2;
+                if (soulHearts + redContainers > MAX_HEALTH)
+                    soulHearts--;
                 return true;
             }
         }
         return false;
-    }
-
-    private void setupBaseHealth(int redHearts, int soulHearts, int emptyContainers) {
-        if (emptyContainers % 2 != 0)
-            emptyContainers++;
-        if (redHearts + soulHearts > MAX_HEALTH)
-            soulHearts -= redHearts + soulHearts - MAX_HEALTH;
-        soulHearts = Math.max(soulHearts, 0);
-        if (redHearts + soulHearts > MAX_HEALTH)
-            redHearts -= redHearts + soulHearts - MAX_HEALTH;
-        this.soulHearts = soulHearts;
-        this.redHearts = redContainers = redHearts;
-        this.redContainers += emptyContainers;
-        hud.updateHearts(this.redHearts, this.redContainers, this.soulHearts);
     }
 
     private void facingDirection(boolean[] sides) {
@@ -240,6 +269,7 @@ public class Player extends PhysicalEntity {
         if (facing != null && fireCounter >= firingTime) {
             fire();
             fireCounter -= firingTime;
+            firingTime = (int)(60 / firingSpeed);
         }
         if (fireCounter != firingTime)
             fireCounter++;
@@ -271,7 +301,7 @@ public class Player extends PhysicalEntity {
         var rad = Math.atan2(fireY, fireX);
         int angle = (int)(rad * (180 / Math.PI));
         angle = angle < 0 ? angle + 360 : angle;
-        entities.addEntity(new Fireball(wrap, entities, x, y + 15, (int)(100 * shotSize), (int)(100 * shotSize), shotSpeed, velocityX, velocityY, angle));
+        entities.addEntity(new Fireball(wrap, entities, damage, range, x, y + 15, (int)(100 * shotSize), (int)(100 * shotSize), shotSpeed, velocityX, velocityY, angle));
     }
 
     private void move(int x, int y) {

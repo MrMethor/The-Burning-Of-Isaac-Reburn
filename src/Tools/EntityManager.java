@@ -101,6 +101,12 @@ public class EntityManager {
                 entity.render(g);
     }
 
+    public void renderItems(Graphics g) {
+        for (Entity entity : entities)
+            if (entity.getType() == EntityType.ITEM)
+                entity.render(g);
+    }
+
     public void addEntity(Entity entity) {
         entitiesToAdd.add(entity);
     }

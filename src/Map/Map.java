@@ -18,7 +18,7 @@ public class Map {
 
     private boolean changeLevel = false;
 
-    private final int POSSIBLE_ROOMS = 2;
+    private final int POSSIBLE_ROOMS = 10;
 
     private FloorType floor;
 
@@ -54,7 +54,7 @@ public class Map {
             case DEPTHS -> roomCount = 32 + random.nextInt(8);
         }
 
-        rooms[currentX][currentY] = new Room(wrap, "resource/rooms/starterRoom.txt", RoomType.DEFAULT, floor);
+        rooms[currentX][currentY] = new Room(wrap, "resource/roomLayouts/starterRoom.txt", RoomType.DEFAULT, floor);
 
         generateGenericRooms(floor);
 
@@ -89,7 +89,7 @@ public class Map {
                     }
 
                     if (randomFactor != 0 && rand.nextInt(randomFactor) == 0 && roomCount > 0) {
-                        rooms[x][y] = new Room(wrap, "resource/rooms/room" + (rand.nextInt(POSSIBLE_ROOMS) + 1) + ".txt", RoomType.DEFAULT, floor);
+                        rooms[x][y] = new Room(wrap, "resource/roomLayouts/room" + (rand.nextInt(POSSIBLE_ROOMS) + 1) + ".txt", RoomType.DEFAULT, floor);
                         roomCount--;
                     }
                 }
@@ -109,7 +109,7 @@ public class Map {
                     int nearbyRoomsCount = nearbyRoomsCount(x, y);
 
                     if (nearbyRoomsCount == 1 && rand.nextInt(4) < 1) {
-                        rooms[x][y] = new Room(wrap, "resource/rooms/goldenRoom.txt", RoomType.GOLDEN, floor);
+                        rooms[x][y] = new Room(wrap, "resource/roomLayouts/goldenRoom.txt", RoomType.GOLDEN, floor);
                         return;
                     }
                 }
@@ -134,7 +134,7 @@ public class Map {
                         continue;
 
                     if (nearbyRoomsCount == 1 && rand.nextInt(4) < 1) {
-                        rooms[x][y] = new Room(wrap, "resource/rooms/bossRoom.txt", RoomType.BOSS, floor);
+                        rooms[x][y] = new Room(wrap, "resource/roomLayouts/bossRoom.txt", RoomType.BOSS, floor);
                         return;
                     }
                 }

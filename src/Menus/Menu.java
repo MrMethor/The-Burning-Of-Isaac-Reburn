@@ -7,7 +7,7 @@ import Tools.Button;
 public class Menu extends MenuType {
 
     public Menu(Wrap wrap) {
-        super(wrap, "resource/textures/menu.jpg");
+        super(wrap, "resource/backgrounds/menu.jpg");
     }
 
     protected void setupButtons() {
