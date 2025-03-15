@@ -9,9 +9,9 @@ import java.awt.Graphics;
 
 public abstract class DynamicEntity extends Entity {
 
-    protected double previousX;
-    protected double previousY;
-    protected double speed;
+    private double previousX;
+    private double previousY;
+    private double speed;
 
     public DynamicEntity(Wrap wrap, EntityManager entities, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         super (wrap, entities, type, texturePath, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
@@ -27,34 +27,51 @@ public abstract class DynamicEntity extends Entity {
 
     @Override
     public void render(Graphics g) {
-        double renderedX = this.wrap.interpolate(this.previousX, this.x) - this.width / 2.0;
-        double renderedY = this.wrap.interpolate(this.previousY, this.y) - this.height / 2.0;
-        this.texture.changePosition((int)renderedX, (int)renderedY);
+        double renderedX = this.getWrap().interpolate(this.previousX, this.getX()) - this.getWidth() / 2.0;
+        double renderedY = this.getWrap().interpolate(this.previousY, this.getY()) - this.getHeight() / 2.0;
+        this.getTexture().changePosition((int)renderedX, (int)renderedY);
         super.render(g);
     }
 
     public void applyMovement() {
-        this.previousX = this.x;
-        this.previousY = this.y;
+        this.previousX = this.getX();
+        this.previousY = this.getY();
         this.calculateMovement();
     }
 
     // Setup options
     protected void move(double x, double y) {
-        this.previousX = this.x;
-        this.previousY = this.y;
-        this.x = x;
-        this.y = y;
+        this.previousX = this.getX();
+        this.previousY = this.getY();
+        this.setX(x);
+        this.setY(y);
     }
 
     protected void changePosition(double x, double y) {
         this.previousX = x;
         this.previousY = y;
-        this.x = x;
-        this.y = y;
+        this.setX(x);
+        this.setY(y);
     }
 
     protected void changeSpeed(double speed) {
         this.speed = speed;
+    }
+
+    // Getters
+    protected void addToX(double addition) {
+        this.setX(this.getX() + addition);
+    }
+
+    protected void addToY(double velocity) {
+        this.setY(this.getY() + velocity);
+    }
+
+    protected void addSpeed(double addSpeed) {
+        this.speed += addSpeed;
+    }
+
+    protected double getSpeed() {
+        return this.speed;
     }
 }

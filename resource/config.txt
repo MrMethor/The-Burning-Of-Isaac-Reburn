@@ -1,1 +1,5 @@
 width 1600
+ups 80
+debug true
+fullscreen false
+hitbox false

@@ -18,13 +18,16 @@ public class Button {
     private final int width;
     private final int height;
     private boolean hovered;
+    private boolean isOn;
 
-    public Button(Wrap wrap, String label, String path, int x, int y, int size) {
+    public Button(Wrap wrap, String label, int x, int y, int size, boolean isOn) {
         this.wrap = wrap;
         this.x = x;
         this.y = y;
         this.width = size;
         this.height = (int)(size / 480.0 * 100.0);
+        this.isOn = isOn;
+        String path = this.isOn ? "resource/hud/onButton.png" : "resource/hud/offButton.png";
 
         Color color = Color.decode("#BBBBBB");
         this.label = new TextBox(wrap, label, x, y, color, "Castellar", Font.BOLD, this.height / 2, this.width, this.height);
@@ -55,7 +58,9 @@ public class Button {
         return x > this.x && x < this.x + this.width && y > this.y && y < this.y + this.height;
     }
 
-    public void changeImage(String path) {
+    public void toggle() {
+        this.isOn = !this.isOn;
+        String path = this.isOn ? "resource/hud/onButton.png" : "resource/hud/offButton.png";
         this.image.changeImage(path);
     }
 }

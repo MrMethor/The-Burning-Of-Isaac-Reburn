@@ -2,56 +2,51 @@ package tboir.menus;
 
 import tboir.engine.Wrap;
 import tboir.enums.GameState;
-import tboir.tools.Button;
+
+import java.util.HashMap;
 
 public class Settings extends MenuType {
 
-    private boolean fullscreen;
-    private boolean debug;
-    private boolean hitbox;
+    private final HashMap<String, Boolean> settings;
 
     public Settings(Wrap wrap) {
         super(wrap, "resource/backgrounds/menu.jpg");
-        this.fullscreen = wrap.isFullscreen();
-        this.debug = wrap.isDebug();
-        this.hitbox = wrap.isHitboxes();
+        this.settings = new HashMap<>();
+        this.settings.put("debug", this.getWrap().isDebug());
+        this.settings.put("fullscreen", this.getWrap().isFullscreen());
+        this.settings.put("hitbox", this.getWrap().isHitboxes());
     }
 
+    @Override
     protected void setupButtons() {
         int buttonSize = 300;
         int centerX = 1920 / 2 - buttonSize / 2;
-        this.buttons.put("fullscreen", new Button(this.wrap, "FULLSCREEN", this.buttonOn(this.wrap.isFullscreen()), centerX, 700, buttonSize));
-        this.buttons.put("debug", new Button(this.wrap, "DEBUG", this.buttonOn(this.wrap.isDebug()), centerX, 775, buttonSize));
-        this.buttons.put("hitbox", new Button(this.wrap, "HITBOX", this.buttonOn(this.wrap.isHitboxes()), centerX, 850, buttonSize));
-        this.buttons.put("apply", new Button(this.wrap, "APPLY", this.buttonOn(true), centerX, 925, buttonSize));
-        this.buttons.put("menu", new Button(this.wrap, "BACK", this.buttonOn(false), centerX, 1000, buttonSize));
+        this.addButton("fullscreen", "FULLSCREEN", this.getWrap().isFullscreen(), centerX, 700, buttonSize);
+        this.addButton("debug", "DEBUG", this.getWrap().isDebug(), centerX, 775, buttonSize);
+        this.addButton("hitbox", "HITBOX", this.getWrap().isHitboxes(), centerX, 850, buttonSize);
+        this.addButton("apply", "APPLY", true, centerX, 925, buttonSize);
+        this.addButton("menu", "BACK", false, centerX, 1000, buttonSize);
     }
 
+    @Override
     protected void buttonClicked(String name) {
         switch (name) {
-            case "fullscreen" -> {
-                this.fullscreen = !this.fullscreen;
-                this.buttons.get("fullscreen").changeImage(buttonOn(this.fullscreen));
-            }
-            case "debug" -> {
-                this.debug = !this.debug;
-                this.buttons.get("debug").changeImage(buttonOn(this.debug));
-            }
-            case "hitbox" -> {
-                this.hitbox = !this.hitbox;
-                this.buttons.get("hitbox").changeImage(buttonOn(this.hitbox));
+            case "fullscreen", "debug", "hitbox" -> {
+                this.toggleButton(name);
+                this.settings.replace(name, !this.settings.get(name));
             }
             case "apply" -> {
-                this.wrap.applySettings(this.fullscreen, this.debug, this.hitbox);
-                this.wrap.changeState(GameState.MENU);
+                this.getWrap().applySettings(this.settings);
+                this.getWrap().changeState(GameState.MENU);
             }
-            case "menu" -> this.wrap.changeState(GameState.MENU);
+            case "menu" -> this.getWrap().changeState(GameState.MENU);
         }
     }
 
+    @Override
     protected void keyPressed(String name) {
         switch (name) {
-            case "escape" -> this.wrap.changeState(GameState.MENU);
+            case "escape" -> this.getWrap().changeState(GameState.MENU);
         }
     }
 }

@@ -18,8 +18,6 @@ public class Map {
 
     private boolean changeLevel;
 
-    private final int POSSIBLE_ROOMS = 10;
-
     private final FloorType floor;
 
     private final int size;
@@ -55,13 +53,13 @@ public class Map {
 
     private void generateMap() {
         Random random = new Random();
-        switch(this.floor) {
+        switch (this.floor) {
             case BASEMENT -> this.roomCount = 8 + random.nextInt(1);
             case CAVES -> this.roomCount = 16 + random.nextInt(4);
             case DEPTHS -> this.roomCount = 32 + random.nextInt(8);
         }
 
-        this.rooms[currentX][currentY] = new Room(this.wrap, "resource/roomLayouts/starterRoom.txt", RoomType.DEFAULT, this.floor);
+        this.rooms[this.currentX][this.currentY] = new Room(this.wrap, "resource/roomLayouts/starterRoom.txt", RoomType.DEFAULT, this.floor);
 
         this.generateGenericRooms(this.floor);
 
@@ -74,7 +72,7 @@ public class Map {
         this.setupDoors();
 
         this.currentRoom().getEntities().addPlayer(this.player);
-        this.player.referenceEntities(currentRoom().getEntities());
+        this.player.referenceEntities(this.currentRoom().getEntities());
         this.player.referenceMap(this);
     }
 
@@ -87,7 +85,7 @@ public class Map {
                         continue;
                     }
 
-                    int nearbyRoomsCount = nearbyRoomsCount(x, y);
+                    int nearbyRoomsCount = this.nearbyRoomsCount(x, y);
 
                     int randomFactor = 0;
                     switch (nearbyRoomsCount) {
@@ -98,7 +96,8 @@ public class Map {
                     }
 
                     if (randomFactor != 0 && rand.nextInt(randomFactor) == 0 && this.roomCount > 0) {
-                        this.rooms[x][y] = new Room(this.wrap, "resource/roomLayouts/room" + (rand.nextInt(POSSIBLE_ROOMS) + 1) + ".txt", RoomType.DEFAULT, floor);
+                        int possibleRooms = 10;
+                        this.rooms[x][y] = new Room(this.wrap, "resource/roomLayouts/room" + (rand.nextInt(possibleRooms) + 1) + ".txt", RoomType.DEFAULT, floor);
                         this.roomCount--;
                     }
                 }
@@ -116,7 +115,7 @@ public class Map {
                         continue;
                     }
 
-                    int nearbyRoomsCount = nearbyRoomsCount(x, y);
+                    int nearbyRoomsCount = this.nearbyRoomsCount(x, y);
 
                     if (nearbyRoomsCount == 1 && rand.nextInt(4) < 1) {
                         this.rooms[x][y] = new Room(this.wrap, "resource/roomLayouts/goldenRoom.txt", RoomType.GOLDEN, floor);
@@ -139,7 +138,7 @@ public class Map {
                         continue;
                     }
 
-                    int nearbyRoomsCount = nearbyRoomsCount(x, y);
+                    int nearbyRoomsCount = this.nearbyRoomsCount(x, y);
 
                     if (x >= 3 && x <= 6 && y >= 3 && y <= 6) {
                         continue;
@@ -164,7 +163,10 @@ public class Map {
                     continue;
                 }
 
-                DoorType up = null, down = null, left = null, right = null;
+                DoorType up = null;
+                DoorType down = null;
+                DoorType left = null;
+                DoorType right = null;
 
                 if (x - 1 >= 0 && this.rooms[x - 1][y] != null) {
                     left = this.getDoorType(this.rooms[x - 1][y].getType(), this.floor);
@@ -223,7 +225,7 @@ public class Map {
     }
 
     public void tryChangeLevel() {
-        if (!currentRoom().isCompleted()) {
+        if (!this.currentRoom().isCompleted()) {
             return;
         }
         this.changeLevel = true;
@@ -236,13 +238,13 @@ public class Map {
         this.currentRoom().getEntities().removePlayer();
         this.currentRoom().getEntities().removeProjectiles();
         this.player.referenceEntities(null);
-        switch(side) {
+        switch (side) {
             case LEFT -> this.currentX--;
             case RIGHT -> this.currentX++;
             case UP -> this.currentY--;
             case DOWN -> this.currentY++;
         }
-        this.currentRoom().getEntities().addPlayer(player);
+        this.currentRoom().getEntities().addPlayer(this.player);
         this.player.referenceEntities(this.currentRoom().getEntities());
         this.player.changeRoom(side);
     }
@@ -253,6 +255,6 @@ public class Map {
 
     //Getter
     public Room currentRoom() {
-        return this.rooms[currentX][currentY];
+        return this.rooms[this.currentX][this.currentY];
     }
 }

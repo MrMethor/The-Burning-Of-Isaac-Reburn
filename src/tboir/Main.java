@@ -30,7 +30,7 @@ public class Main extends Canvas implements Runnable {
 
     public Main() {
         this.frame = null;
-        this.wrap = new Wrap("resource/config.txt");
+        this.wrap = new Wrap();
         this.menu = new Menu(this.wrap);
         this.setFocusable(true);
         this.requestFocus();
@@ -95,7 +95,7 @@ public class Main extends Canvas implements Runnable {
             this.createBufferStrategy(3);
             return;
         }
-        Graphics2D g = (Graphics2D) bs.getDrawGraphics();
+        Graphics2D g = (Graphics2D)bs.getDrawGraphics();
 
         switch (this.wrap.getGameState()) {
             case MENU -> this.menu.render(g);
@@ -149,7 +149,7 @@ public class Main extends Canvas implements Runnable {
     }
 
     private void setupFrame() {
-        if (this.frame != null){
+        if (this.frame != null) {
             this.frame.setVisible(false);
             this.frame = null;
         }

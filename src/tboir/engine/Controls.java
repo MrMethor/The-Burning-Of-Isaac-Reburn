@@ -95,10 +95,8 @@ public class Controls implements MouseListener, KeyListener, MouseMotionListener
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        switch (e.getButton()) {
-            case MouseEvent.BUTTON1:
-                this.addCommand(Commands.leftClick, (int)((double)e.getX() / this.wrap.getScale()), (int)((double)e.getY() / this.wrap.getScale()));
-                break;
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            this.addCommand(Commands.leftClick, (int)((double)e.getX() / this.wrap.getScale()), (int)((double)e.getY() / this.wrap.getScale()));
         }
     }
 

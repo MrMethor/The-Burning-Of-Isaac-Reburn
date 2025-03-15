@@ -10,8 +10,8 @@ import java.io.IOException;
 
 public class Image {
 
-    protected final Wrap wrap;
-    protected BufferedImage image;
+    private final Wrap wrap;
+    private BufferedImage image;
     private int x;
     private int y;
     private int width;
@@ -24,10 +24,10 @@ public class Image {
         } catch (IOException e) {
             System.out.println("Couldn't find the file " + path);
         }
-        this.x = (int) (x * wrap.getScale());
-        this.y = (int) (y * wrap.getScale());
-        this.width = (int) (width * wrap.getScale());
-        this.height = (int) (height * wrap.getScale());
+        this.x = (int)(x * wrap.getScale());
+        this.y = (int)(y * wrap.getScale());
+        this.width = (int)(width * wrap.getScale());
+        this.height = (int)(height * wrap.getScale());
     }
 
     public Image(Wrap wrap, String path, double x, double y) {
@@ -37,28 +37,19 @@ public class Image {
         } catch (IOException e) {
             System.out.println("Couldn't find the file");
         }
-        this.x = (int) (x * wrap.getScale());
-        this.y = (int) (y * wrap.getScale());
-        this.width = (int)((double)image.getWidth() * wrap.getScale());
-        this.height = (int)((double)image.getHeight() * wrap.getScale());
+        this.x = (int)(x * wrap.getScale());
+        this.y = (int)(y * wrap.getScale());
+        this.width = (int)((double)this.image.getWidth() * wrap.getScale());
+        this.height = (int)((double)this.image.getHeight() * wrap.getScale());
     }
 
     public Image(Wrap wrap, BufferedImage image, double x, double y, double width, double height) {
         this.wrap = wrap;
         this.image = image;
-        this.x = (int) (x * wrap.getScale());
-        this.y = (int) (y * wrap.getScale());
-        this.width = (int) (width * wrap.getScale());
-        this.height = (int) (height * wrap.getScale());
-    }
-
-    public Image(Wrap wrap, BufferedImage image, double x, double y) {
-        this.wrap = wrap;
-        this.image = image;
-        this.x = (int) (x * wrap.getScale());
-        this.y = (int) (y * wrap.getScale());
-        this.width = (int)((double)image.getWidth() * wrap.getScale());
-        this.height = (int)((double)image.getHeight() * wrap.getScale());
+        this.x = (int)(x * wrap.getScale());
+        this.y = (int)(y * wrap.getScale());
+        this.width = (int)(width * wrap.getScale());
+        this.height = (int)(height * wrap.getScale());
     }
 
     public void changePosition(double x, double y) {
@@ -77,6 +68,10 @@ public class Image {
         } catch (IOException e) {
             System.out.println("Couldn't find the file");
         }
+    }
+
+    public void changeImage(BufferedImage image) {
+        this.image = image;
     }
 
     public void draw(Graphics g) {

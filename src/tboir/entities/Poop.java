@@ -14,12 +14,11 @@ public class Poop extends Entity {
     public Poop(Wrap wrap, EntityManager entities, double x, double y) {
         super(wrap, entities, EntityType.OBSTACLE, "resource/entities/poop.png", 5, 1, x, y, 130, 130, 0.8, 0.8, 0, 0);
         this.swapTexture(0, 0);
-        health = 30;
+        this.health = 30;
     }
 
     @Override
     public void applyBehavior() {
-
     }
 
     @Override
@@ -27,11 +26,11 @@ public class Poop extends Entity {
         if (this.health <= 0) {
             return;
         }
-        if (collision.entity().getType() == EntityType.FRIENDLY_PROJECTILE){
+        if (collision.entity().getType() == EntityType.FRIENDLY_PROJECTILE) {
             Random rand = new Random();
             this.health -= rand.nextInt(5) + 3;
-            if (this.health <= 0){
-                this.type = EntityType.VISUAL;
+            if (this.health <= 0) {
+                this.changeType(EntityType.VISUAL);
                 this.swapTexture(4, 0);
                 return;
             }
@@ -41,6 +40,5 @@ public class Poop extends Entity {
 
     @Override
     public void animate() {
-
     }
 }

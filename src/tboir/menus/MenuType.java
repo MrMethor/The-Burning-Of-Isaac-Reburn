@@ -9,13 +9,13 @@ import java.util.HashMap;
 
 public abstract class MenuType {
 
-    protected final Wrap wrap;
-    protected final Image background;
-    protected HashMap<String, Button> buttons;
+    private final Wrap wrap;
+    private final Image background;
+    private final HashMap<String, Button> buttons;
 
-    public MenuType(Wrap wrap, String BGpath) {
+    public MenuType(Wrap wrap, String bgPath) {
         this.wrap = wrap;
-        this.background = new Image(wrap, BGpath, 0, 0);
+        this.background = new Image(wrap, bgPath, 0, 0);
         this.buttons = new HashMap<>();
         this.setupButtons();
     }
@@ -34,29 +34,35 @@ public abstract class MenuType {
                 case leftClick -> {
                     int fi = i;
                     this.buttons.forEach((string, button) -> {
-                        if (button.isWithinBounds(commands.get(fi).x(), commands.get(fi).y()))
-                            buttonClicked(string);
+                        if (button.isWithinBounds(commands.get(fi).x(), commands.get(fi).y())) {
+                            this.buttonClicked(string);
+                        }
                     });
                 }
-                case escape -> keyPressed("escape");
+                case escape -> this.keyPressed("escape");
             }
             this.wrap.getControls().removeCommand(commands.get(i));
         }
-        this.buttons.forEach((string, button) ->{
-            button.update();
-        });
+        this.buttons.forEach((_, button) -> button.update());
     }
 
     public void render(Graphics g) {
-        if (this.background != null)
+        if (this.background != null) {
             this.background.draw(g);
-        this.buttons.forEach((string, button) ->{
-            button.render(g);
-        });
+        }
+        this.buttons.forEach((_, button) -> button.render(g));
     }
 
-    protected String buttonOn(boolean on) {
-        return on ? "resource/hud/onButton.png" : "resource/hud/offButton.png";
+    protected void addButton(String name, String label, boolean isOn, int x, int y, int size) {
+        this.buttons.put(name, new Button(this.wrap, label, x, y, size, isOn));
+    }
+
+    protected void toggleButton(String name) {
+        this.buttons.get(name).toggle();
+    }
+
+    protected Wrap getWrap() {
+        return this.wrap;
     }
 
     protected abstract void setupButtons();

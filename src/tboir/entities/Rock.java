@@ -16,16 +16,13 @@ public class Rock extends Entity {
 
     @Override
     public void applyBehavior() {
-
     }
 
     @Override
     protected void applyCollision(Collision collision) {
-
     }
 
     @Override
     public void animate() {
-
     }
 }

@@ -2,7 +2,6 @@ package tboir.menus;
 
 import tboir.engine.Wrap;
 import tboir.enums.GameState;
-import tboir.tools.Button;
 
 public class Menu extends MenuType {
 
@@ -14,17 +13,17 @@ public class Menu extends MenuType {
     protected void setupButtons() {
         int buttonSize = 400;
         int centerX = 1920 / 2 - buttonSize / 2;
-        this.buttons.put("start", new Button(this.wrap, "BEGIN", this.buttonOn(true), centerX, 750, buttonSize));
-        this.buttons.put("settings", new Button(this.wrap, "SETTINGS", this.buttonOn(false), centerX, 850, buttonSize));
-        this.buttons.put("exit", new Button(this.wrap, "EXIT", this.buttonOn(false), centerX, 950, buttonSize));
+        this.addButton("start", "BEGIN", true, centerX, 750, buttonSize);
+        this.addButton("settings", "SETTINGS", false, centerX, 850, buttonSize);
+        this.addButton("exit", "EXIT", false, centerX, 950, buttonSize);
     }
 
     @Override
     protected void buttonClicked(String name) {
         switch (name) {
-            case "start" -> this.wrap.changeState(GameState.GAME);
-            case "settings" -> this.wrap.changeState(GameState.SETTINGS);
-            case "exit" -> this.wrap.changeState(GameState.EXIT);
+            case "start" -> this.getWrap().changeState(GameState.GAME);
+            case "settings" -> this.getWrap().changeState(GameState.SETTINGS);
+            case "exit" -> this.getWrap().changeState(GameState.EXIT);
         }
     }
 

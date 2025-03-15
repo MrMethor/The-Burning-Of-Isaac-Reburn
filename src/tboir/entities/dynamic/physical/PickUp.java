@@ -5,7 +5,7 @@ import tboir.enums.EntityType;
 import tboir.tools.Collision;
 import tboir.tools.EntityManager;
 
-public class PickUp extends PhysicalEntity{
+public class PickUp extends PhysicalEntity {
 
     public PickUp(Wrap wrap, EntityManager entities, EntityType type, double x, double y) {
         super(wrap, entities, type, "resource/entities/" + getPath(type) + ".png", x, y, 50, 50, 0.9, 0.9, 0, 0);
@@ -14,7 +14,6 @@ public class PickUp extends PhysicalEntity{
 
     @Override
     public void applyBehavior() {
-
     }
 
     @Override
@@ -23,19 +22,19 @@ public class PickUp extends PhysicalEntity{
             case OBSTACLE, WALL -> this.applySolidCollision(collision);
             case HALF_HEART, FULL_HEART, SOUL_HEART -> this.applyRelativeCollision(collision);
             case PLAYER, ENEMY -> {
-                if (!(collision.entity() instanceof PhysicalEntity physicalEntity && physicalEntity.canFly()))
+                if (!(collision.entity() instanceof PhysicalEntity physicalEntity && physicalEntity.canFly())) {
                     this.applyRelativeCollision(collision);
+                }
             }
         }
     }
 
     @Override
     public void animate() {
-
     }
 
     private static String getPath(EntityType type) {
-        switch(type) {
+        switch (type) {
             case FULL_HEART -> {
                 return "fullHeart";
             }

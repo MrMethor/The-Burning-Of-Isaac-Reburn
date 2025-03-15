@@ -18,7 +18,6 @@ public class Fire extends Entity {
 
     @Override
     public void applyBehavior() {
-
     }
 
     @Override
@@ -29,15 +28,16 @@ public class Fire extends Entity {
         if (collision.entity().getType() == EntityType.FRIENDLY_PROJECTILE) {
             Random rand = new Random();
             this.health -= rand.nextInt(5) + 3;
-            if (this.health <= 0)
+            if (this.health <= 0) {
                 destroy();
+            }
         }
     }
 
     @Override
     public void animate() {
-        int column = (int) (this.animationCounter / 10.0 % 7);
+        int column = (int)(this.getAnimationCounter() / 10.0 % 7);
         this.swapTexture(column, 0);
-        this.animationCounter++;
+        this.addToAnimationCounter();
     }
 }

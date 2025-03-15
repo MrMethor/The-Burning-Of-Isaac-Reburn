@@ -7,7 +7,7 @@ import tboir.tools.Collision;
 import tboir.tools.EntityManager;
 import tboir.tools.ItemTemplate;
 
-public class Item extends Entity{
+public class Item extends Entity {
 
     private final int id;
 
@@ -18,7 +18,6 @@ public class Item extends Entity{
 
     @Override
     public void applyBehavior() {
-
     }
 
     @Override
@@ -31,19 +30,20 @@ public class Item extends Entity{
 
     @Override
     public void animate() {
-
     }
 
-    private void applyItemEffect(){
-        ItemTemplate item = this.wrap.getItemFromRegistry(id);
+    private void applyItemEffect() {
+        ItemTemplate item = this.getWrap().getItemFromRegistry(this.id);
         Player player = null;
-        for (Entity entity : this.entities.getEntities()){
-            if (entity.getType() == EntityType.PLAYER)
-                player = (Player) entity;
+        for (Entity entity : this.getEntities().getEntities()) {
+            if (entity.getType() == EntityType.PLAYER) {
+                player = (Player)entity;
+            }
         }
         player.addHealth(item.redHearts(), item.redContainers(), item.soulHearts());
         player.addStats(item.damage(), item.range(), item.shotSpeed(), item.fireSpeed(), item.shotSize(), item.speed(), item.size());
-        if (item.special())
-            player.addSpecial(id);
+        if (item.special()) {
+            player.addSpecial(this.id);
+        }
     }
 }

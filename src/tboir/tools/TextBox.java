@@ -11,9 +11,9 @@ public class TextBox {
 
     private final Wrap wrap;
     private String text;
-    private Font font;
+    private final Font font;
     private Color color;
-    private Color defaultColor;
+    private final Color defaultColor;
     private int width;
     private int height;
     private int x;
@@ -22,10 +22,10 @@ public class TextBox {
     public TextBox(Wrap wrap, String text, int x, int y, Color color, String fontFamily, int decor, int size, int width, int height) {
         this.wrap = wrap;
         this.text = text;
-        this.x = (int) (x * wrap.getScale());
-        this.y = (int) (y * wrap.getScale());
-        this.width = (int) (width * wrap.getScale());
-        this.height = (int) (height * wrap.getScale());
+        this.x = (int)(x * wrap.getScale());
+        this.y = (int)(y * wrap.getScale());
+        this.width = (int)(width * wrap.getScale());
+        this.height = (int)(height * wrap.getScale());
         this.font = new Font(fontFamily, decor, (int)((double)size * wrap.getScale()));
         this.defaultColor = color;
         this.color = color;
@@ -34,8 +34,8 @@ public class TextBox {
     public TextBox(Wrap wrap, String text, int x, int y, Color color, String fontFamily, int decor, int size) {
         this.wrap = wrap;
         this.text = text;
-        this.x = (int) (x * wrap.getScale());
-        this.y = (int) (y * wrap.getScale());
+        this.x = (int)(x * wrap.getScale());
+        this.y = (int)(y * wrap.getScale());
         this.font = new Font(fontFamily, decor, (int)((double)size * wrap.getScale()));
         this.defaultColor = color;
         this.color = color;
@@ -50,7 +50,7 @@ public class TextBox {
         if (this.height == 0 || this.width == 0) {
             g.drawString(this.text, this.x, this.y);
         } else {
-            g.drawString(this.text, calculateX(g.getFontMetrics(this.font)), calculateY(g.getFontMetrics(this.font)));
+            g.drawString(this.text, this.calculateX(g.getFontMetrics(this.font)), this.calculateY(g.getFontMetrics(this.font)));
         }
 
         g.setColor(previousColor);
@@ -66,8 +66,8 @@ public class TextBox {
     }
 
     public void changePosition(int x, int y) {
-        this.x = (int) (x * this.wrap.getScale());
-        this.y = (int) (y * this.wrap.getScale());
+        this.x = (int)(x * this.wrap.getScale());
+        this.y = (int)(y * this.wrap.getScale());
     }
 
     public void changeText(String text) {
@@ -75,10 +75,10 @@ public class TextBox {
     }
 
     private int calculateX(FontMetrics metrics) {
-        return x + (this.width - metrics.stringWidth(this.text)) / 2;
+        return this.x + (this.width - metrics.stringWidth(this.text)) / 2;
     }
 
     private int calculateY(FontMetrics metrics) {
-        return y +  (this.height - metrics.getHeight()) / 2 + metrics.getAscent();
+        return this.y + (this.height - metrics.getHeight()) / 2 + metrics.getAscent();
     }
 }

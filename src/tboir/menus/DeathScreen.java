@@ -2,7 +2,6 @@ package tboir.menus;
 
 import tboir.engine.Wrap;
 import tboir.enums.GameState;
-import tboir.tools.Button;
 
 public class DeathScreen extends MenuType {
 
@@ -14,15 +13,15 @@ public class DeathScreen extends MenuType {
     protected void setupButtons() {
         int buttonSize = 400;
         int centerX = 1920 / 2 - buttonSize / 2 + 27;
-        this.buttons.put("restart", new Button(this.wrap, "RESTART", this.buttonOn(true), centerX, 500, buttonSize));
-        this.buttons.put("exit", new Button(this.wrap, "EXIT", this.buttonOn(false), centerX, 600, buttonSize));
+        this.addButton("restart", "RESTART", true, centerX, 500, buttonSize);
+        this.addButton("exit", "EXIT", false, centerX, 600, buttonSize);
     }
 
     @Override
     protected void buttonClicked(String name) {
         switch (name) {
-            case "restart" -> this.wrap.changeState(GameState.GAME);
-            case "exit" -> this.wrap.changeState(GameState.MENU);
+            case "restart" -> this.getWrap().changeState(GameState.GAME);
+            case "exit" -> this.getWrap().changeState(GameState.MENU);
         }
     }
 

@@ -31,18 +31,17 @@ public class EntityManager {
     }
 
     public void update() {
-        this.entities.removeIf(Entity::isToDestroy);
         this.entities.removeAll(this.entitiesToRemove);
         this.entities.addAll(this.entitiesToAdd);
-        this.entitiesToAdd.clear();
         this.entitiesToRemove.clear();
+        this.entitiesToAdd.clear();
         this.entities.sort((a, b) -> -1 * a.compareTo(b));
         for (Entity entity : this.entities) {
             entity.applyBehavior();
         }
         for (Entity entity : this.entities) {
             if (entity instanceof DynamicEntity) {
-                ((DynamicEntity) entity).applyMovement();
+                ((DynamicEntity)entity).applyMovement();
             }
         }
         this.handleCollisions();
@@ -81,21 +80,19 @@ public class EntityManager {
                         }
                     }
                     entity1.addCollision(sideOut, penetration, entity2);
+                    assert sideOut != null;
                     entity2.addCollision(Side.getOpposite(sideOut), penetration, entity1);
                 }
             }
         }
     }
 
-    public void renderDoors(Graphics g) {
+    public void renderBack(Graphics g) {
         for (Entity entity : this.entities) {
             if (entity.getType() == EntityType.DOOR) {
                 entity.render(g);
             }
         }
-    }
-
-    public void renderTiles(Graphics g) {
         for (Entity entity : this.entities) {
             if (entity.getType() == EntityType.OBSTACLE || entity.getType() == EntityType.VISUAL || entity.getType() == EntityType.SPIKE || entity.getType() == EntityType.TRAP_DOOR) {
                 entity.render(g);
@@ -103,17 +100,14 @@ public class EntityManager {
         }
     }
 
-    public void renderDynamic(Graphics g) {
+    public void renderFront(Graphics g) {
         for (Entity entity : this.entities) {
-            if (entity instanceof DynamicEntity || entity.getType() == EntityType.ENEMY) {
+            if (entity.getType() == EntityType.ITEM) {
                 entity.render(g);
             }
         }
-    }
-
-    public void renderItems(Graphics g) {
         for (Entity entity : this.entities) {
-            if (entity.getType() == EntityType.ITEM) {
+            if (entity instanceof DynamicEntity || entity.getType() == EntityType.ENEMY) {
                 entity.render(g);
             }
         }
@@ -149,13 +143,17 @@ public class EntityManager {
     public void openDoors() {
         for (Entity entity : this.entities) {
             if (entity instanceof Door) {
-                ((Door) entity).openDoor();
+                ((Door)entity).openDoor();
             } else if (entity instanceof TrapDoor) {
-                ((TrapDoor) entity).openTrapDoor();
+                ((TrapDoor)entity).openTrapDoor();
             } else if (entity instanceof Wall) {
                 this.entitiesToRemove.add(entity);
             }
         }
+    }
+
+    public void destroy(Entity entity) {
+        this.entitiesToRemove.add(entity);
     }
 
     // Getter

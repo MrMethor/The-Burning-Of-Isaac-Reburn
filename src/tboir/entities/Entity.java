@@ -14,30 +14,27 @@ import java.util.ArrayList;
 
 public abstract class Entity implements Comparable<Entity> {
 
-    protected final Wrap wrap;
-    protected EntityManager entities;
-    protected EntityType type;
+    private final Wrap wrap;
+    private EntityManager entities;
+    private EntityType type;
 
-    protected boolean toDestroy;
+    private double x;
+    private double y;
+    private double width;
+    private double height;
 
-    protected double x;
-    protected double y;
-    protected double width;
-    protected double height;
+    private double hitboxWidthScale;
+    private double hitboxHeightScale;
+    private double hitboxOffsetX;
+    private double hitboxOffsetY;
 
-    protected double hitboxWidthScale;
-    protected double hitboxHeightScale;
-    protected double hitboxOffsetX;
-    protected double hitboxOffsetY;
+    private Image texture;
+    private int animationCounter;
 
-    protected Image texture;
-    protected long animationCounter;
-
-    protected final ArrayList<Collision> collisions;
+    private final ArrayList<Collision> collisions;
 
     public Entity(Wrap wrap, EntityManager entities, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         this.wrap = wrap;
-        this.toDestroy = false;
         this.collisions = new ArrayList<>();
         this.entities = entities;
         this.type = type;
@@ -54,7 +51,6 @@ public abstract class Entity implements Comparable<Entity> {
 
     public Entity(Wrap wrap, EntityManager entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         this.wrap = wrap;
-        this.toDestroy = false;
         this.collisions = new ArrayList<>();
         this.entities = entities;
         this.type = type;
@@ -71,6 +67,17 @@ public abstract class Entity implements Comparable<Entity> {
 
     public abstract void applyBehavior();
 
+    public void addCollision(Side side, double penetration, Entity entity) {
+        this.collisions.add(new Collision(side, penetration, entity));
+    }
+
+    public void applyCollisions() {
+        for (Collision collision : this.collisions) {
+            this.applyCollision(collision);
+        }
+        this.resetCollisions();
+    }
+
     protected abstract void applyCollision(Collision collision);
 
     public abstract void animate();
@@ -82,25 +89,14 @@ public abstract class Entity implements Comparable<Entity> {
         }
     }
 
-    public void applyCollisions() {
-        for (Collision collision : this.collisions) {
-            this.applyCollision(collision);
-        }
-        this.resetCollisions();
-    }
-
-    public void addCollision(Side side, double penetration, Entity entity) {
-        this.collisions.add(new Collision(side, penetration, entity));
-    }
-
     private void resetCollisions() {
         this.collisions.clear();
     }
 
     private void drawHitbox(Graphics g) {
         Color c = g.getColor();
-        g.setColor(new Color(1f,0f,0f,.2f));
-        g.fillRect((int)((this.getHitboxX() - this.getHitboxWidth() / 2) * this.wrap.getScale()), (int) ((this.getHitboxY() - this.getHitboxHeight() / 2) * this.wrap.getScale()), (int) (this.getHitboxWidth() * this.wrap.getScale()), (int) (this.getHitboxHeight() * this.wrap.getScale()));
+        g.setColor(new Color(1f, 0f, 0f, .2f));
+        g.fillRect((int)((this.getHitboxX() - this.getHitboxWidth() / 2) * this.wrap.getScale()), (int)((this.getHitboxY() - this.getHitboxHeight() / 2) * this.wrap.getScale()), (int)(this.getHitboxWidth() * this.wrap.getScale()), (int)(this.getHitboxHeight() * this.wrap.getScale()));
         g.setColor(c);
     }
 
@@ -129,26 +125,90 @@ public abstract class Entity implements Comparable<Entity> {
     }
 
     protected void swapTexture(int column, int row) {
-        if (this.texture instanceof SpriteSheet)
-            ((SpriteSheet) this.texture).swapImage(column, row);
+        if (this.texture instanceof SpriteSheet) {
+            ((SpriteSheet)this.texture).swapImage(column, row);
+        }
+    }
+
+    protected void addEntity(Entity newEntity) {
+        this.entities.addEntity(newEntity);
     }
 
     public void destroy() {
-        this.toDestroy = true;
+        this.entities.destroy(this);
     }
 
     public int compareTo(Entity o) {
         return (int)(o.getHitboxY() - this.getHitboxY());
     }
 
-
-    // Getters
-    public double getWeight() {
-        return this.getHitboxWidth() * this.getHitboxHeight();
+    public void referenceEntities(EntityManager e) {
+        this.entities = e;
     }
 
-    public boolean isToDestroy() {
-        return this.toDestroy;
+    public boolean hasEntities() {
+        return this.entities != null;
+    }
+
+
+    // Protected Getters
+    protected Wrap getWrap() {
+        return this.wrap;
+    }
+
+    protected EntityManager getEntities() {
+        return this.entities;
+    }
+
+    protected void changeType(EntityType newType) {
+        this.type = newType;
+    }
+
+    protected long getAnimationCounter() {
+        return this.animationCounter;
+    }
+
+    protected void addToAnimationCounter() {
+        this.animationCounter++;
+    }
+
+    protected double getX() {
+        return this.x;
+    }
+
+    protected double getY() {
+        return this.y;
+    }
+
+    protected void setX(double x) {
+        this.x = x;
+    }
+
+    protected void setY(double y) {
+        this.y = y;
+    }
+
+    protected double getWidth() {
+        return this.width;
+    }
+
+    protected double getHeight() {
+        return this.height;
+    }
+
+    protected void addSize(double size) {
+        this.width += size;
+        this.height += size;
+    }
+
+    protected Image getTexture() {
+        return this.texture;
+    }
+
+
+    // Public Getters
+    public double getWeight() {
+        return this.getHitboxWidth() * this.getHitboxHeight();
     }
 
     public EntityType getType() {

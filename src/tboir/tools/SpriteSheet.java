@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class SpriteSheet extends Image{
+public class SpriteSheet extends Image {
 
     private BufferedImage spriteSheet;
     private final int spriteWidth;
@@ -33,7 +33,7 @@ public class SpriteSheet extends Image{
         }
         this.currentColumn = column;
         this.currentRow = row;
-        this.image = this.spriteSheet.getSubimage(column * this.spriteWidth, row * this.spriteHeight, this.spriteWidth, this.spriteHeight);
+        this.changeImage(this.spriteSheet.getSubimage(column * this.spriteWidth, row * this.spriteHeight, this.spriteWidth, this.spriteHeight));
     }
 
     public BufferedImage getImage(int column, int row) {

@@ -12,13 +12,13 @@ public class Fly extends Enemy {
     public Fly(Wrap wrap, EntityManager entities, double x, double y) {
         super(wrap, entities, EntityType.ENEMY, 5, "resource/entities/fly.png", 2, 2, x, y, 100, 100, .7, .7, 0, 0);
         this.changeSpeed(.5);
-        this.flying = true;
+        this.canFly(true);
     }
 
     @Override
     public void applyBehavior() {
         if (this.player == null) {
-            for (Entity entity : this.entities.getEntities()) {
+            for (Entity entity : this.getEntities().getEntities()) {
                 if (entity.getType() == EntityType.PLAYER) {
                     this.player = entity;
                 }
@@ -33,21 +33,21 @@ public class Fly extends Enemy {
         double directionX = playerX / distance;
         double directionY = playerY / distance;
 
-        this.velocityX += directionX * this.speed;
-        this.velocityY += directionY * this.speed;
+        this.addVelocity(directionX * this.getSpeed(), directionY * this.getSpeed());
     }
 
     @Override
     public void animate() {
-        int column = (int) (this.animationCounter / 10.0 % 2);
+        int column = (int)(this.getAnimationCounter() / 10.0 % 2);
         double playerDistanceX = -1;
 
-        if (this.player != null)
+        if (this.player != null) {
             playerDistanceX = this.player.getHitboxX() - getHitboxX();
+        }
 
         int row = playerDistanceX > 0 ? 0 : 1;
 
         this.swapTexture(column, row);
-        this.animationCounter++;
+        this.addToAnimationCounter();
     }
 }

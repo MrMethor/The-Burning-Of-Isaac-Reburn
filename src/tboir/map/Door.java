@@ -18,13 +18,13 @@ public class Door extends Entity {
     private final Side side;
 
     public Door(Wrap wrap, EntityManager entities, Side side, DoorType type) {
-        super(wrap, entities, EntityType.DOOR, getPath(type), 4, 2, Door.getX(side), Door.getY(side), 175, 175, 0.3, 0.3, 0,0);
+        super(wrap, entities, EntityType.DOOR, getPath(type), 4, 2, Door.getX(side), Door.getY(side), 175, 175, 0.3, 0.3, 0, 0);
         this.side = side;
         swapTexture(side.num(), DoorState.CLOSED.ordinal());
     }
 
     public void openDoor() {
-        this.swapTexture(side.num(), DoorState.OPENED.ordinal());
+        this.swapTexture(this.side.num(), DoorState.OPENED.ordinal());
     }
 
     @Override

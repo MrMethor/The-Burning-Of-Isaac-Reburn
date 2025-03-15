@@ -12,18 +12,27 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Scanner;
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.Iterator;
 
 public class Wrap {
 
+    public static final int CENTER_X = 1920 / 2;
+    public static final int CENTER_Y = 1080 / 2;
+    public static final String DEFAULT_SETTINGS_PATH = "resource/config.txt";
+
     private GameState newState;
     private GameState gameState;
-    private boolean[] newSettings;
-    private final Screen screen;
+    private HashMap<String, Boolean> newSettings;
+    private Screen screen;
     private final Controls controls;
-    private final Counter counter;
+    private Counter counter;
     private final Interpolation interpolation;
     private boolean hitboxes;
     private int entityCount;
@@ -32,14 +41,29 @@ public class Wrap {
 
     private final ArrayList<TextBox> debug;
 
-    public Wrap(String path) {
+    public Wrap() {
         this.debug = new ArrayList<>();
-        boolean fullscreen = false;
-        boolean debug = false;
-        int width = 0;
-        int ups = 60;
+        this.controls = new Controls(this);
+        this.interpolation = new Interpolation();
+        this.newSettings = null;
+        this.newState = GameState.MENU;
+        this.gameState = GameState.MENU;
+        this.entityCount = 0;
+
+        boolean defaultFullscreen = false;
+        boolean defaultDebug = false;
+        int defaultWidth = 0;
+        int defaultUps = 60;
+        this.loadConfigFile(defaultFullscreen, defaultDebug, defaultWidth, defaultUps);
+
+        this.setupDebug();
+
+        this.loadItemRegistry();
+    }
+
+    private void loadConfigFile(boolean fullscreen, boolean debug, int width, int ups) {
         try {
-            File file = new File(path);
+            File file = new File(DEFAULT_SETTINGS_PATH);
             Scanner reader = new Scanner(file);
             while (reader.hasNextLine()) {
                 String line = reader.nextLine();
@@ -59,17 +83,11 @@ public class Wrap {
             System.out.println("Config file not found. Proceeding with default settings.");
         }
 
-        this.newSettings = null;
-        this.newState = GameState.MENU;
-        this.gameState = GameState.MENU;
-        this.counter = new Counter(ups);
         this.screen = new Screen(fullscreen, debug, width);
-        this.controls = new Controls(this);
-        this.interpolation = new Interpolation();
-        this.entityCount = 0;
+        this.counter = new Counter(ups);
+    }
 
-        this.setupDebug();
-
+    private void loadItemRegistry() {
         try {
             File file = new File("resource/items/itemRegistry.txt");
             Scanner itemCounter = new Scanner(file);
@@ -124,12 +142,17 @@ public class Wrap {
         }
     }
 
+    public void applySettings(HashMap<String, Boolean> newSettings) {
+        this.newSettings = newSettings;
+    }
+
     public boolean updateSettings() {
         if (this.newSettings != null) {
-            boolean updateMenu = this.isFullscreen() != this.newSettings[0];
-            this.screen.setFullscreen(this.newSettings[0]);
-            this.screen.setDebug(this.newSettings[1]);
-            this.hitboxes = this.newSettings[2];
+            boolean updateMenu = this.isFullscreen() != this.newSettings.get("fullscreen");
+            this.screen.setFullscreen(this.newSettings.get("fullscreen"));
+            this.screen.setDebug(this.newSettings.get("debug"));
+            this.hitboxes = this.newSettings.get("hitbox");
+            this.saveNewSettings();
             this.newSettings = null;
             this.setupDebug();
             return updateMenu;
@@ -137,8 +160,49 @@ public class Wrap {
         return false;
     }
 
-    public void applySettings(boolean fullscreen, boolean debug, boolean hitbox) {
-        this.newSettings = new boolean[]{fullscreen, debug, hitbox};
+    private void saveNewSettings() {
+        try {
+            File file = new File(DEFAULT_SETTINGS_PATH);
+            if (file.exists()) {
+                if (file.delete()) {
+                    System.out.println("Old config file removed");
+                } else {
+                    System.out.println("Couldn't remove old config file, something went wrong");
+                    return;
+                }
+            }
+            if (file.createNewFile()) {
+                System.out.println("New config file created");
+            } else {
+                System.out.println("Couldn't create new config file");
+                return;
+            }
+
+        } catch (IOException e) {
+            System.out.println("Something bad happened");
+        }
+
+        try {
+            FileWriter writer = new FileWriter(DEFAULT_SETTINGS_PATH);
+
+            writer.write("width " + this.screen.getWidth() + "\n");
+            writer.write("ups " + this.counter.getDesiredUPS() + "\n");
+
+            Iterator<Map.Entry<String, Boolean>> it = this.newSettings.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, Boolean> pair = it.next();
+                writer.write(pair.getKey() + " " + pair.getValue() + "\n");
+                it.remove();
+            }
+
+            writer.close();
+            System.out.println("New config saved");
+        } catch (IOException e) {
+            System.out.println("Error when writing to a file");
+        }
+
+
+
     }
 
     public void updateEntityCount(int count) {

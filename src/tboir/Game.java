@@ -15,15 +15,13 @@ public class Game {
     private final Player player;
     private final Hud hud;
     private int currentFloor;
-    private boolean isGoldenRoom;
 
     public Game(Wrap wrap) {
         this.wrap = wrap;
         this.currentFloor = 1;
-        this.isGoldenRoom = true;
         this.hud = new Hud(this.wrap);
         this.player = new Player(this.wrap, this.hud);
-        this.map = new Map(this.wrap, this.player, this.currentFloor, this.isGoldenRoom);
+        this.map = new Map(this.wrap, this.player, this.currentFloor, true);
     }
 
     public void update() {
@@ -54,7 +52,7 @@ public class Game {
 
     private void changeLevel() {
         this.currentFloor++;
-        this.map = new Map(this.wrap, this.player, this.currentFloor, this.isGoldenRoom);
+        this.map = new Map(this.wrap, this.player, this.currentFloor, true);
         this.player.resetPosition();
     }
 }

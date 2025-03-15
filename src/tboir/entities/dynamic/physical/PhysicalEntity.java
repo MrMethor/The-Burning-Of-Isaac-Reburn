@@ -8,17 +8,17 @@ import tboir.tools.EntityManager;
 
 public abstract class PhysicalEntity extends DynamicEntity {
 
-    protected double velocityX;
-    protected double velocityY;
-    protected double slideFactor;
-    protected boolean flying;
+    private double velocityX;
+    private double velocityY;
+    private double slideFactor;
+    private boolean flying;
 
     public PhysicalEntity(Wrap wrap, EntityManager entities, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         super (wrap, entities, type, texturePath, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         this.velocityX = 0.0;
         this.velocityY = 0.0;
         this.slideFactor = 0.9;
-        this.speed = 1;
+        this.changeSpeed(1);
     }
 
     public PhysicalEntity(Wrap wrap, EntityManager entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
@@ -26,13 +26,13 @@ public abstract class PhysicalEntity extends DynamicEntity {
         this.velocityX = 0.0;
         this.velocityY = 0.0;
         this.slideFactor = 0.9;
-        this.speed = 1;
+        this.changeSpeed(1);
     }
 
     @Override
     protected void calculateMovement() {
-        this.x += this.velocityX;
-        this.y += this.velocityY;
+        this.addToX(this.velocityX);
+        this.addToY(this.velocityY);
         this.velocityX *= this.slideFactor;
         this.velocityY *= this.slideFactor;
     }
@@ -53,24 +53,28 @@ public abstract class PhysicalEntity extends DynamicEntity {
         }
         switch (collision.side()) {
             case UP -> {
-                this.y -= collision.penetration();
-                if (this.velocityY < 0)
+                this.addToY(-collision.penetration());
+                if (this.velocityY < 0) {
                     this.velocityY = 0;
+                }
             }
             case DOWN -> {
-                this.y += collision.penetration();
-                if (this.velocityY > 0)
+                this.addToY(collision.penetration());
+                if (this.velocityY > 0) {
                     this.velocityY = 0;
+                }
             }
             case LEFT -> {
-                this.x -= collision.penetration();
-                if (this.velocityX < 0)
+                this.addToX(-collision.penetration());
+                if (this.velocityX < 0) {
                     this.velocityX = 0;
+                }
             }
             case RIGHT -> {
-                this.x += collision.penetration();
-                if (this.velocityX > 0)
+                this.addToX(collision.penetration());
+                if (this.velocityX > 0) {
                     this.velocityX = 0;
+                }
             }
         }
     }
@@ -79,8 +83,26 @@ public abstract class PhysicalEntity extends DynamicEntity {
         this.slideFactor = factor;
     }
 
+    public void resetPosition() {
+        this.changePosition(1920 / 2, 1080 / 2);
+    }
+
+    public void resetVelocity() {
+        this.velocityX = 0;
+        this.velocityY = 0;
+    }
+
+    protected void addVelocity(double velocityX, double velocityY) {
+        this.velocityX += velocityX;
+        this.velocityY += velocityY;
+    }
+
     // Getter
     public boolean canFly() {
         return this.flying;
+    }
+
+    protected void canFly(boolean canFly) {
+        this.flying = canFly;
     }
 }

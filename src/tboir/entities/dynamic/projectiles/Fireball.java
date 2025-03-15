@@ -23,9 +23,9 @@ public class Fireball extends Projectile {
 
     @Override
     public void animate() {
-        int column = (int) (this.animationCounter / 6 % 4);
+        int column = (int)(this.getAnimationCounter() / 6 % 4);
         int row = this.facing.num();
         this.swapTexture(column, row);
-        this.animationCounter++;
+        this.addToAnimationCounter();
     }
 }

@@ -5,7 +5,6 @@ import tboir.entities.dynamic.projectiles.Fireball;
 import tboir.enums.EntityType;
 import tboir.enums.Side;
 import tboir.tools.Collision;
-import tboir.tools.EntityManager;
 import tboir.map.Map;
 import tboir.hud.Hud;
 
@@ -43,7 +42,7 @@ public class Player extends PhysicalEntity {
     private int gracePeriodCounter;
 
     public Player(Wrap wrap, Hud hud) {
-        super(wrap, null, EntityType.PLAYER, "resource/entities/character.png", 3, 4, 1920/2.0, 1080/2.0, 150, 150, 0.4, 0.4, 0, 0.3);
+        super(wrap, null, EntityType.PLAYER, "resource/entities/character.png", 3, 4, 1920 / 2.0, 1080 / 2.0, 150, 150, 0.4, 0.4, 0, 0.3);
         this.hud = hud;
         this.dead = false;
         this.firingSpeed = 2;
@@ -67,9 +66,12 @@ public class Player extends PhysicalEntity {
     public void applyBehavior() {
         int playerX = 0;
         int playerY = 0;
-        boolean fireUp = false, fireDown = false, fireLeft = false, fireRight = false;
+        boolean fireUp = false;
+        boolean fireDown = false;
+        boolean fireLeft = false;
+        boolean fireRight = false;
 
-        var actions = this.wrap.getActions();
+        var actions = this.getWrap().getActions();
         for (int i = 0; i < actions.size(); i++) {
             switch (actions.get(i)) {
                 case moveUp -> playerY -= 1;
@@ -82,9 +84,9 @@ public class Player extends PhysicalEntity {
                 case fireRight -> fireRight = true;
             }
         }
-        facingDirection(new boolean[]{fireUp, fireDown, fireLeft, fireRight});
-        fireCheck();
-        move(playerX, playerY);
+        this.facingDirection(new boolean[]{fireUp, fireDown, fireLeft, fireRight});
+        this.fireCheck();
+        this.move(playerX, playerY);
         if (this.gracePeriodCounter > 0) {
             this.gracePeriodCounter--;
         }
@@ -100,23 +102,23 @@ public class Player extends PhysicalEntity {
                 this.applyRelativeCollision(collision);
                 this.hit(1);
             }
-            case DOOR -> map.queueChangeRoom(collision.side());
+            case DOOR -> this.map.queueChangeRoom(collision.side());
             case SPIKE -> this.hit(2);
-            case TRAP_DOOR -> map.tryChangeLevel();
+            case TRAP_DOOR -> this.map.tryChangeLevel();
             case FULL_HEART, SOUL_HEART, HALF_HEART -> {
-                if (this.consumeHeart(collision.entity().getType())){
+                if (this.consumeHeart(collision.entity().getType())) {
                     collision.entity().destroy();
-                    hud.updateHearts(redHearts, redContainers, soulHearts);
-                }
-                else
+                    this.hud.updateHearts(this.redHearts, this.redContainers, this.soulHearts);
+                } else {
                     this.applyRelativeCollision(collision);
+                }
             }
         }
     }
 
     @Override
     public void animate() {
-        int numFrame = (int) (this.animationCounter / (10.0 / this.speed) / (this.width / 150.0) % 4);
+        int numFrame = (int)(this.getAnimationCounter() / (10.0 / this.getSpeed()) / (this.getWidth() / 150.0) % 4);
         int column = numFrame == 3 ? 1 : numFrame;
         int row;
         if (this.facing != null) {
@@ -137,57 +139,53 @@ public class Player extends PhysicalEntity {
             column = 1;
         }
         this.swapTexture(column, row);
-        this.animationCounter++;
+        this.addToAnimationCounter();
     }
 
     @Override
     public void render(Graphics g) {
-        if (this.gracePeriodCounter != 0 && this.gracePeriodCounter / 5 % 2 == 1)
+        if (this.gracePeriodCounter != 0 && this.gracePeriodCounter / 5 % 2 == 1) {
             return;
+        }
         super.render(g);
     }
 
     public void changeRoom(Side side) {
         int halfARoomHeight = 725;
         int halfARoomWidth = 1290;
+        double x = Wrap.CENTER_X;
+        double y = Wrap.CENTER_Y - 40;
         switch (side) {
-            case UP -> this.y = this.previousY = this.y + halfARoomHeight;
-            case DOWN -> this.y = this.previousY = this.y - halfARoomHeight;
-            case LEFT -> this.x = this.previousX = this.x + halfARoomWidth;
-            case RIGHT -> this.x = this.previousX = this.x - halfARoomWidth;
+            case UP -> y = this.getY() + halfARoomHeight;
+            case DOWN -> y = this.getY() - halfARoomHeight;
+            case LEFT -> x = this.getX() + halfARoomWidth;
+            case RIGHT -> x = this.getX() - halfARoomWidth;
         }
-        switch (side) {
-            case UP, DOWN -> this.x = this.previousX = 1920 / 2.0;
-            case LEFT, RIGHT -> this.y = this.previousY = 1080 / 2.0 - 40;
-        }
-        this.velocityX = 0;
-        this.velocityY = 0;
-    }
-
-    public void resetPosition() {
-        this.x = this.previousX = 1920 / 2.0;
-        this.y = this.previousY = 1080 / 2.0;
+        this.changePosition(x, y);
+        this.resetVelocity();
     }
 
     public void addHealth(int redHearts, int redContainers, int soulHearts) {
-        if (redContainers % 2 != 0)
+        if (redContainers % 2 != 0) {
             redContainers++;
+        }
         this.redContainers += redContainers + redHearts;
         this.redHearts += redHearts;
         this.soulHearts += soulHearts;
 
-        if (this.redHearts > this.redContainers)
+        if (this.redHearts > this.redContainers) {
             this.redHearts = this.redContainers;
+        }
 
         if (this.soulHearts + this.redContainers > MAX_HEALTH) {
             int excessHearts = this.soulHearts + this.redContainers - MAX_HEALTH;
-            if (this.soulHearts < excessHearts){
+            if (this.soulHearts < excessHearts) {
                 excessHearts -= this.soulHearts;
                 this.soulHearts = 0;
             }
             this.redContainers -= excessHearts;
         }
-        hud.updateHearts(this.redHearts, this.redContainers, this.soulHearts);
+        this.hud.updateHearts(this.redHearts, this.redContainers, this.soulHearts);
     }
 
     public void addStats(double damage, double range, double shotSpeed, double fireSpeed, double shotSize, double speed, int size) {
@@ -196,26 +194,15 @@ public class Player extends PhysicalEntity {
         this.shotSpeed += shotSpeed;
         this.firingSpeed += fireSpeed;
         this.shotSize += shotSize;
-        this.speed += speed;
-        this.width += size;
-        this.height += size;
+        this.addSpeed(speed);
+        this.addSize(size);
     }
 
     public void addSpecial(int id) {
-
-    }
-
-    public void referenceEntities(EntityManager e) {
-        this.entities = e;
     }
 
     public void referenceMap(Map m) {
         this.map = m;
-    }
-
-    // Getters
-    public boolean hasEntities() {
-        return this.entities != null;
     }
 
     public boolean isDead() {
@@ -224,41 +211,48 @@ public class Player extends PhysicalEntity {
 
     // Help methods
     private void hit(double damage) {
-        if (gracePeriodCounter == 0) {
-            if (soulHearts > 0)
-                soulHearts -= damage;
-            else
-                redHearts -= damage;
+        if (this.gracePeriodCounter == 0) {
+            if (this.soulHearts > 0) {
+                this.soulHearts -= damage;
+            } else {
+                this.redHearts -= damage;
+            }
 
-            gracePeriodCounter = gracePeriod;
+            this.gracePeriodCounter = this.gracePeriod;
         }
-        hud.updateHearts(redHearts, redContainers, soulHearts);
-        if (redHearts + soulHearts <= 0)
-            dead = true;
+        this.hud.updateHearts(this.redHearts, this.redContainers, this.soulHearts);
+        if (this.redHearts + this.soulHearts <= 0) {
+            this.dead = true;
+        }
     }
 
     private boolean consumeHeart(EntityType type) {
         switch (type) {
             case FULL_HEART -> {
-                if (redHearts >= redContainers)
+                if (this.redHearts >= this.redContainers) {
                     return false;
-                redHearts += 2;
-                if (redHearts > redContainers)
-                    redContainers--;
+                }
+                this.redHearts += 2;
+                if (this.redHearts > this.redContainers) {
+                    this.redContainers--;
+                }
                 return true;
             }
             case HALF_HEART -> {
-                if (redHearts >= redContainers)
+                if (this.redHearts >= this.redContainers) {
                     return false;
-                redHearts++;
+                }
+                this.redHearts++;
                 return true;
             }
             case SOUL_HEART -> {
-                if (soulHearts + redContainers >= MAX_HEALTH)
+                if (this.soulHearts + this.redContainers >= MAX_HEALTH) {
                     return false;
-                soulHearts += 2;
-                if (soulHearts + redContainers > MAX_HEALTH)
-                    soulHearts--;
+                }
+                this.soulHearts += 2;
+                if (this.soulHearts + this.redContainers > MAX_HEALTH) {
+                    this.soulHearts--;
+                }
                 return true;
             }
         }
@@ -267,63 +261,66 @@ public class Player extends PhysicalEntity {
 
     private void facingDirection(boolean[] sides) {
         for (int i = 0; i < sides.length; i++) {
-            if (sides[i] && !firingOrder.contains(i))
-                firingOrder.addFirst(i);
-            else if (!sides[i] && firingOrder.contains(i))
-                firingOrder.remove(Integer.valueOf(i));
+            if (sides[i] && !this.firingOrder.contains(i)) {
+                this.firingOrder.addFirst(i);
+            } else if (!sides[i] && this.firingOrder.contains(i)) {
+                this.firingOrder.remove(Integer.valueOf(i));
+            }
         }
-        if (!firingOrder.isEmpty())
-            facing = Side.getSide(firingOrder.getFirst());
-        else
-            facing = null;
+        if (!this.firingOrder.isEmpty()) {
+            this.facing = Side.getSide(this.firingOrder.getFirst());
+        } else {
+            this.facing = null;
+        }
     }
 
     private void fireCheck() {
-        if (facing != null && fireCounter >= firingTime) {
-            fire();
-            fireCounter -= firingTime;
-            firingTime = (int)(60 / firingSpeed);
+        if (this.facing != null && this.fireCounter >= this.firingTime) {
+            this.fire();
+            this.fireCounter -= this.firingTime;
+            this.firingTime = (int)(60 / this.firingSpeed);
         }
-        if (fireCounter != firingTime)
-            fireCounter++;
+        if (this.fireCounter != this.firingTime) {
+            this.fireCounter++;
+        }
     }
 
     private void fire() {
         int fireX = 0;
         int fireY = 0;
-        double x = this.x;
-        double y = this.y;
-        switch (facing) {
+        double x = this.getX();
+        double y = this.getY();
+        switch (this.facing) {
             case UP -> {
                 fireY = 1;
-                y -= height / 4;
+                y -= this.getHeight() / 4;
             }
             case DOWN -> {
                 fireY = -1;
-                y += height / 4;
+                y += this.getHeight() / 4;
             }
             case LEFT -> {
                 fireX = -1;
-                x -= width / 4;
+                x -= this.getWidth() / 4;
             }
             case RIGHT -> {
                 fireX = 1;
-                x += width / 4;
+                x += this.getWidth() / 4;
             }
         }
         var rad = Math.atan2(fireY, fireX);
         int angle = (int)(rad * (180 / Math.PI));
         angle = angle < 0 ? angle + 360 : angle;
-        entities.addEntity(new Fireball(wrap, entities, damage, range, x, y + 15, (int)(100 * shotSize), (int)(100 * shotSize), shotSpeed, velocityX, velocityY, angle));
+        this.addEntity(new Fireball(this.getWrap(), this.getEntities(), this.damage, this.range, x, y + 15, (int)(100 * this.shotSize), (int)(100 * this.shotSize), this.shotSpeed, 0, 0, angle));
     }
 
     private void move(int x, int y) {
-        movingX = x;
-        movingY = y;
+        this.movingX = x;
+        this.movingY = y;
         double compensation = 1;
-        if (x != 0 && y != 0)
+        if (x != 0 && y != 0) {
             compensation = 0.7;
-        velocityX += x * speed * compensation;
-        velocityY += y * speed * compensation;
+        }
+        this.addVelocity(x * this.getSpeed() * compensation, y * this.getSpeed() * compensation);
     }
 }

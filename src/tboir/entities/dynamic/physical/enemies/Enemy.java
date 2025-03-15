@@ -12,7 +12,7 @@ import java.util.Random;
 
 public abstract class Enemy extends PhysicalEntity {
 
-    protected double health;
+    private double health;
 
     public Enemy(Wrap wrap, EntityManager entities, EntityType type, double health, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         super(wrap, entities, type, spriteSheetPath, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
@@ -25,28 +25,31 @@ public abstract class Enemy extends PhysicalEntity {
             case WALL -> this.applySolidCollision(collision);
             case PLAYER, ENEMY -> this.applyRelativeCollision(collision);
             case HALF_HEART, FULL_HEART, SOUL_HEART -> {
-                if (!flying) {
+                if (!this.canFly()) {
                     this.applyRelativeCollision(collision);
                 }
             }
             case SPIKE -> {
-                if (!flying) {
-                    health -= 0.1;
+                if (!this.canFly()) {
+                    this.health -= 0.1;
                 }
             }
             case FRIENDLY_PROJECTILE -> {
-                this.health -= ((Projectile) collision.entity()).getDamage();
-                switch(collision.side()) {
-                    case LEFT -> this.velocityX += 10;
-                    case RIGHT -> this.velocityX -= 10;
-                    case UP -> this.velocityY += 10;
-                    case DOWN -> this.velocityY -= 10;
+                this.health -= ((Projectile)collision.entity()).getDamage();
+                int addVelocityX = 0;
+                int addVelocityY = 0;
+                switch (collision.side()) {
+                    case LEFT -> addVelocityX += 10;
+                    case RIGHT -> addVelocityX -= 10;
+                    case UP -> addVelocityY += 10;
+                    case DOWN -> addVelocityY -= 10;
                 }
+                this.addVelocity(addVelocityX, addVelocityY);
             }
         }
-        if (this.health <= 0){
-            dropRoll();
-            destroy();
+        if (this.health <= 0) {
+            this.dropRoll();
+            this.destroy();
         }
     }
 
@@ -54,7 +57,7 @@ public abstract class Enemy extends PhysicalEntity {
         Random random = new Random();
         int chance = random.nextInt(8);
         if (chance == 0) {
-            this.entities.addEntity(new PickUp(this.wrap, this.entities, EntityType.HALF_HEART, this.x, this.y));
+            addEntity(new PickUp(this.getWrap(), this.getEntities(), EntityType.HALF_HEART, this.getX(), this.getY()));
         }
     }
 }

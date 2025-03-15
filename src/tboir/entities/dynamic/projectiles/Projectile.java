@@ -8,8 +8,8 @@ import tboir.tools.EntityManager;
 
 public abstract class Projectile extends DynamicEntity {
 
-    protected int angle;
-    protected double speed;
+    private int angle;
+    private double speed;
     private int timer;
     private double damage;
 
@@ -42,8 +42,8 @@ public abstract class Projectile extends DynamicEntity {
     protected void calculateMovement() {
         double x = Math.cos(Math.toRadians(this.angle));
         double y = -Math.sin(Math.toRadians(this.angle));
-        this.x += x * this.speed;
-        this.y += y * this.speed;
+        this.addToX(x * this.speed);
+        this.addToY(y * this.speed);
     }
 
     @Override

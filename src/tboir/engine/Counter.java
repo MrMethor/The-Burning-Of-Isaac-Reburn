@@ -4,7 +4,7 @@ public class Counter {
 
     private static final double SECOND_IN_NANO = 1_000_000_000;
     private double timeToElapse;
-    private int desiredUPS;
+    private final int desiredUPS;
 
     private int ups;
     private int fps;
@@ -52,5 +52,9 @@ public class Counter {
 
     public double getTimeToElapse() {
         return this.timeToElapse;
+    }
+
+    public int getDesiredUPS() {
+        return this.desiredUPS;
     }
 }

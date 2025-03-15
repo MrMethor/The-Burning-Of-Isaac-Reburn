@@ -1,9 +1,16 @@
 package tboir.map;
 
 import tboir.engine.Wrap;
-import tboir.entities.*;
-import tboir.entities.dynamic.physical.*;
-import tboir.entities.dynamic.physical.enemies.*;
+
+import tboir.entities.Fire;
+import tboir.entities.Poop;
+import tboir.entities.Rock;
+import tboir.entities.Spikes;
+import tboir.entities.Wall;
+import tboir.entities.Item;
+import tboir.entities.TrapDoor;
+import tboir.entities.dynamic.physical.PickUp;
+import tboir.entities.dynamic.physical.enemies.Fly;
 import tboir.enums.FloorType;
 import tboir.enums.EntityType;
 import tboir.enums.DoorType;
@@ -41,7 +48,7 @@ public class Room {
         double y = 1080 / 2.0;
         double width = 1920;
         double height = 1080;
-        this.background = new Image(wrap, "resource/rooms/" + getRoomType() + ".png", x - width / 2.0, y - height / 2.0, width, height);
+        this.background = new Image(wrap, "resource/rooms/" + this.getRoomType() + ".png", x - width / 2.0, y - height / 2.0, width, height);
         this.shade = new Image(wrap, "resource/rooms/roomShade.png", x - width / 2.0, y - height / 2.0, width, height);
         String content = "";
         try {
@@ -55,7 +62,7 @@ public class Room {
         } catch (FileNotFoundException e) {
             System.out.println("Error with loading map file");
         }
-        content = content.replaceAll("\\s+","");
+        content = content.replaceAll("\\s+", "");
         char[] spawnEntities = content.toCharArray();
         int maxWidthTiles = 13;
         int maxHeightTiles = 7;
@@ -91,11 +98,9 @@ public class Room {
 
     public void render(Graphics g) {
         this.renderBackground(g);
-        this.entities.renderDoors(g);
-        this.entities.renderTiles(g);
+        this.entities.renderBack(g);
         this.renderShade(g);
-        this.entities.renderItems(g);
-        this.entities.renderDynamic(g);
+        this.entities.renderFront(g);
     }
 
     private String getRoomType() {
@@ -140,7 +145,10 @@ public class Room {
     }
 
     private void addWall(Side side) {
-        int width, height, x, y;
+        int width;
+        int height;
+        int x;
+        int y;
         if (side == Side.UP || side == Side.DOWN) {
             width = 1920;
             height = 200;
@@ -150,8 +158,7 @@ public class Room {
             } else {
                 y = 1080 - 75;
             }
-        }
-        else {
+        } else {
             width = 200;
             height = 1080;
             y = 1080 / 2;
@@ -165,29 +172,40 @@ public class Room {
     }
 
     private void addDoorWall(Side side) {
-        int width1, height1, x1, y1;
-        int width2, height2, x2, y2;
+        int width1;
+        int height1;
+        int x1;
+        int y1;
+        int width2;
+        int height2;
+        int x2;
+        int y2;
         if (side == Side.UP || side == Side.DOWN) {
-            width1 = width2 = 1920 / 2 - 125;
-            height1 = height2 = 200;
+            width1 = 1920 / 2 - 125;
+            width2 = width1;
+            height1 = 200;
+            height2 = height1;
             x1 = 1920 / 4;
             x2 = 1920 / 4 * 3;
             if (side == Side.UP) {
-                y1 = y2 = 63;
+                y1 = 63;
             } else {
-                y1 = y2 = 1080 - 63;
+                y1 = 1080 - 63;
             }
-        }
-        else {
-            width1 = width2 = 200;
-            height1 = height2 = 1080 / 2 - 125;
+            y2 = y1;
+        } else {
+            width1 = 200;
+            width2 = width1;
+            height1 = 1080 / 2 - 125;
+            height2 = height1;
             y1 = 1080 / 4;
             y2 = 1080 / 4 * 3;
             if (side == Side.LEFT) {
-                x1 = x2 = 200;
+                x1 = 200;
             } else {
-                x1 = x2 = 1920 - 200;
+                x1 = 1920 - 200;
             }
+            x2 = x1;
         }
         this.entities.addEntity(new Wall(this.wrap, this.entities, x1, y1, width1, height1));
         this.entities.addEntity(new Wall(this.wrap, this.entities, x2, y2, width2, height2));

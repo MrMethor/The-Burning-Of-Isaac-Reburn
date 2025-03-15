@@ -2,7 +2,6 @@ package tboir.menus;
 
 import tboir.engine.Wrap;
 import tboir.enums.GameState;
-import tboir.tools.Button;
 
 public class Pause extends MenuType {
 
@@ -10,23 +9,26 @@ public class Pause extends MenuType {
         super(wrap);
     }
 
+    @Override
     protected void setupButtons() {
         int buttonSize = 500;
         int centerX = 1920 / 2 - buttonSize / 2;
-        this.buttons.put("resume", new Button(this.wrap, "RESUME", this.buttonOn(true), centerX, 550, buttonSize));
-        this.buttons.put("menu", new Button(this.wrap, "EXIT", this.buttonOn(false), centerX, 700, buttonSize));
+        this.addButton("resume", "RESUME", true, centerX, 550, buttonSize);
+        this.addButton("menu", "EXIT", false, centerX, 700, buttonSize);
     }
 
+    @Override
     protected void buttonClicked(String name) {
         switch (name) {
-            case "resume" -> this.wrap.changeState(GameState.GAME);
-            case "menu" -> this.wrap.changeState(GameState.MENU);
+            case "resume" -> this.getWrap().changeState(GameState.GAME);
+            case "menu" -> this.getWrap().changeState(GameState.MENU);
         }
     }
 
+    @Override
     protected void keyPressed(String name) {
-        switch(name) {
-            case "escape" -> this.wrap.changeState(GameState.GAME);
+        switch (name) {
+            case "escape" -> this.getWrap().changeState(GameState.GAME);
         }
     }
 }
