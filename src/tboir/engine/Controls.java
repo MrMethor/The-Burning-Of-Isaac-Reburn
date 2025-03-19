@@ -1,102 +1,119 @@
 package tboir.engine;
 
-import tboir.enums.Actions;
 import tboir.enums.Commands;
 import tboir.tools.Coords;
+import tboir.tools.EditedKey;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Scanner;
 
 public class Controls implements MouseListener, KeyListener, MouseMotionListener {
 
-    private final ArrayList<Coords> commands;
-    private final ArrayList<Actions> actions;
-    private final double[] mouseCoords;
     private final Wrap wrap;
+
+    public static final String DEFAULT_KEY_PATH = "resource/defaultKeyConfig.txt";
+    public static final String USER_KEY_PATH = "resource/userKeyConfig.txt";
+
+    private final Commands[] keybinds;
+
+    private final ArrayList<Coords> pressCommands;
+    private final ArrayList<Commands> toggleCommands;
+    private final double[] mouseCoords;
+
+    private EditedKey editedKey;
 
     public Controls(Wrap wrap) {
         this.wrap = wrap;
-        this.commands = new ArrayList<>();
-        this.actions = new ArrayList<>();
+        this.keybinds = new Commands[255];
+        this.pressCommands = new ArrayList<>();
+        this.toggleCommands = new ArrayList<>();
         this.mouseCoords = new double[2];
+
+        boolean useDefaultKeyConfig = true;
+        if (this.hasUserConfig()) {
+            if (this.loadKeyConfig(USER_KEY_PATH)) {
+                useDefaultKeyConfig = false;
+            }
+        }
+        if (useDefaultKeyConfig) {
+            System.out.println("User keyconfig not present, proceeding with default keyconfig");
+            if (!this.loadKeyConfig(DEFAULT_KEY_PATH)) {
+                System.out.println("Couldn't load default key config");
+            }
+        }
+
+    }
+
+    private boolean hasUserConfig() {
+        File file = new File(USER_KEY_PATH);
+        return file.exists();
+    }
+
+    private boolean loadKeyConfig(String path) {
+        boolean isSuccess = false;
+        try {
+            File file = new File(path);
+            Scanner reader = new Scanner(file);
+            while (reader.hasNextLine()) {
+                String line = reader.nextLine();
+                String[] input = line.split(" ", 2);
+                if (input.length != 2) {
+                    System.out.println("Corrupted keyConfig file!");
+                    return isSuccess;
+                }
+                if (Arrays.asList(Commands.values()).contains(Commands.valueOf(input[0]))) {
+                    this.keybinds[Integer.parseInt(input[1])] = Commands.valueOf(input[0]);
+                }
+            }
+            reader.close();
+            isSuccess = true;
+        } catch (FileNotFoundException e) {
+
+        }
+        return isSuccess;
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_W:
-                this.addAction(Actions.moveUp);
-                break;
-            case KeyEvent.VK_S:
-                this.addAction(Actions.moveDown);
-                break;
-            case KeyEvent.VK_A:
-                this.addAction(Actions.moveLeft);
-                break;
-            case KeyEvent.VK_D:
-                this.addAction(Actions.moveRight);
-                break;
-            case KeyEvent.VK_UP:
-                this.addAction(Actions.fireUp);
-                break;
-            case KeyEvent.VK_DOWN:
-                this.addAction(Actions.fireDown);
-                break;
-            case KeyEvent.VK_LEFT:
-                this.addAction(Actions.fireLeft);
-                break;
-            case KeyEvent.VK_RIGHT:
-                this.addAction(Actions.fireRight);
-                break;
+        if (this.editedKey != null) {
+            if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                this.editedKey.keybinds().restoreButton();
+                this.editedKey = null;
+                return;
+            }
+            this.editedKey.keybinds().updateKeybinds(this.editedKey.name(), e.getKeyCode());
+            this.editedKey = null;
         }
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_ESCAPE:
-                this.addCommand(Commands.escape, 0, 0);
-                break;
-            case KeyEvent.VK_SPACE:
-                this.addCommand(Commands.space, 0, 0);
-                break;
+        if (this.keybinds[e.getKeyCode()] != null) {
+            this.addToggleCommand(this.keybinds[e.getKeyCode()]);
+        }
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            this.addPressCommand(Commands.menu, 0, 0);
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_W:
-                this.removeAction(Actions.moveUp);
-                break;
-            case KeyEvent.VK_S:
-                this.removeAction(Actions.moveDown);
-                break;
-            case KeyEvent.VK_A:
-                this.removeAction(Actions.moveLeft);
-                break;
-            case KeyEvent.VK_D:
-                this.removeAction(Actions.moveRight);
-                break;
-            case KeyEvent.VK_UP:
-                this.removeAction(Actions.fireUp);
-                break;
-            case KeyEvent.VK_DOWN:
-                this.removeAction(Actions.fireDown);
-                break;
-            case KeyEvent.VK_LEFT:
-                this.removeAction(Actions.fireLeft);
-                break;
-            case KeyEvent.VK_RIGHT:
-                this.removeAction(Actions.fireRight);
-                break;
+        if (this.keybinds[e.getKeyCode()] != null) {
+            this.removeToggleCommand(this.keybinds[e.getKeyCode()]);
         }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        if (this.editedKey != null) {
+            return;
+        }
         if (e.getButton() == MouseEvent.BUTTON1) {
-            this.addCommand(Commands.leftClick, (int)((double)e.getX() / this.wrap.getScale()), (int)((double)e.getY() / this.wrap.getScale()));
+            this.addPressCommand(Commands.interact, (int)((double)e.getX() / this.wrap.getScale()), (int)((double)e.getY() / this.wrap.getScale()));
         }
     }
 
@@ -106,35 +123,43 @@ public class Controls implements MouseListener, KeyListener, MouseMotionListener
         this.mouseCoords[1] = e.getY() / this.wrap.getScale();
     }
 
-    private void addAction(Actions action) {
-        if (!this.actions.contains(action)) {
-            this.actions.add(action);
+    private void addToggleCommand(Commands toggleCommand) {
+        if (!this.toggleCommands.contains(toggleCommand)) {
+            this.toggleCommands.add(toggleCommand);
         }
     }
 
-    private void removeAction(Actions action) {
-        this.actions.remove(action);
+    private void removeToggleCommand(Commands toggleCommand) {
+        this.toggleCommands.remove(toggleCommand);
     }
 
-    private void addCommand(Commands command, int x, int y) {
-        this.commands.add(new Coords(x, y, command));
+    private void addPressCommand(Commands pressCommand, int x, int y) {
+        this.pressCommands.add(new Coords(x, y, pressCommand));
     }
 
-    public void removeCommand(Coords command) {
-        this.commands.remove(command);
+    public void removePressCommand(Coords pressCommand) {
+        this.pressCommands.remove(pressCommand);
+    }
+
+    public void newEditedKey(EditedKey editedKey) {
+        this.editedKey = editedKey;
     }
 
     // Getters
-    public ArrayList<Coords> getCommands() {
-        return this.commands;
+    public ArrayList<Coords> getPressCommands() {
+        return this.pressCommands;
     }
 
-    public ArrayList<Actions> getActions() {
-        return this.actions;
+    public ArrayList<Commands> getToggleCommands() {
+        return this.toggleCommands;
     }
 
     public double[] getMouseCoords() {
         return this.mouseCoords;
+    }
+
+    public Commands[] getKeybinds() {
+        return this.keybinds;
     }
 
     // Unused

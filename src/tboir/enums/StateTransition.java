@@ -10,7 +10,9 @@ public enum StateTransition {
     SETTINGS_TO_MENU,
     DEATH,
     EXIT_DEATH,
-    RESTART;
+    RESTART,
+    APPLY_KEYBINDS,
+    SETTINGS_TO_KEYBINDS;
 
     public static StateTransition getTransition(GameState previous, GameState next) {
         if (previous == GameState.MENU && next == GameState.GAME) {
@@ -42,6 +44,12 @@ public enum StateTransition {
         }
         if (previous == GameState.DEATH && next == GameState.GAME) {
             return RESTART;
+        }
+        if (previous == GameState.SETTINGS && next == GameState.KEYBINDS) {
+            return SETTINGS_TO_KEYBINDS;
+        }
+        if (previous == GameState.KEYBINDS && next == GameState.SETTINGS) {
+            return APPLY_KEYBINDS;
         }
         return null;
     }

@@ -85,7 +85,7 @@ public class Map {
                         continue;
                     }
 
-                    int nearbyRoomsCount = this.nearbyRoomsCount(x, y);
+                    int nearbyRoomsCount = this.roomsNearby(x, y);
 
                     int randomFactor = 0;
                     switch (nearbyRoomsCount) {
@@ -115,9 +115,7 @@ public class Map {
                         continue;
                     }
 
-                    int nearbyRoomsCount = this.nearbyRoomsCount(x, y);
-
-                    if (nearbyRoomsCount == 1 && rand.nextInt(4) < 1) {
+                    if (this.roomsNearby(x, y) == 1 && rand.nextInt(4) < 1) {
                         this.rooms[x][y] = new Room(this.wrap, "resource/roomLayouts/goldenRoom.txt", RoomType.GOLDEN, floor);
                         return;
                     }
@@ -138,13 +136,11 @@ public class Map {
                         continue;
                     }
 
-                    int nearbyRoomsCount = this.nearbyRoomsCount(x, y);
-
                     if (x >= 3 && x <= 6 && y >= 3 && y <= 6) {
                         continue;
                     }
 
-                    if (nearbyRoomsCount == 1 && rand.nextInt(4) < 1) {
+                    if (this.roomsNearby(x, y, RoomType.GOLDEN) == 0 && this.roomsNearby(x, y, RoomType.DEFAULT) == 1 && rand.nextInt(4) < 1) {
                         this.rooms[x][y] = new Room(this.wrap, "resource/roomLayouts/bossRoom.txt", RoomType.BOSS, floor);
                         return;
                     }
@@ -203,21 +199,38 @@ public class Map {
         return DoorType.BASEMENT;
     }
 
-    private int nearbyRoomsCount(int x, int y) {
-        int nearRoomCount = 0;
-        if (x - 1 >= 0 && this.rooms[x - 1][y] != null && this.rooms[x - 1][y].getType() == RoomType.DEFAULT) {
-            nearRoomCount++;
+    private int roomsNearby(int x, int y, RoomType type) {
+        int roomsNearby = 0;
+        if (x - 1 >= 0 && this.rooms[x - 1][y] != null && this.rooms[x - 1][y].getType() == type) {
+            roomsNearby++;
         }
-        if (x + 1 < this.size && this.rooms[x + 1][y] != null && this.rooms[x + 1][y].getType() == RoomType.DEFAULT) {
-            nearRoomCount++;
+        if (x + 1 < this.size && this.rooms[x + 1][y] != null && this.rooms[x + 1][y].getType() == type) {
+            roomsNearby++;
         }
-        if (y - 1 >= 0 && this.rooms[x][y - 1] != null && this.rooms[x][y - 1].getType() == RoomType.DEFAULT) {
-            nearRoomCount++;
+        if (y - 1 >= 0 && this.rooms[x][y - 1] != null && this.rooms[x][y - 1].getType() == type) {
+            roomsNearby++;
         }
-        if (y + 1 < this.size && this.rooms[x][y + 1] != null && this.rooms[x][y + 1].getType() == RoomType.DEFAULT) {
-            nearRoomCount++;
+        if (y + 1 < this.size && this.rooms[x][y + 1] != null && this.rooms[x][y + 1].getType() == type) {
+            roomsNearby++;
         }
-        return nearRoomCount;
+        return roomsNearby;
+    }
+
+    private int roomsNearby(int x, int y) {
+        int roomsNearby = 0;
+        if (x - 1 >= 0 && this.rooms[x - 1][y] != null) {
+            roomsNearby++;
+        }
+        if (x + 1 < this.size && this.rooms[x + 1][y] != null) {
+            roomsNearby++;
+        }
+        if (y - 1 >= 0 && this.rooms[x][y - 1] != null) {
+            roomsNearby++;
+        }
+        if (y + 1 < this.size && this.rooms[x][y + 1] != null) {
+            roomsNearby++;
+        }
+        return roomsNearby;
     }
 
     public void queueChangeRoom(Side side) {

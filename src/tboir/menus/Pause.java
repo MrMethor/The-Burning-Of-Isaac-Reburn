@@ -12,7 +12,7 @@ public class Pause extends MenuType {
     @Override
     protected void setupButtons() {
         int buttonSize = 500;
-        int centerX = 1920 / 2 - buttonSize / 2;
+        int centerX = this.getCenter(buttonSize);
         this.addButton("resume", "RESUME", true, centerX, 550, buttonSize);
         this.addButton("menu", "EXIT", false, centerX, 700, buttonSize);
     }
@@ -28,7 +28,7 @@ public class Pause extends MenuType {
     @Override
     protected void keyPressed(String name) {
         switch (name) {
-            case "escape" -> this.getWrap().changeState(GameState.GAME);
+            case "menu" -> this.getWrap().changeState(GameState.GAME);
         }
     }
 }

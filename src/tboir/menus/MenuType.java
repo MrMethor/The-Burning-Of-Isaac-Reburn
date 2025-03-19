@@ -28,10 +28,10 @@ public abstract class MenuType {
     }
 
     public void update() {
-        var commands = this.wrap.getCommands();
+        var commands = this.wrap.getPressCommands();
         for (int i = 0; i < commands.size(); i++) {
             switch (commands.get(i).command()) {
-                case leftClick -> {
+                case interact -> {
                     int fi = i;
                     this.buttons.forEach((string, button) -> {
                         if (button.isWithinBounds(commands.get(fi).x(), commands.get(fi).y())) {
@@ -39,9 +39,9 @@ public abstract class MenuType {
                         }
                     });
                 }
-                case escape -> this.keyPressed("escape");
+                case menu -> this.keyPressed("menu");
             }
-            this.wrap.getControls().removeCommand(commands.get(i));
+            this.wrap.getControls().removePressCommand(commands.get(i));
         }
         this.buttons.forEach((_, button) -> button.update());
     }
@@ -53,8 +53,16 @@ public abstract class MenuType {
         this.buttons.forEach((_, button) -> button.render(g));
     }
 
+    protected int getCenter(int buttonSize) {
+        return 1920 / 2 - buttonSize / 2;
+    }
+
     protected void addButton(String name, String label, boolean isOn, int x, int y, int size) {
-        this.buttons.put(name, new Button(this.wrap, label, x, y, size, isOn));
+        this.buttons.put(name, new Button(this.wrap, label, x, y, size, isOn, true));
+    }
+
+    protected void addGhostButton(String name, String label, boolean isOn, int x, int y, int size) {
+        this.buttons.put(name, new Button(this.wrap, label, x, y, size, isOn, false));
     }
 
     protected void toggleButton(String name) {
@@ -63,6 +71,10 @@ public abstract class MenuType {
 
     protected Wrap getWrap() {
         return this.wrap;
+    }
+
+    protected Button getButton(String name) {
+        return this.buttons.get(name);
     }
 
     protected abstract void setupButtons();

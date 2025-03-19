@@ -2,10 +2,7 @@ package tboir;
 
 import tboir.enums.StateTransition;
 import tboir.engine.Wrap;
-import tboir.menus.DeathScreen;
-import tboir.menus.Menu;
-import tboir.menus.Pause;
-import tboir.menus.Settings;
+import tboir.menus.*;
 
 import java.awt.Canvas;
 import java.awt.Graphics2D;
@@ -26,6 +23,7 @@ public class Main extends Canvas implements Runnable {
     private Game game;
     private Pause pause;
     private Settings settings;
+    private Keybinds keybinds;
     private DeathScreen deathScreen;
 
     public Main() {
@@ -83,6 +81,7 @@ public class Main extends Canvas implements Runnable {
             case GAME -> this.game.update();
             case PAUSE -> this.pause.update();
             case SETTINGS -> this.settings.update();
+            case KEYBINDS -> this.keybinds.update();
             case DEATH -> this.deathScreen.update();
         }
 
@@ -102,6 +101,7 @@ public class Main extends Canvas implements Runnable {
             case GAME -> this.game.render(g);
             case PAUSE -> this.pause.render(g);
             case SETTINGS -> this.settings.render(g);
+            case KEYBINDS -> this.keybinds.render(g);
             case DEATH -> this.deathScreen.render(g);
         }
 
@@ -142,6 +142,12 @@ public class Main extends Canvas implements Runnable {
             case SETTINGS_TO_MENU -> {
                 this.menu = new Menu(this.wrap);
                 this.settings = null;
+            }
+            case SETTINGS_TO_KEYBINDS -> {
+                this.keybinds = new Keybinds(this.wrap);
+            }
+            case APPLY_KEYBINDS -> {
+                this.keybinds = null;
             }
             case EXIT_GAME -> this.stop();
         }

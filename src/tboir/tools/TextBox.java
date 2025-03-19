@@ -81,4 +81,8 @@ public class TextBox {
     private int calculateY(FontMetrics metrics) {
         return this.y + (this.height - metrics.getHeight()) / 2 + metrics.getAscent();
     }
+
+    public String getText() {
+        return this.text;
+    }
 }

@@ -28,14 +28,14 @@ public class Game {
         if (this.map.changeLevelRequest()) {
             this.changeLevel();
         }
-        for (int i = 0; i < this.wrap.getCommands().size(); i++) {
-            switch (this.wrap.getCommands().get(i).command()) {
-                case escape -> this.wrap.changeState(GameState.PAUSE);
+        for (int i = 0; i < this.wrap.getPressCommands().size(); i++) {
+            switch (this.wrap.getPressCommands().get(i).command()) {
+                case menu -> this.wrap.changeState(GameState.PAUSE);
                 default -> {
                     continue;
                 }
             }
-            this.wrap.getControls().removeCommand(this.wrap.getCommands().get(i));
+            this.wrap.getControls().removePressCommand(this.wrap.getPressCommands().get(i));
         }
         this.map.update();
         if (this.player.isDead()) {

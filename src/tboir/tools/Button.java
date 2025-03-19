@@ -18,15 +18,17 @@ public class Button {
     private final int width;
     private final int height;
     private boolean hovered;
+    private boolean hoverable;
     private boolean isOn;
 
-    public Button(Wrap wrap, String label, int x, int y, int size, boolean isOn) {
+    public Button(Wrap wrap, String label, int x, int y, int size, boolean isOn, boolean hoverable) {
         this.wrap = wrap;
         this.x = x;
         this.y = y;
         this.width = size;
         this.height = (int)(size / 480.0 * 100.0);
         this.isOn = isOn;
+        this.hoverable = hoverable;
         String path = this.isOn ? "resource/hud/onButton.png" : "resource/hud/offButton.png";
 
         Color color = Color.decode("#BBBBBB");
@@ -36,6 +38,9 @@ public class Button {
 
     public void update() {
         boolean isHovered = this.isWithinBounds(this.wrap.getMouseX(), this.wrap.getMouseY());
+        if (!this.hoverable) {
+            return;
+        }
         if (this.hovered != isHovered) {
             if (isHovered) {
                 this.label.changeColor(Color.decode("#CFCFCF"));
@@ -62,5 +67,13 @@ public class Button {
         this.isOn = !this.isOn;
         String path = this.isOn ? "resource/hud/onButton.png" : "resource/hud/offButton.png";
         this.image.changeImage(path);
+    }
+
+    public void changeLabel(String newLabel) {
+        this.label.changeText(newLabel);
+    }
+
+    public String getLabel() {
+        return this.label.getText();
     }
 }

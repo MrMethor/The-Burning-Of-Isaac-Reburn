@@ -12,7 +12,7 @@ public class Menu extends MenuType {
     @Override
     protected void setupButtons() {
         int buttonSize = 400;
-        int centerX = 1920 / 2 - buttonSize / 2;
+        int centerX = this.getCenter(buttonSize);
         this.addButton("start", "BEGIN", true, centerX, 750, buttonSize);
         this.addButton("settings", "SETTINGS", false, centerX, 850, buttonSize);
         this.addButton("exit", "EXIT", false, centerX, 950, buttonSize);

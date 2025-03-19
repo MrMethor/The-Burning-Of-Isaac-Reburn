@@ -1,6 +1,6 @@
 package tboir.engine;
 
-import tboir.enums.Actions;
+import tboir.enums.Commands;
 import tboir.enums.GameState;
 import tboir.tools.Coords;
 import tboir.tools.ItemTemplate;
@@ -50,10 +50,10 @@ public class Wrap {
         this.gameState = GameState.MENU;
         this.entityCount = 0;
 
-        boolean defaultFullscreen = false;
-        boolean defaultDebug = false;
         int defaultWidth = 0;
         int defaultUps = 60;
+        boolean defaultFullscreen = false;
+        boolean defaultDebug = false;
         this.loadConfigFile(defaultFullscreen, defaultDebug, defaultWidth, defaultUps);
 
         this.setupDebug();
@@ -269,12 +269,12 @@ public class Wrap {
         return this.screen.getScale();
     }
 
-    public ArrayList<Coords> getCommands() {
-        return this.controls.getCommands();
+    public ArrayList<Coords> getPressCommands() {
+        return this.controls.getPressCommands();
     }
 
-    public ArrayList<Actions> getActions() {
-        return this.controls.getActions();
+    public ArrayList<Commands> getToggleCommands() {
+        return this.controls.getToggleCommands();
     }
 
     public double getMouseX() {

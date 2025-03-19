@@ -71,9 +71,9 @@ public class Player extends PhysicalEntity {
         boolean fireLeft = false;
         boolean fireRight = false;
 
-        var actions = this.getWrap().getActions();
-        for (int i = 0; i < actions.size(); i++) {
-            switch (actions.get(i)) {
+        var commands = this.getWrap().getToggleCommands();
+        for (int i = 0; i < commands.size(); i++) {
+            switch (commands.get(i)) {
                 case moveUp -> playerY -= 1;
                 case moveDown -> playerY += 1;
                 case moveRight -> playerX += 1;
