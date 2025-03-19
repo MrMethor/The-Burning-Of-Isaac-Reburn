@@ -89,7 +89,7 @@ public class Wrap {
 
     private void loadItemRegistry() {
         try {
-            File file = new File("resource/items/itemRegistry.txt");
+            File file = new File("resource/items/itemRegistry.csv");
             Scanner itemCounter = new Scanner(file);
             itemCounter.nextLine();
             int itemCount = 0;
@@ -101,20 +101,24 @@ public class Wrap {
             Scanner itemReader = new Scanner(file);
             itemReader.useLocale(Locale.US);
             itemReader.nextLine();
-            while (itemReader.hasNextInt()) {
-                int id = itemReader.nextInt();
-                String itemPath = itemReader.next();
-                int redHearts = itemReader.nextInt();
-                int redContainers = itemReader.nextInt();
-                int soulHearts = itemReader.nextInt();
-                double damage = itemReader.nextDouble();
-                double range = itemReader.nextDouble();
-                double shotSpeed = itemReader.nextDouble();
-                double fireSpeed = itemReader.nextDouble();
-                double shotSize = itemReader.nextDouble();
-                double speed = itemReader.nextDouble();
-                int size = itemReader.nextInt();
-                boolean special = itemReader.nextInt() == 1;
+            while (itemReader.hasNextLine()) {
+                String[] newItem = itemReader.nextLine().split(",", -1);
+                for (int i = 0; i < newItem.length; i++) {
+                    newItem[i] = newItem[i].isEmpty() ? "0" : newItem[i];
+                }
+                int id = Integer.parseInt(newItem[0]);
+                String itemPath = newItem[1];
+                int redHearts = Integer.parseInt(newItem[2]);
+                int redContainers = Integer.parseInt(newItem[3]);
+                int soulHearts = Integer.parseInt(newItem[4]);
+                double damage = Double.parseDouble(newItem[5]);
+                double range = Double.parseDouble(newItem[6]);
+                double shotSpeed = Double.parseDouble(newItem[7]);
+                double fireSpeed = Double.parseDouble(newItem[8]);
+                double shotSize = Double.parseDouble(newItem[9]);
+                double speed = Double.parseDouble(newItem[10]);
+                int size = Integer.parseInt(newItem[11]);
+                boolean special = Integer.parseInt(newItem[12]) == 1;
                 this.itemRegistry[id] = new ItemTemplate(itemPath, redHearts, redContainers, soulHearts, damage, range, shotSpeed, fireSpeed, shotSize, speed, size, special);
             }
         } catch (FileNotFoundException e) {
@@ -200,9 +204,6 @@ public class Wrap {
         } catch (IOException e) {
             System.out.println("Error when writing to a file");
         }
-
-
-
     }
 
     public void updateEntityCount(int count) {
