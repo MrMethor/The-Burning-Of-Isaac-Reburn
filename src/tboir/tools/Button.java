@@ -18,7 +18,7 @@ public class Button {
     private final int width;
     private final int height;
     private boolean hovered;
-    private boolean hoverable;
+    private final boolean hoverable;
     private boolean isOn;
 
     public Button(Wrap wrap, String label, int x, int y, int size, boolean isOn, boolean hoverable) {

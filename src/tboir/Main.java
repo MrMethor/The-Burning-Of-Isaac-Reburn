@@ -2,7 +2,11 @@ package tboir;
 
 import tboir.enums.StateTransition;
 import tboir.engine.Wrap;
-import tboir.menus.*;
+import tboir.menus.Menu;
+import tboir.menus.Pause;
+import tboir.menus.Settings;
+import tboir.menus.Keybinds;
+import tboir.menus.DeathScreen;
 
 import java.awt.Canvas;
 import java.awt.Graphics2D;
@@ -143,12 +147,8 @@ public class Main extends Canvas implements Runnable {
                 this.menu = new Menu(this.wrap);
                 this.settings = null;
             }
-            case SETTINGS_TO_KEYBINDS -> {
-                this.keybinds = new Keybinds(this.wrap);
-            }
-            case APPLY_KEYBINDS -> {
-                this.keybinds = null;
-            }
+            case SETTINGS_TO_KEYBINDS -> this.keybinds = new Keybinds(this.wrap);
+            case APPLY_KEYBINDS -> this.keybinds = null;
             case EXIT_GAME -> this.stop();
         }
         this.wrap.updateGameState(this.wrap.getNewState());
