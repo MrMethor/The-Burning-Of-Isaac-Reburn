@@ -213,9 +213,9 @@ public class Player extends PhysicalEntity {
     private void hit(double damage) {
         if (this.gracePeriodCounter == 0) {
             if (this.soulHearts > 0) {
-                this.soulHearts -= damage;
+                this.soulHearts -= (int)damage;
             } else {
-                this.redHearts -= damage;
+                this.redHearts -= (int)damage;
             }
 
             this.gracePeriodCounter = this.gracePeriod;
