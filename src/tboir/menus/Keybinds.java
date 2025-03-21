@@ -10,8 +10,7 @@ import java.util.HashMap;
 
 public class Keybinds extends MenuType {
 
-    private Commands[] currentKeybinds;
-    private HashMap<Commands, Character> keybinds;
+    private HashMap<Commands, Integer> keybinds;
 
     private String prevKeyName;
     private String prevKeyLabel;
@@ -23,21 +22,19 @@ public class Keybinds extends MenuType {
     @Override
     protected void setupButtons() {
         this.loadKeybindings();
-        int otherButtonSize = 300;
         int buttonSize = 300;
-        int otherCenterX = this.getCenter(otherButtonSize);
+        int otherCenterX = this.getCenter(buttonSize);
         int nameButtonX = this.getCenter(buttonSize) - buttonSize / 2;
         int keyButtonX = this.getCenter(buttonSize) + buttonSize / 2;
         int buttonY = 275;
-        for (int i = 0; i < Commands.values().length; i++) {
-            if (Commands.values()[i].isEditable()) {
-                this.addGhostButton(String.valueOf(i), Commands.values()[i].getName(), true, nameButtonX, buttonY + i * buttonSize / 4, buttonSize);
-                this.addButton(Commands.values()[i].toString(), KeyEvent.getKeyText((this.keybinds.get(Commands.values()[i]))), false, keyButtonX, buttonY + i * buttonSize / 4, buttonSize);
-            }
+        for (int i = 0; i < Commands.numOfEditable(); i++) {
+            this.addGhostButton(String.valueOf(i), Commands.getCommand(i).getName(), true, nameButtonX, buttonY + i * buttonSize / 4, buttonSize);
+            String keyName = KeyEvent.getKeyText((this.keybinds.get(Commands.getCommand(i))));
+            this.addButton(Commands.getCommand(i).toString(), keyName, false, keyButtonX, buttonY + i * buttonSize / 4, buttonSize);
         }
-        this.addButton("apply", "APPLY", true, otherCenterX + 150, 1000, otherButtonSize);
-        this.addButton("restore", "RESTORE", false, otherCenterX, 900, otherButtonSize);
-        this.addButton("menu", "BACK", false, otherCenterX - 150, 1000, otherButtonSize);
+        this.addButton("apply", "APPLY", true, otherCenterX + 150, 1000, buttonSize);
+        this.addButton("restore", "RESTORE", false, otherCenterX, 900, buttonSize);
+        this.addButton("menu", "BACK", false, otherCenterX - 150, 1000, buttonSize);
     }
 
     @Override
@@ -53,8 +50,8 @@ public class Keybinds extends MenuType {
                 this.getWrap().changeState(GameState.SETTINGS);
             }
             default -> {
-                for (int i = 0; i < 255; i++) {
-                    if (this.currentKeybinds[i] != null && this.currentKeybinds[i].toString().equals(name)) {
+                for (int i = 0; i < Commands.numOfEditable(); i++) {
+                    if (name.equals(Commands.getCommand(i).toString())) {
                         this.getWrap().getControls().newEditedKey(new EditedKey(name, this));
                         this.prevKeyName = name;
                         this.prevKeyLabel = this.getButton(name).getLabel();
@@ -74,21 +71,14 @@ public class Keybinds extends MenuType {
 
     private void loadKeybindings() {
         this.keybinds = new HashMap<>();
-        this.currentKeybinds = this.getWrap().getControls().getKeybinds();
-        for (Commands command : Commands.values()) {
-            if (command.isEditable()) {
-                this.addKeybind(command);
-            }
+        for (int i = 0; i < Commands.numOfEditable(); i++) {
+            this.keybinds.put(Commands.getCommand(i), this.getCharByCommand(Commands.getCommand(i)));
         }
     }
 
-    private void addKeybind(Commands command) {
-        this.keybinds.put(command, (char)this.getCharByCommand(command));
-    }
-
     private int getCharByCommand(Commands commandToFind) {
-        for (int i = 0; i < this.currentKeybinds.length; i++) {
-            if (this.currentKeybinds[i] == commandToFind) {
+        for (int i = 0; i < this.getWrap().getControls().getKeybinds().length; i++) {
+            if (this.getWrap().getControls().getKeybinds()[i] == commandToFind) {
                 return i;
             }
         }
@@ -100,7 +90,14 @@ public class Keybinds extends MenuType {
     }
 
     public void updateKeybinds(String name, int e) {
-        this.keybinds.replace(Commands.valueOf(name), (char)e);
-        this.getButton(name).changeLabel(KeyEvent.getKeyText(e));
+        if (e != 0) {
+            for (int i = 0; i < Commands.numOfEditable(); i++) {
+                if (this.keybinds.get(Commands.getCommand(i)) == e) {
+                    this.updateKeybinds(Commands.getCommand(i).toString(), 0);
+                }
+            }
+        }
+        this.keybinds.replace(Commands.valueOf(name), e);
+        this.getButton(name).changeLabel(e == 0 ? "" : KeyEvent.getKeyText(e));
     }
 }

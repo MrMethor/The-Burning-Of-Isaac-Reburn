@@ -43,21 +43,17 @@ public class Controls implements MouseListener, KeyListener, MouseMotionListener
         this.reloadConfig();
     }
 
-    public void changeKeybinds(HashMap<Commands, Character> keybinds) {
+    public void changeKeybinds(HashMap<Commands, Integer> keybinds) {
         if (!Wrap.replaceFile(USER_KEY_PATH, "user key")) {
             return;
         }
         try {
             FileWriter writer = new FileWriter(USER_KEY_PATH);
-
-            for (int i = 0; i < Commands.values().length; i++) {
-                if (Commands.values()[i].isEditable()) {
-                    writer.write(Commands.values()[i] + " " + (int)keybinds.get(Commands.values()[i]) + "\n");
-                }
+            for (int i = 0; i < Commands.numOfEditable(); i++) {
+                writer.write(Commands.getCommand(i) + " " + keybinds.get(Commands.getCommand(i)) + "\n");
             }
             writer.close();
             System.out.println("New config saved");
-
             this.reloadConfig();
         } catch (IOException e) {
             System.out.println("Error when writing to a file");
@@ -136,6 +132,9 @@ public class Controls implements MouseListener, KeyListener, MouseMotionListener
 
     @Override
     public void keyReleased(KeyEvent e) {
+        if (this.editedKey != null) {
+            return;
+        }
         if (this.keybinds[e.getKeyCode()] != null) {
             this.removeToggleCommand(this.keybinds[e.getKeyCode()]);
         }
