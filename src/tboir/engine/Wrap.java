@@ -164,28 +164,43 @@ public class Wrap {
         return false;
     }
 
-    private void saveNewSettings() {
-        try {
-            File file = new File(DEFAULT_SETTINGS_PATH);
-            if (file.exists()) {
-                if (file.delete()) {
-                    System.out.println("Old config file removed");
-                } else {
-                    System.out.println("Couldn't remove old config file, something went wrong");
-                    return;
-                }
-            }
-            if (file.createNewFile()) {
-                System.out.println("New config file created");
+    public static boolean removeFile(String path, String name) {
+        File file = new File(path);
+        if (file.exists()) {
+            if (file.delete()) {
+                System.out.println("Old " + name + " file removed");
             } else {
-                System.out.println("Couldn't create new config file");
-                return;
+                System.out.println("Couldn't remove " + name + "  file, something went wrong");
+                return false;
             }
-
-        } catch (IOException e) {
-            System.out.println("Something bad happened");
         }
+        return true;
+    }
 
+    public static boolean replaceFile(String path, String name) {
+        if (!removeFile(path, name)) {
+            System.out.println("Something bad happened while creating " + name);
+            return false;
+        }
+        try {
+            File file = new File(path);
+            if (file.createNewFile()) {
+                System.out.println("New " + name + " created");
+            } else {
+                System.out.println("Couldn't create new " + name + " file");
+                return false;
+            }
+        } catch (IOException e) {
+            System.out.println("Something bad happened while creating " + name);
+            return false;
+        }
+        return true;
+    }
+
+    private void saveNewSettings() {
+        if (!replaceFile(DEFAULT_SETTINGS_PATH, "config")) {
+            return;
+        }
         try {
             FileWriter writer = new FileWriter(DEFAULT_SETTINGS_PATH);
 

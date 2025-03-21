@@ -1,0 +1,8 @@
+moveUp 84
+moveDown 83
+moveLeft 65
+moveRight 68
+fireUp 38
+fireDown 40
+fireLeft 37
+fireRight 39

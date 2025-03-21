@@ -11,8 +11,11 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Controls implements MouseListener, KeyListener, MouseMotionListener {
@@ -37,6 +40,36 @@ public class Controls implements MouseListener, KeyListener, MouseMotionListener
         this.toggleCommands = new ArrayList<>();
         this.mouseCoords = new double[2];
 
+        this.reloadConfig();
+    }
+
+    public void changeKeybinds(HashMap<Commands, Character> keybinds) {
+        if (!Wrap.replaceFile(USER_KEY_PATH, "user key")) {
+            return;
+        }
+        try {
+            FileWriter writer = new FileWriter(USER_KEY_PATH);
+
+            for (int i = 0; i < Commands.values().length; i++) {
+                if (Commands.values()[i].isEditable()) {
+                    writer.write(Commands.values()[i] + " " + (int)keybinds.get(Commands.values()[i]) + "\n");
+                }
+            }
+            writer.close();
+            System.out.println("New config saved");
+
+            this.reloadConfig();
+        } catch (IOException e) {
+            System.out.println("Error when writing to a file");
+        }
+    }
+
+    public void resetToDefault() {
+        Wrap.removeFile(USER_KEY_PATH, "user path");
+        this.reloadConfig();
+    }
+
+    private void reloadConfig() {
         boolean useDefaultKeyConfig = true;
         if (this.hasUserConfig()) {
             if (this.loadKeyConfig(USER_KEY_PATH)) {
@@ -49,7 +82,6 @@ public class Controls implements MouseListener, KeyListener, MouseMotionListener
                 System.out.println("Couldn't load default key config");
             }
         }
-
     }
 
     private boolean hasUserConfig() {
@@ -62,6 +94,7 @@ public class Controls implements MouseListener, KeyListener, MouseMotionListener
         try {
             File file = new File(path);
             Scanner reader = new Scanner(file);
+            Arrays.fill(this.keybinds, null);
             while (reader.hasNextLine()) {
                 String line = reader.nextLine();
                 String[] input = line.split(" ", 2);
@@ -69,6 +102,7 @@ public class Controls implements MouseListener, KeyListener, MouseMotionListener
                     System.out.println("Corrupted keyConfig file!");
                     return isSuccess;
                 }
+
                 if (Arrays.asList(Commands.values()).contains(Commands.valueOf(input[0]))) {
                     this.keybinds[Integer.parseInt(input[1])] = Commands.valueOf(input[0]);
                 }

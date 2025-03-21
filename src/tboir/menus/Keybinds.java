@@ -5,6 +5,7 @@ import tboir.enums.Commands;
 import tboir.enums.GameState;
 import tboir.tools.EditedKey;
 
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
 public class Keybinds extends MenuType {
@@ -31,7 +32,7 @@ public class Keybinds extends MenuType {
         for (int i = 0; i < Commands.values().length; i++) {
             if (Commands.values()[i].isEditable()) {
                 this.addGhostButton(String.valueOf(i), Commands.values()[i].getName(), true, nameButtonX, buttonY + i * buttonSize / 4, buttonSize);
-                this.addButton(Commands.values()[i].toString(), String.valueOf(this.keybinds.get(Commands.values()[i])), false, keyButtonX, buttonY + i * buttonSize / 4, buttonSize);
+                this.addButton(Commands.values()[i].toString(), KeyEvent.getKeyText((this.keybinds.get(Commands.values()[i]))), false, keyButtonX, buttonY + i * buttonSize / 4, buttonSize);
             }
         }
         this.addButton("apply", "APPLY", true, otherCenterX + 150, 1000, otherButtonSize);
@@ -43,10 +44,14 @@ public class Keybinds extends MenuType {
     protected void buttonClicked(String name) {
         switch (name) {
             case "apply" -> {
-                // apply keybindings
+                this.getWrap().getControls().changeKeybinds(this.keybinds);
                 this.getWrap().changeState(GameState.SETTINGS);
             }
             case "menu" -> this.getWrap().changeState(GameState.SETTINGS);
+            case "restore" -> {
+                this.getWrap().getControls().resetToDefault();
+                this.getWrap().changeState(GameState.SETTINGS);
+            }
             default -> {
                 for (int i = 0; i < 255; i++) {
                     if (this.currentKeybinds[i] != null && this.currentKeybinds[i].toString().equals(name)) {
@@ -96,6 +101,6 @@ public class Keybinds extends MenuType {
 
     public void updateKeybinds(String name, int e) {
         this.keybinds.replace(Commands.valueOf(name), (char)e);
-        this.getButton(name).changeLabel(String.valueOf((char)e));
+        this.getButton(name).changeLabel(KeyEvent.getKeyText(e));
     }
 }
