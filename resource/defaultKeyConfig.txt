@@ -6,3 +6,4 @@ fireUp 38
 fireDown 40
 fireLeft 37
 fireRight 39
+fullscreen 70

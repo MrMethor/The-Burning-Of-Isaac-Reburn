@@ -1,12 +1,15 @@
 package tboir;
 
+import tboir.enums.Commands;
+import tboir.enums.GameState;
 import tboir.enums.StateTransition;
 import tboir.engine.Wrap;
-import tboir.menus.Menu;
-import tboir.menus.Pause;
+import tboir.menus.MenuType;
 import tboir.menus.Settings;
-import tboir.menus.Keybinds;
+import tboir.menus.Menu;
 import tboir.menus.DeathScreen;
+import tboir.menus.Pause;
+import tboir.menus.Keybinds;
 
 import java.awt.Canvas;
 import java.awt.Graphics2D;
@@ -23,12 +26,8 @@ public class Main extends Canvas implements Runnable {
     private JFrame frame;
 
     private final Wrap wrap;
-    private Menu menu;
     private Game game;
-    private Pause pause;
-    private Settings settings;
-    private Keybinds keybinds;
-    private DeathScreen deathScreen;
+    private MenuType menu;
 
     public Main() {
         this.frame = null;
@@ -72,6 +71,10 @@ public class Main extends Canvas implements Runnable {
             this.setupFrame();
         }
 
+        if (this.wrap.toggleFullscreen()) {
+            this.setupFrame();
+        }
+
         if (this.wrap.getGameState() != this.wrap.getNewState()) {
             this.updateState();
         }
@@ -80,13 +83,17 @@ public class Main extends Canvas implements Runnable {
             this.wrap.updateDebug();
         }
 
-        switch (this.wrap.getGameState()) {
-            case MENU -> this.menu.update();
-            case GAME -> this.game.update();
-            case PAUSE -> this.pause.update();
-            case SETTINGS -> this.settings.update();
-            case KEYBINDS -> this.keybinds.update();
-            case DEATH -> this.deathScreen.update();
+        for (int i = 0; i < this.wrap.getPressCommands().size(); i++) {
+            if (this.wrap.getPressCommands().get(i).command() == Commands.fullscreen) {
+                this.wrap.isToToggleFullscreen();
+                this.wrap.getControls().removePressCommand(this.wrap.getPressCommands().get(i));
+            }
+        }
+
+        if (this.wrap.getGameState() == GameState.GAME) {
+            this.game.update();
+        } else {
+            this.menu.update();
         }
 
         this.frame.setCursor(this.wrap.getCursor());
@@ -100,13 +107,10 @@ public class Main extends Canvas implements Runnable {
         }
         Graphics2D g = (Graphics2D)bs.getDrawGraphics();
 
-        switch (this.wrap.getGameState()) {
-            case MENU -> this.menu.render(g);
-            case GAME -> this.game.render(g);
-            case PAUSE -> this.pause.render(g);
-            case SETTINGS -> this.settings.render(g);
-            case KEYBINDS -> this.keybinds.render(g);
-            case DEATH -> this.deathScreen.render(g);
+        if (this.wrap.getGameState() == GameState.GAME) {
+            this.game.render(g);
+        } else {
+            this.menu.render(g);
         }
 
         if (this.wrap.isDebug()) {
@@ -119,36 +123,20 @@ public class Main extends Canvas implements Runnable {
 
     private void updateState() {
         switch (StateTransition.getTransition(this.wrap.getGameState(), this.wrap.getNewState())) {
-            case START_GAME -> {
+            case START_GAME, RESTART -> {
                 this.game = new Game(this.wrap);
                 this.menu = null;
             }
-            case PAUSE_GAME -> this.pause = new Pause(this.wrap);
-            case RESUME_GAME -> this.pause = null;
-            case DEATH -> this.deathScreen = new DeathScreen(this.wrap);
-            case EXIT_DEATH -> {
-                this.menu = new Menu(this.wrap);
-                this.deathScreen = null;
-                this.game = null;
-            }
-            case RESTART -> {
-                this.game = new Game(this.wrap);
-                this.deathScreen = null;
-            }
-            case BACK_TO_MENU -> {
+            case PAUSE_GAME -> this.menu = new Pause(this.wrap);
+            case RESUME_GAME -> this.menu = null;
+            case DEATH -> this.menu = new DeathScreen(this.wrap);
+            case EXIT_DEATH, BACK_TO_MENU -> {
                 this.menu = new Menu(this.wrap);
                 this.game = null;
             }
-            case MENU_TO_SETTINGS -> {
-                this.settings = new Settings(this.wrap);
-                this.menu = null;
-            }
-            case SETTINGS_TO_MENU -> {
-                this.menu = new Menu(this.wrap);
-                this.settings = null;
-            }
-            case SETTINGS_TO_KEYBINDS -> this.keybinds = new Keybinds(this.wrap);
-            case APPLY_KEYBINDS -> this.keybinds = null;
+            case MENU_TO_SETTINGS, APPLY_KEYBINDS -> this.menu = new Settings(this.wrap);
+            case SETTINGS_TO_MENU -> this.menu = new Menu(this.wrap);
+            case SETTINGS_TO_KEYBINDS -> this.menu = new Keybinds(this.wrap);
             case EXIT_GAME -> this.stop();
         }
         this.wrap.updateGameState(this.wrap.getNewState());

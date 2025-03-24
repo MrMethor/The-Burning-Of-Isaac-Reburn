@@ -29,6 +29,7 @@ public class Wrap {
 
     private GameState newState;
     private GameState gameState;
+    private boolean toggleFullscreen;
     private HashMap<String, Boolean> newSettings;
     private Screen screen;
     private final Controls controls;
@@ -42,6 +43,7 @@ public class Wrap {
     private final ArrayList<TextBox> debug;
 
     public Wrap() {
+        this.toggleFullscreen = false;
         this.debug = new ArrayList<>();
         this.controls = new Controls(this);
         this.interpolation = new Interpolation();
@@ -164,6 +166,21 @@ public class Wrap {
         return false;
     }
 
+    public boolean toggleFullscreen() {
+        if (this.toggleFullscreen) {
+            this.screen.toggleFullscreen();
+            this.toggleFullscreen = false;
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public void isToToggleFullscreen() {
+        this.toggleFullscreen = true;
+    }
+
     public static boolean removeFile(String path, String name) {
         File file = new File(path);
         if (file.exists()) {
@@ -204,7 +221,7 @@ public class Wrap {
         try {
             FileWriter writer = new FileWriter(DEFAULT_SETTINGS_PATH);
 
-            writer.write("width " + this.screen.getWidth() + "\n");
+            writer.write("width " + this.screen.getWindowedWidth() + "\n");
             writer.write("ups " + this.counter.getDesiredUPS() + "\n");
 
             Iterator<Map.Entry<String, Boolean>> it = this.newSettings.entrySet().iterator();

@@ -121,12 +121,17 @@ public class Controls implements MouseListener, KeyListener, MouseMotionListener
             }
             this.editedKey.keybinds().updateKeybinds(this.editedKey.name(), e.getKeyCode());
             this.editedKey = null;
+            return;
         }
         if (this.keybinds[e.getKeyCode()] != null) {
-            this.addToggleCommand(this.keybinds[e.getKeyCode()]);
+            if (this.keybinds[e.getKeyCode()].isPressCommand()) {
+                this.addPressCommand(this.keybinds[e.getKeyCode()], 0, 0);
+            } else {
+                this.addToggleCommand(this.keybinds[e.getKeyCode()]);
+            }
         }
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            this.addPressCommand(Commands.menu, 0, 0);
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_ESCAPE -> this.addPressCommand(Commands.menu, 0, 0);
         }
     }
 

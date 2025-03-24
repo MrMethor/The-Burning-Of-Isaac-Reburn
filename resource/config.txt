@@ -1,5 +1,5 @@
-width 1600
+width 1200
 ups 60
-debug true
-fullscreen false
+debug false
+fullscreen true
 hitbox false

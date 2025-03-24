@@ -24,10 +24,10 @@ public class Image {
         } catch (IOException e) {
             System.out.println("Couldn't find the file " + path);
         }
-        this.x = (int)(x * wrap.getScale());
-        this.y = (int)(y * wrap.getScale());
-        this.width = (int)(width * wrap.getScale());
-        this.height = (int)(height * wrap.getScale());
+        this.x = (int)x;
+        this.y = (int)y;
+        this.width = (int)width;
+        this.height = (int)height;
     }
 
     public Image(Wrap wrap, String path, double x, double y) {
@@ -37,29 +37,29 @@ public class Image {
         } catch (IOException e) {
             System.out.println("Couldn't find the file");
         }
-        this.x = (int)(x * wrap.getScale());
-        this.y = (int)(y * wrap.getScale());
-        this.width = (int)((double)this.image.getWidth() * wrap.getScale());
-        this.height = (int)((double)this.image.getHeight() * wrap.getScale());
+        this.x = (int)x;
+        this.y = (int)y;
+        this.width = this.image.getWidth();
+        this.height = this.image.getHeight();
     }
 
     public Image(Wrap wrap, BufferedImage image, double x, double y, double width, double height) {
         this.wrap = wrap;
         this.image = image;
-        this.x = (int)(x * wrap.getScale());
-        this.y = (int)(y * wrap.getScale());
-        this.width = (int)(width * wrap.getScale());
-        this.height = (int)(height * wrap.getScale());
+        this.x = (int)x;
+        this.y = (int)y;
+        this.width = (int)width;
+        this.height = (int)height;
     }
 
     public void changePosition(double x, double y) {
-        this.x = (int)(x * this.wrap.getScale());
-        this.y = (int)(y * this.wrap.getScale());
+        this.x = (int)x;
+        this.y = (int)y;
     }
 
     public void changeSize(double width, double height) {
-        this.width = (int)(width * this.wrap.getScale());
-        this.height = (int)(height * this.wrap.getScale());
+        this.width = (int)width;
+        this.height = (int)height;
     }
 
     public void changeImage(String path) {
@@ -78,11 +78,7 @@ public class Image {
         if (this.image == null) {
             return;
         }
-        if (this.width != this.image.getWidth() || this.height != this.image.getHeight()) {
-            g.drawImage(this.image, this.x, this.y, this.width, this.height, null);
-        } else {
-            g.drawImage(this.image, this.x, this.y, null);
-        }
+        g.drawImage(this.image, (int)(this.x * this.wrap.getScale()), (int)(this.y * this.wrap.getScale()), (int)(this.width * this.wrap.getScale()), (int)(this.height * this.wrap.getScale()), null);
     }
 }
 

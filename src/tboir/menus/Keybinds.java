@@ -26,7 +26,7 @@ public class Keybinds extends MenuType {
         int otherCenterX = this.getCenter(buttonSize);
         int nameButtonX = this.getCenter(buttonSize) - buttonSize / 2;
         int keyButtonX = this.getCenter(buttonSize) + buttonSize / 2;
-        int buttonY = 275;
+        int buttonY = 200;
         for (int i = 0; i < Commands.numOfEditable(); i++) {
             this.addGhostButton(String.valueOf(i), Commands.getCommand(i).getName(), true, nameButtonX, buttonY + i * buttonSize / 4, buttonSize);
             String keyName = KeyEvent.getKeyText((this.keybinds.get(Commands.getCommand(i))));
