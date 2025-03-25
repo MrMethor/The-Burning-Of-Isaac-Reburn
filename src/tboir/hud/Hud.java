@@ -1,6 +1,8 @@
 package tboir.hud;
 
 import tboir.engine.Wrap;
+import tboir.map.Map;
+import tboir.map.Room;
 import tboir.tools.SpriteSheet;
 import tboir.tools.Image;
 
@@ -9,14 +11,22 @@ import java.util.Arrays;
 
 public class Hud {
 
+    public static final int MAX_HEARTS = 12;
+
     private final Wrap wrap;
-    private final SpriteSheet spriteSheet;
+    private final SpriteSheet heartsSpriteSheet;
+    private final SpriteSheet mapIconSpriteSheet;
     private final Image[] hearts;
+    private final Image[][] minimap;
+    private final Image[][] mapIcons;
 
     public Hud(Wrap wrap) {
         this.wrap = wrap;
-        this.hearts = new Image[12];
-        this.spriteSheet = new SpriteSheet(this.wrap, "resource/hud/hearts.png", 0, 0, 48, 32, 3, 2);
+        this.hearts = new Image[MAX_HEARTS];
+        this.minimap = new Image[Map.MAX_SIZE][Map.MAX_SIZE];
+        this.mapIcons = new Image[Map.MAX_SIZE][Map.MAX_SIZE];
+        this.heartsSpriteSheet = new SpriteSheet(this.wrap, "resource/hud/hearts.png", 0, 0, 48, 32, 3, 2);
+        this.mapIconSpriteSheet = new SpriteSheet(this.wrap, "resource/hud/mapIcons.png", 0, 0, 9, 8, 3, 2);
     }
 
     public void updateHearts(int redHearts, int containers, int soulHearts) {
@@ -52,16 +62,53 @@ public class Hud {
                 heart.draw(g);
             }
         }
+        for (int i = 0; i < Map.MAX_SIZE; i++) {
+            for (int j = 0; j < Map.MAX_SIZE; j++) {
+                if (this.mapIcons[i][j] != null) {
+                    this.minimap[i][j].draw(g);
+                    this.mapIcons[i][j].draw(g);
+                }
+            }
+        }
+    }
+
+    public void updateMap(int currentX, int currentY, Room[][] rooms) {
+        for (int i = 0; i < Map.MAX_SIZE; i++) {
+            Arrays.fill(this.mapIcons[i], null);
+            Arrays.fill(this.minimap[i], null);
+        }
+
+        int minimapComponentSize = 30;
+        int baseX = 1600;
+        int baseY = 0;
+        for (int i = 0; i < Map.MAX_SIZE; i++) {
+            for (int j = 0; j < Map.MAX_SIZE; j++) {
+                RoomState roomState = null;
+                if (rooms[i][j] == null) {
+                    continue;
+                }
+                if (i == currentX && j == currentY) {
+                    roomState = RoomState.currentlyIn;
+                } else if (rooms[i][j].isCompleted()) {
+                    roomState = RoomState.completed;
+                } else if (rooms[i][j].isExplored()) {
+                    roomState = RoomState.explored;
+                } else if ((i != 0 && rooms[i - 1][j] != null && rooms[i - 1][j].isExplored()) || (i + 1 != Map.MAX_SIZE && rooms[i + 1][j] != null && rooms[i + 1][j].isExplored()) || (j != 0 && rooms[i][j - 1] != null && rooms[i][j - 1].isExplored()) || (j + 1 != Map.MAX_SIZE && rooms[i][j + 1] != null && rooms[i][j + 1].isExplored())) {
+                    roomState = RoomState.explored;
+                }
+                if (roomState != null) {
+                    this.minimap[i][j] = new Image(this.wrap, this.mapIconSpriteSheet.getImage(roomState.ordinal(), 0), baseX + (i) * minimapComponentSize, baseY + (j) * minimapComponentSize, minimapComponentSize, minimapComponentSize);
+                    this.mapIcons[i][j] = new Image(this.wrap, this.mapIconSpriteSheet.getImage(rooms[i][j].getType().ordinal(), 1), baseX + (i) * minimapComponentSize, baseY + (j) * minimapComponentSize, minimapComponentSize, minimapComponentSize);
+                }
+            }
+        }
     }
 
     private void addHearts(int column, int row, int index) {
         int size = 70;
-
         int spacing = size - 10;
-
         int x = 50 + (index % (12 / 2)) * spacing;
         int y = 50 + (index / 6 * spacing);
-
-        this.hearts[index] = new Image(this.wrap, this.spriteSheet.getImage(column, row), x, y, size, size);
+        this.hearts[index] = new Image(this.wrap, this.heartsSpriteSheet.getImage(column, row), x, y, size, size);
     }
 }

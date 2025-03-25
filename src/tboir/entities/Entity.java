@@ -1,8 +1,7 @@
 package tboir.entities;
 
 import tboir.engine.Wrap;
-import tboir.enums.EntityType;
-import tboir.enums.Side;
+import tboir.engine.Side;
 import tboir.tools.EntityManager;
 import tboir.tools.Image;
 import tboir.tools.Collision;

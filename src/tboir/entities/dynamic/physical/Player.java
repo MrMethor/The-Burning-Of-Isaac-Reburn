@@ -2,8 +2,8 @@ package tboir.entities.dynamic.physical;
 
 import tboir.engine.Wrap;
 import tboir.entities.dynamic.projectiles.Fireball;
-import tboir.enums.EntityType;
-import tboir.enums.Side;
+import tboir.entities.EntityType;
+import tboir.engine.Side;
 import tboir.tools.Collision;
 import tboir.map.Map;
 import tboir.hud.Hud;

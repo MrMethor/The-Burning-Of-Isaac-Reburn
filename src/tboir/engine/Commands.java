@@ -1,4 +1,4 @@
-package tboir.enums;
+package tboir.engine;
 
 public enum Commands {
     moveUp ("Move Up", true, false),

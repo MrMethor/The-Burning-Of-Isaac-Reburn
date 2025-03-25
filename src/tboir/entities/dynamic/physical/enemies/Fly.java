@@ -2,7 +2,7 @@ package tboir.entities.dynamic.physical.enemies;
 
 import tboir.engine.Wrap;
 import tboir.entities.Entity;
-import tboir.enums.EntityType;
+import tboir.entities.EntityType;
 import tboir.tools.EntityManager;
 
 public class Fly extends Enemy {
@@ -17,6 +17,9 @@ public class Fly extends Enemy {
 
     @Override
     public void applyBehavior() {
+        if (this.waitInitially()) {
+            return;
+        }
         if (this.player == null) {
             for (Entity entity : this.getEntities().getEntities()) {
                 if (entity.getType() == EntityType.PLAYER) {

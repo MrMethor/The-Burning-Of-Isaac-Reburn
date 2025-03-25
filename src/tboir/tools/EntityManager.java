@@ -8,8 +8,8 @@ import tboir.entities.dynamic.projectiles.Projectile;
 import tboir.entities.Entity;
 import tboir.entities.TrapDoor;
 import tboir.entities.Wall;
-import tboir.enums.EntityType;
-import tboir.enums.Side;
+import tboir.entities.EntityType;
+import tboir.engine.Side;
 import tboir.map.Door;
 
 import java.awt.Graphics;

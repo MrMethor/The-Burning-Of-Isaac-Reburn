@@ -2,40 +2,38 @@ package tboir.map;
 
 import tboir.engine.Wrap;
 import tboir.entities.dynamic.physical.Player;
-import tboir.enums.DoorType;
-import tboir.enums.FloorType;
-import tboir.enums.RoomType;
-import tboir.enums.Side;
+import tboir.engine.Side;
+import tboir.hud.Hud;
 
 import java.util.Random;
 
 public class Map {
 
+    public static final int MAX_SIZE = 9;
+
     private final Wrap wrap;
     private final Player player;
+    private final Hud hud;
 
     private Side changeRoom;
-
     private boolean changeLevel;
-
     private final FloorType floor;
 
-    private final int size;
     private final Room[][] rooms;
     private int roomCount;
     private final boolean hasGolden;
     private int currentX;
     private int currentY;
 
-    public Map(Wrap wrap, Player player, int floor, boolean isGolden) {
+    public Map(Wrap wrap, Player player, int floor, boolean isGolden, Hud hud) {
         this.wrap = wrap;
         this.player = player;
+        this.hud = hud;
         this.hasGolden = isGolden;
         this.floor = FloorType.getType(floor);
         this.changeRoom = null;
         this.changeLevel = false;
-        this.size = 9;
-        this.rooms = new Room[this.size][this.size];
+        this.rooms = new Room[MAX_SIZE][MAX_SIZE];
         this.currentX = 4;
         this.currentY = 4;
         this.generateMap();
@@ -72,15 +70,17 @@ public class Map {
         this.setupDoors();
 
         this.currentRoom().getEntities().addPlayer(this.player);
+        this.currentRoom().explored();
         this.player.referenceEntities(this.currentRoom().getEntities());
         this.player.referenceMap(this);
+        this.hud.updateMap(this.currentX, this.currentY, this.rooms);
     }
 
     private void generateGenericRooms(FloorType floor) {
         Random rand = new Random();
         while (this.roomCount != 0) {
-            for (int y = 0; y < this.size; y++) {
-                for (int x = 0; x < this.size; x++) {
+            for (int y = 0; y < MAX_SIZE; y++) {
+                for (int x = 0; x < MAX_SIZE; x++) {
                     if (this.rooms[x][y] != null) {
                         continue;
                     }
@@ -109,8 +109,8 @@ public class Map {
         Random rand = new Random();
         int failState = 10;
         while (failState != 0) {
-            for (int y = 0; y < this.size; y++) {
-                for (int x = 0; x < this.size; x++) {
+            for (int y = 0; y < MAX_SIZE; y++) {
+                for (int x = 0; x < MAX_SIZE; x++) {
                     if (this.rooms[x][y] != null) {
                         continue;
                     }
@@ -130,8 +130,8 @@ public class Map {
         Random rand = new Random();
         int failState = 10;
         while (failState != 0) {
-            for (int y = 0; y < this.size; y++) {
-                for (int x = 0; x < this.size; x++) {
+            for (int y = 0; y < MAX_SIZE; y++) {
+                for (int x = 0; x < MAX_SIZE; x++) {
                     if (this.rooms[x][y] != null) {
                         continue;
                     }
@@ -152,8 +152,8 @@ public class Map {
     }
 
     private void setupDoors() {
-        for (int y = 0; y < this.size; y++) {
-            for (int x = 0; x < this.size; x++) {
+        for (int y = 0; y < MAX_SIZE; y++) {
+            for (int x = 0; x < MAX_SIZE; x++) {
 
                 if (this.rooms[x][y] == null) {
                     continue;
@@ -167,13 +167,13 @@ public class Map {
                 if (x - 1 >= 0 && this.rooms[x - 1][y] != null) {
                     left = this.getDoorType(this.rooms[x - 1][y].getType(), this.floor);
                 }
-                if (x + 1 < this.size && this.rooms[x + 1][y] != null) {
+                if (x + 1 < MAX_SIZE && this.rooms[x + 1][y] != null) {
                     right = this.getDoorType(this.rooms[x + 1][y].getType(), this.floor);
                 }
                 if (y - 1 >= 0 && this.rooms[x][y - 1] != null) {
                     up = this.getDoorType(this.rooms[x][y - 1].getType(), this.floor);
                 }
-                if (y + 1 < this.size && this.rooms[x][y + 1] != null) {
+                if (y + 1 < MAX_SIZE && this.rooms[x][y + 1] != null) {
                     down = this.getDoorType(this.rooms[x][y + 1].getType(), this.floor);
                 }
 
@@ -204,13 +204,13 @@ public class Map {
         if (x - 1 >= 0 && this.rooms[x - 1][y] != null && this.rooms[x - 1][y].getType() == type) {
             roomsNearby++;
         }
-        if (x + 1 < this.size && this.rooms[x + 1][y] != null && this.rooms[x + 1][y].getType() == type) {
+        if (x + 1 < MAX_SIZE && this.rooms[x + 1][y] != null && this.rooms[x + 1][y].getType() == type) {
             roomsNearby++;
         }
         if (y - 1 >= 0 && this.rooms[x][y - 1] != null && this.rooms[x][y - 1].getType() == type) {
             roomsNearby++;
         }
-        if (y + 1 < this.size && this.rooms[x][y + 1] != null && this.rooms[x][y + 1].getType() == type) {
+        if (y + 1 < MAX_SIZE && this.rooms[x][y + 1] != null && this.rooms[x][y + 1].getType() == type) {
             roomsNearby++;
         }
         return roomsNearby;
@@ -221,13 +221,13 @@ public class Map {
         if (x - 1 >= 0 && this.rooms[x - 1][y] != null) {
             roomsNearby++;
         }
-        if (x + 1 < this.size && this.rooms[x + 1][y] != null) {
+        if (x + 1 < MAX_SIZE && this.rooms[x + 1][y] != null) {
             roomsNearby++;
         }
         if (y - 1 >= 0 && this.rooms[x][y - 1] != null) {
             roomsNearby++;
         }
-        if (y + 1 < this.size && this.rooms[x][y + 1] != null) {
+        if (y + 1 < MAX_SIZE && this.rooms[x][y + 1] != null) {
             roomsNearby++;
         }
         return roomsNearby;
@@ -245,9 +245,6 @@ public class Map {
     }
 
     private void changeRoom(Side side) {
-        if (!this.currentRoom().isCompleted()) {
-            return;
-        }
         this.currentRoom().getEntities().removePlayer();
         this.currentRoom().getEntities().removeProjectiles();
         this.player.referenceEntities(null);
@@ -257,9 +254,11 @@ public class Map {
             case UP -> this.currentY--;
             case DOWN -> this.currentY++;
         }
+        this.currentRoom().explored();
         this.currentRoom().getEntities().addPlayer(this.player);
         this.player.referenceEntities(this.currentRoom().getEntities());
         this.player.changeRoom(side);
+        this.hud.updateMap(this.currentX, this.currentY, this.rooms);
     }
 
     public boolean changeLevelRequest() {

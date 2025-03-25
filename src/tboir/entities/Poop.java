@@ -3,7 +3,6 @@ package tboir.entities;
 import tboir.engine.Wrap;
 import tboir.tools.Collision;
 import tboir.tools.EntityManager;
-import tboir.enums.EntityType;
 
 import java.util.Random;
 

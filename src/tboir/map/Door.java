@@ -2,16 +2,10 @@ package tboir.map;
 
 import tboir.engine.Wrap;
 import tboir.entities.Entity;
-import tboir.enums.DoorType;
-import tboir.enums.Side;
-import tboir.enums.EntityType;
+import tboir.engine.Side;
+import tboir.entities.EntityType;
 import tboir.tools.Collision;
 import tboir.tools.EntityManager;
-
-enum DoorState {
-    CLOSED,
-    OPENED
-}
 
 public class Door extends Entity {
 

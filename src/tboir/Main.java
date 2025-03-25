@@ -1,8 +1,8 @@
 package tboir;
 
-import tboir.enums.Commands;
-import tboir.enums.GameState;
-import tboir.enums.StateTransition;
+import tboir.engine.Commands;
+import tboir.engine.GameState;
+import tboir.engine.StateTransition;
 import tboir.engine.Wrap;
 import tboir.menus.MenuType;
 import tboir.menus.Settings;

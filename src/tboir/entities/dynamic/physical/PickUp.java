@@ -1,7 +1,7 @@
 package tboir.entities.dynamic.physical;
 
 import tboir.engine.Wrap;
-import tboir.enums.EntityType;
+import tboir.entities.EntityType;
 import tboir.tools.Collision;
 import tboir.tools.EntityManager;
 

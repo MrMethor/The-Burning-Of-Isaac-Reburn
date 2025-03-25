@@ -2,7 +2,7 @@ package tboir.entities.dynamic;
 
 import tboir.engine.Wrap;
 import tboir.entities.Entity;
-import tboir.enums.EntityType;
+import tboir.entities.EntityType;
 import tboir.tools.EntityManager;
 
 import java.awt.Graphics;

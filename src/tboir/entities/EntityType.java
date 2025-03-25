@@ -1,4 +1,4 @@
-package tboir.enums;
+package tboir.entities;
 
 public enum EntityType {
     FRIENDLY_PROJECTILE,

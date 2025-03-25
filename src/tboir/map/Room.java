@@ -11,11 +11,8 @@ import tboir.entities.Item;
 import tboir.entities.TrapDoor;
 import tboir.entities.dynamic.physical.PickUp;
 import tboir.entities.dynamic.physical.enemies.Fly;
-import tboir.enums.FloorType;
-import tboir.enums.EntityType;
-import tboir.enums.DoorType;
-import tboir.enums.RoomType;
-import tboir.enums.Side;
+import tboir.entities.EntityType;
+import tboir.engine.Side;
 import tboir.tools.EntityManager;
 import tboir.tools.Image;
 
@@ -31,6 +28,7 @@ public class Room {
 
     private final EntityManager entities;
     private boolean completed;
+    private boolean explored;
     private final RoomType roomType;
     private final FloorType floorType;
     private DoorType[] doors;
@@ -42,6 +40,7 @@ public class Room {
         this.wrap = wrap;
         this.roomType = roomType;
         this.floorType = floorType;
+        this.explored = false;
         this.entities = new EntityManager(wrap);
         this.completed = false;
         double x = 1920 / 2.0;
@@ -233,5 +232,13 @@ public class Room {
 
     public boolean isCompleted() {
         return this.completed;
+    }
+
+    public boolean isExplored() {
+        return this.explored;
+    }
+
+    public void explored() {
+        this.explored = true;
     }
 }

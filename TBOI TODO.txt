@@ -1,5 +1,4 @@
 IMPORTANT
-- minimap ui
 - more enemies
 - new rooms
 
@@ -13,4 +12,3 @@ ADDITIONAL
 OPTIONAL
 - pills
 - cards
-- use f11 to change toggle fullscreen

@@ -1,4 +1,4 @@
-package tboir.enums;
+package tboir.map;
 
 public enum DoorType {
     BASEMENT,

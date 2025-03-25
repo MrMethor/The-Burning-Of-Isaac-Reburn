@@ -1,8 +1,8 @@
 package tboir.menus;
 
 import tboir.engine.Wrap;
-import tboir.enums.Commands;
-import tboir.enums.GameState;
+import tboir.engine.Commands;
+import tboir.engine.GameState;
 import tboir.tools.EditedKey;
 
 import java.awt.event.KeyEvent;

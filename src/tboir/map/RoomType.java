@@ -1,9 +1,9 @@
-package tboir.enums;
+package tboir.map;
 
 public enum RoomType {
-    DEFAULT,
     GOLDEN,
     BOSS,
+    DEFAULT,
     SHOP,
     SACRIFICE
 }

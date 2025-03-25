@@ -4,7 +4,7 @@ import tboir.engine.Wrap;
 import tboir.entities.dynamic.physical.PhysicalEntity;
 import tboir.entities.dynamic.physical.PickUp;
 import tboir.entities.dynamic.projectiles.Projectile;
-import tboir.enums.EntityType;
+import tboir.entities.EntityType;
 import tboir.tools.Collision;
 import tboir.tools.EntityManager;
 
@@ -13,10 +13,12 @@ import java.util.Random;
 public abstract class Enemy extends PhysicalEntity {
 
     private double health;
+    private int initialWait;
 
     public Enemy(Wrap wrap, EntityManager entities, EntityType type, double health, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         super(wrap, entities, type, spriteSheetPath, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         this.health = health;
+        this.initialWait = 20;
     }
 
     @Override
@@ -59,5 +61,14 @@ public abstract class Enemy extends PhysicalEntity {
         if (chance == 0) {
             addEntity(new PickUp(this.getWrap(), this.getEntities(), EntityType.HALF_HEART, this.getX(), this.getY()));
         }
+    }
+
+    protected boolean waitInitially() {
+        if (this.initialWait == 0) {
+            return false;
+        } else {
+            this.initialWait--;
+        }
+        return true;
     }
 }

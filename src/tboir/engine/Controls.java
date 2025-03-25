@@ -1,6 +1,5 @@
 package tboir.engine;
 
-import tboir.enums.Commands;
 import tboir.tools.Coords;
 import tboir.tools.EditedKey;
 

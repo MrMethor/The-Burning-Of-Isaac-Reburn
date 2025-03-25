@@ -3,7 +3,7 @@ package tboir;
 import tboir.engine.Wrap;
 import tboir.entities.dynamic.physical.Player;
 import tboir.map.Map;
-import tboir.enums.GameState;
+import tboir.engine.GameState;
 import tboir.hud.Hud;
 
 import java.awt.Graphics;
@@ -21,7 +21,7 @@ public class Game {
         this.currentFloor = 1;
         this.hud = new Hud(this.wrap);
         this.player = new Player(this.wrap, this.hud);
-        this.map = new Map(this.wrap, this.player, this.currentFloor, true);
+        this.map = new Map(this.wrap, this.player, this.currentFloor, true, this.hud);
     }
 
     public void update() {
@@ -52,7 +52,7 @@ public class Game {
 
     private void changeLevel() {
         this.currentFloor++;
-        this.map = new Map(this.wrap, this.player, this.currentFloor, true);
+        this.map = new Map(this.wrap, this.player, this.currentFloor, true, this.hud);
         this.player.resetPosition();
     }
 }

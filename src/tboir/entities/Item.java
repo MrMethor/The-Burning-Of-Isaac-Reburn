@@ -2,7 +2,6 @@ package tboir.entities;
 
 import tboir.engine.Wrap;
 import tboir.entities.dynamic.physical.Player;
-import tboir.enums.EntityType;
 import tboir.tools.Collision;
 import tboir.tools.EntityManager;
 import tboir.tools.ItemTemplate;

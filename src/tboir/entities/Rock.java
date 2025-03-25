@@ -1,7 +1,6 @@
 package tboir.entities;
 
 import tboir.engine.Wrap;
-import tboir.enums.EntityType;
 import tboir.tools.Collision;
 import tboir.tools.EntityManager;
 

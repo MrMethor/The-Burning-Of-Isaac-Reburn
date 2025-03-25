@@ -1,7 +1,7 @@
 package tboir.menus;
 
 import tboir.engine.Wrap;
-import tboir.enums.GameState;
+import tboir.engine.GameState;
 
 import java.util.HashMap;
 
