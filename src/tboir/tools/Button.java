@@ -2,7 +2,7 @@ package tboir.tools;
 
 import tboir.engine.Wrap;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Color;
@@ -54,7 +54,7 @@ public class Button {
         }
     }
 
-    public void render(Graphics g) {
+    public void render(Graphics2D g) {
         this.image.draw(g);
         this.label.draw(g);
     }

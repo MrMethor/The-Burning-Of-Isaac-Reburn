@@ -8,6 +8,8 @@ import tboir.tools.EntityManager;
 
 public abstract class PhysicalEntity extends DynamicEntity {
 
+    private double defaultSlideFactor;
+
     private double velocityX;
     private double velocityY;
     private double slideFactor;
@@ -25,7 +27,7 @@ public abstract class PhysicalEntity extends DynamicEntity {
         super (wrap, entities, type, spriteSheetPath, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         this.velocityX = 0.0;
         this.velocityY = 0.0;
-        this.slideFactor = 0.9;
+        this.changeDefaultSlideFactor(0.9);
         this.changeSpeed(1);
     }
 
@@ -35,6 +37,7 @@ public abstract class PhysicalEntity extends DynamicEntity {
         this.addToY(this.velocityY);
         this.velocityX *= this.slideFactor;
         this.velocityY *= this.slideFactor;
+        this.resetSlideFactor();
     }
 
     protected void applyRelativeCollision(Collision collision) {
@@ -79,8 +82,16 @@ public abstract class PhysicalEntity extends DynamicEntity {
         }
     }
 
+    protected void changeDefaultSlideFactor(double slideFactor) {
+        this.defaultSlideFactor = slideFactor;
+    }
+
     protected void changeSlideFactor(double factor) {
         this.slideFactor = factor;
+    }
+
+    protected void resetSlideFactor() {
+        this.slideFactor = this.defaultSlideFactor;
     }
 
     public void resetPosition() {

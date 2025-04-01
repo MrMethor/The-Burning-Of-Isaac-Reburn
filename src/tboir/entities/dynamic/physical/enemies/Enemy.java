@@ -14,6 +14,7 @@ public abstract class Enemy extends PhysicalEntity {
 
     private double health;
     private int initialWait;
+    private boolean[][] tileObstacleGrid;
 
     public Enemy(Wrap wrap, EntityManager entities, EntityType type, double health, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         super(wrap, entities, type, spriteSheetPath, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
@@ -70,5 +71,9 @@ public abstract class Enemy extends PhysicalEntity {
             this.initialWait--;
         }
         return true;
+    }
+
+    public void updateObstacleGrid(boolean[][] tileObstacleGrid) {
+        this.tileObstacleGrid = tileObstacleGrid;
     }
 }

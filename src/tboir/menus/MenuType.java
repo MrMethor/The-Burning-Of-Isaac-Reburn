@@ -4,7 +4,7 @@ import tboir.engine.Wrap;
 import tboir.tools.Image;
 import tboir.tools.Button;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.HashMap;
 
 public abstract class MenuType {
@@ -46,7 +46,7 @@ public abstract class MenuType {
         this.buttons.forEach((_, button) -> button.update());
     }
 
-    public void render(Graphics g) {
+    public void render(Graphics2D g) {
         if (this.background != null) {
             this.background.draw(g);
         }

@@ -7,7 +7,7 @@ import tboir.tools.TextBox;
 import java.awt.Cursor;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -140,7 +140,7 @@ public class Wrap {
         this.debug.get(2).changeText("Entity: " + this.entityCount);
     }
 
-    public void drawDebug(Graphics g) {
+    public void drawDebug(Graphics2D g) {
         for (TextBox box : this.debug) {
             box.draw(g);
         }

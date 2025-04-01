@@ -4,7 +4,7 @@ import tboir.engine.Wrap;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.FontMetrics;
 
 public class TextBox {
@@ -48,7 +48,7 @@ public class TextBox {
 
     }
 
-    public void draw(Graphics g) {
+    public void draw(Graphics2D g) {
         Color previousColor = g.getColor();
         Font previousFont = g.getFont();
 

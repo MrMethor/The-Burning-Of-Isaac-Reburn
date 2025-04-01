@@ -2,27 +2,40 @@ package tboir.map;
 
 import tboir.engine.Wrap;
 
+import tboir.entities.Entity;
 import tboir.entities.Fire;
 import tboir.entities.Poop;
 import tboir.entities.Rock;
 import tboir.entities.Spikes;
 import tboir.entities.Wall;
 import tboir.entities.Item;
+import tboir.entities.Web;
 import tboir.entities.TrapDoor;
 import tboir.entities.dynamic.physical.PickUp;
+import tboir.entities.dynamic.physical.enemies.Enemy;
 import tboir.entities.dynamic.physical.enemies.Fly;
 import tboir.entities.EntityType;
 import tboir.engine.Side;
 import tboir.tools.EntityManager;
 import tboir.tools.Image;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Room {
+
+    public static final int TILES_WIDTH = 15;
+    public static final int TILES_HEIGHT = 7;
+    public static final int TILE_WIDTH_PX = 102;
+    public static final int TILE_HEIGHT_PX = 107;
+    public static final int OFFSET_WIDTH_PX = 350;
+    public static final int OFFSET_HEIGHT_PX = 215;
+
+    public static final int OBSTACLE_UPDATE_TIME_MS = 60;
+    private int counter;
 
     private final Wrap wrap;
 
@@ -53,6 +66,7 @@ public class Room {
         try {
             File file = new File(mapPath);
             Scanner reader = new Scanner(file);
+            reader.nextLine();
             StringBuilder tmp = new StringBuilder();
             while (reader.hasNextLine()) {
                 tmp.append(reader.nextLine());
@@ -88,6 +102,7 @@ public class Room {
     }
 
     public void update() {
+        this.updateObstacles();
         this.entities.update();
         if (!this.completed && !this.entities.hasEnemies()) {
             this.completed = true;
@@ -95,7 +110,7 @@ public class Room {
         }
     }
 
-    public void render(Graphics g) {
+    public void render(Graphics2D g) {
         this.renderBackground(g);
         this.entities.renderBack(g);
         this.renderShade(g);
@@ -116,17 +131,17 @@ public class Room {
         };
     }
 
-    private void renderBackground(Graphics g) {
+    private void renderBackground(Graphics2D g) {
         this.background.draw(g);
     }
 
-    private void renderShade(Graphics g) {
+    private void renderShade(Graphics2D g) {
         this.shade.draw(g);
     }
 
     private void addEntity(char type, int xTile, int yTile) {
-        int x = xTile * 102 + 350;
-        int y = yTile * 107 + 215;
+        int x = xTile * TILE_WIDTH_PX + OFFSET_WIDTH_PX;
+        int y = yTile * TILE_HEIGHT_PX + OFFSET_HEIGHT_PX;
         Random random = new Random();
         int randomItem = random.nextInt(this.wrap.getNumOfItems() - 1);
         switch (type) {
@@ -140,6 +155,7 @@ public class Room {
             case 'N' -> this.entities.addEntity(new PickUp(this.wrap, this.entities, EntityType.HALF_HEART, x, y));
             case 'O' -> this.entities.addEntity(new PickUp(this.wrap, this.entities, EntityType.SOUL_HEART, x, y));
             case 'I' -> this.entities.addEntity(new Item(this.wrap, this.entities, randomItem, this.wrap.getItemFromRegistry(randomItem).path(), x, y));
+            case 'W' -> this.entities.addEntity(new Web(this.wrap, this.entities, x, y));
         }
     }
 
@@ -221,6 +237,25 @@ public class Room {
         }
     }
 
+    private void updateObstacles() {
+        boolean[][] tileObstacleGrid = new boolean[Room.TILES_WIDTH][Room.TILES_HEIGHT];
+        if (this.counter == 0) {
+            for (Entity entity : this.entities.getEntities()) {
+                if (entity.getType() == EntityType.OBSTACLE) {
+                    tileObstacleGrid[Room.getTileX(entity)][Room.getTileY(entity)] = true;
+                }
+            }
+            for (Entity entity : this.entities.getEntities()) {
+                if (entity instanceof Enemy) {
+                    ((Enemy)entity).updateObstacleGrid(tileObstacleGrid);
+                }
+            }
+            this.counter = OBSTACLE_UPDATE_TIME_MS;
+        } else {
+            this.counter--;
+        }
+    }
+
     // Getters
     public EntityManager getEntities() {
         return this.entities;
@@ -240,5 +275,13 @@ public class Room {
 
     public void explored() {
         this.explored = true;
+    }
+
+    public static int getTileX(Entity entity) {
+        return (int)((entity.getX() - OFFSET_WIDTH_PX) / TILE_WIDTH_PX);
+    }
+
+    public static int getTileY(Entity entity) {
+        return (int)((entity.getY() - OFFSET_HEIGHT_PX) / TILE_HEIGHT_PX);
     }
 }

@@ -5,13 +5,16 @@ import tboir.entities.Entity;
 import tboir.entities.EntityType;
 import tboir.tools.EntityManager;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 public abstract class DynamicEntity extends Entity {
+
+    public static final double SLOW_MODIFIER = 0.8;
 
     private double previousX;
     private double previousY;
     private double speed;
+    private boolean slowed;
 
     public DynamicEntity(Wrap wrap, EntityManager entities, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         super (wrap, entities, type, texturePath, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
@@ -26,7 +29,7 @@ public abstract class DynamicEntity extends Entity {
     protected abstract void calculateMovement();
 
     @Override
-    public void render(Graphics g) {
+    public void render(Graphics2D g) {
         double renderedX = this.getWrap().interpolate(this.previousX, this.getX()) - this.getWidth() / 2.0;
         double renderedY = this.getWrap().interpolate(this.previousY, this.getY()) - this.getHeight() / 2.0;
         this.getTexture().changePosition((int)renderedX, (int)renderedY);
@@ -37,6 +40,7 @@ public abstract class DynamicEntity extends Entity {
         this.previousX = this.getX();
         this.previousY = this.getY();
         this.calculateMovement();
+        this.isSlowed(false);
     }
 
     // Setup options
@@ -58,6 +62,10 @@ public abstract class DynamicEntity extends Entity {
         this.speed = speed;
     }
 
+    protected void isSlowed(boolean slowed) {
+        this.slowed = slowed;
+    }
+
     // Getters
     protected void addToX(double addition) {
         this.setX(this.getX() + addition);
@@ -72,6 +80,6 @@ public abstract class DynamicEntity extends Entity {
     }
 
     protected double getSpeed() {
-        return this.speed;
+        return this.slowed ? this.speed * SLOW_MODIFIER : this.speed;
     }
 }

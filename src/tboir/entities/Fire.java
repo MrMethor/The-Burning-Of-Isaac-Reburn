@@ -35,7 +35,7 @@ public class Fire extends Entity {
 
     @Override
     public void animate() {
-        int column = (int)(this.getAnimationCounter() / 10.0 % 7);
+        int column = (int)(this.getAnimationCounter() / 9.0 % 7);
         this.swapTexture(column, 0);
         this.addToAnimationCounter();
     }

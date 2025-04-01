@@ -14,5 +14,6 @@ public enum EntityType {
     WALL,
     FULL_HEART,
     HALF_HEART,
+    WEB,
     SOUL_HEART
 }

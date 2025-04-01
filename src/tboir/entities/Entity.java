@@ -7,8 +7,8 @@ import tboir.tools.Image;
 import tboir.tools.Collision;
 import tboir.tools.SpriteSheet;
 
+import java.awt.Graphics2D;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.util.ArrayList;
 
 public abstract class Entity implements Comparable<Entity> {
@@ -81,7 +81,7 @@ public abstract class Entity implements Comparable<Entity> {
 
     public abstract void animate();
 
-    public void render(Graphics g) {
+    public void render(Graphics2D g) {
         this.texture.draw(g);
         if (this.wrap.isHitboxes()) {
             this.drawHitbox(g);
@@ -92,7 +92,7 @@ public abstract class Entity implements Comparable<Entity> {
         this.collisions.clear();
     }
 
-    private void drawHitbox(Graphics g) {
+    private void drawHitbox(Graphics2D g) {
         Color c = g.getColor();
         g.setColor(new Color(1f, 0f, 0f, .2f));
         g.fillRect((int)((this.getHitboxX() - this.getHitboxWidth() / 2) * this.wrap.getScale()), (int)((this.getHitboxY() - this.getHitboxHeight() / 2) * this.wrap.getScale()), (int)(this.getHitboxWidth() * this.wrap.getScale()), (int)(this.getHitboxHeight() * this.wrap.getScale()));
@@ -171,14 +171,6 @@ public abstract class Entity implements Comparable<Entity> {
         this.animationCounter++;
     }
 
-    protected double getX() {
-        return this.x;
-    }
-
-    protected double getY() {
-        return this.y;
-    }
-
     protected void setX(double x) {
         this.x = x;
     }
@@ -228,5 +220,13 @@ public abstract class Entity implements Comparable<Entity> {
 
     public double getHitboxY() {
         return this.y + this.height * this.hitboxOffsetY;
+    }
+
+    public double getX() {
+        return this.x;
+    }
+
+    public double getY() {
+        return this.y;
     }
 }

@@ -4,9 +4,7 @@ IMPORTANT
 
 ADDITIONAL
 - boss
-- pits
 - bombs
-- specific side room types
 - ending
 
 OPTIONAL

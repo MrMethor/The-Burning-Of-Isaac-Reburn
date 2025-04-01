@@ -5,11 +5,16 @@ import tboir.entities.dynamic.physical.Player;
 import tboir.engine.Side;
 import tboir.hud.Hud;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Map {
 
     public static final int MAX_SIZE = 9;
+    public static final int FOUR_BITS = 16;
 
     private final Wrap wrap;
     private final Player player;
@@ -19,6 +24,8 @@ public class Map {
     private boolean changeLevel;
     private final FloorType floor;
 
+    private final ArrayList<String>[][] roomLayouts;
+    private final RoomType[][] mapLayout;
     private final Room[][] rooms;
     private int roomCount;
     private final boolean hasGolden;
@@ -36,6 +43,14 @@ public class Map {
         this.rooms = new Room[MAX_SIZE][MAX_SIZE];
         this.currentX = 4;
         this.currentY = 4;
+        this.roomLayouts = (ArrayList<String>[][])new ArrayList[RoomType.values().length][FOUR_BITS];
+        for (int i = 0; i < RoomType.values().length; i++) {
+            for (int j = 0; j < FOUR_BITS; j++) {
+                this.roomLayouts[i][j] = new ArrayList<>();
+            }
+        }
+        this.mapLayout = new RoomType[MAX_SIZE][MAX_SIZE];
+        this.storeRoomOptions();
         this.generateMap();
     }
 
@@ -57,15 +72,17 @@ public class Map {
             case DEPTHS -> this.roomCount = 32 + random.nextInt(8);
         }
 
-        this.rooms[this.currentX][this.currentY] = new Room(this.wrap, "resource/roomLayouts/starterRoom.txt", RoomType.DEFAULT, this.floor);
+        this.mapLayout[this.currentX][this.currentY] = RoomType.STARTING;
 
-        this.generateGenericRooms(this.floor);
+        this.generateGenericRooms();
 
         if (this.hasGolden) {
-            this.generateGoldenRoom(this.floor);
+            this.generateGoldenRoom();
         }
 
-        this.generateBossRoom(this.floor);
+        this.generateBossRoom();
+
+        this.setupRooms();
 
         this.setupDoors();
 
@@ -76,79 +93,104 @@ public class Map {
         this.hud.updateMap(this.currentX, this.currentY, this.rooms);
     }
 
-    private void generateGenericRooms(FloorType floor) {
+    private void generateGenericRooms() {
         Random rand = new Random();
         while (this.roomCount != 0) {
-            for (int y = 0; y < MAX_SIZE; y++) {
-                for (int x = 0; x < MAX_SIZE; x++) {
-                    if (this.rooms[x][y] != null) {
-                        continue;
-                    }
+            int x = rand.nextInt(0, MAX_SIZE);
+            int y = rand.nextInt(0, MAX_SIZE);
+            if (this.mapLayout[x][y] != null) {
+                continue;
+            }
 
-                    int nearbyRoomsCount = this.roomsNearby(x, y);
+            int nearbyRoomsCount = this.roomsNearbyCount(x, y);
 
-                    int randomFactor = 0;
-                    switch (nearbyRoomsCount) {
-                        case 1 -> randomFactor = 5;
-                        case 2 -> randomFactor = 20;
-                        case 3 -> randomFactor = 60;
-                        case 4 -> randomFactor = 120;
-                    }
+            int randomFactor = 0;
+            switch (nearbyRoomsCount) {
+                case 1 -> randomFactor = 2;
+                case 2 -> randomFactor = 4;
+                case 3 -> randomFactor = 8;
+                case 4 -> randomFactor = 16;
+            }
 
-                    if (randomFactor != 0 && rand.nextInt(randomFactor) == 0 && this.roomCount > 0) {
-                        int possibleRooms = 10;
-                        this.rooms[x][y] = new Room(this.wrap, "resource/roomLayouts/room" + (rand.nextInt(possibleRooms) + 1) + ".txt", RoomType.DEFAULT, floor);
-                        this.roomCount--;
-                    }
-                }
+            if (randomFactor != 0 && rand.nextInt(randomFactor) == 0 && this.roomCount > 0) {
+                this.mapLayout[x][y] = RoomType.DEFAULT;
+                this.roomCount--;
             }
         }
     }
 
-    private void generateGoldenRoom(FloorType floor) {
+    private void generateGoldenRoom() {
         Random rand = new Random();
-        int failState = 10;
+        int failState = 10000;
         while (failState != 0) {
-            for (int y = 0; y < MAX_SIZE; y++) {
-                for (int x = 0; x < MAX_SIZE; x++) {
-                    if (this.rooms[x][y] != null) {
-                        continue;
-                    }
+            int x = rand.nextInt(0, MAX_SIZE);
+            int y = rand.nextInt(0, MAX_SIZE);
+            if (this.mapLayout[x][y] != null) {
+                continue;
+            }
 
-                    if (this.roomsNearby(x, y) == 1 && rand.nextInt(4) < 1) {
-                        this.rooms[x][y] = new Room(this.wrap, "resource/roomLayouts/goldenRoom.txt", RoomType.GOLDEN, floor);
-                        return;
-                    }
-                }
+            if (this.roomsNearbyCount(x, y) == 1 && rand.nextInt(4) < 1) {
+                this.mapLayout[x][y] = RoomType.GOLDEN;
+                return;
             }
             failState--;
         }
-        System.out.println("Golden room generation failed");
+        throw new RuntimeException("Golden room generation failed");
     }
 
-    private void generateBossRoom(FloorType floor) {
+    private void generateBossRoom() {
         Random rand = new Random();
-        int failState = 10;
+        int failState = 10000;
         while (failState != 0) {
-            for (int y = 0; y < MAX_SIZE; y++) {
-                for (int x = 0; x < MAX_SIZE; x++) {
-                    if (this.rooms[x][y] != null) {
-                        continue;
-                    }
+            int x = rand.nextInt(0, MAX_SIZE);
+            int y = rand.nextInt(0, MAX_SIZE);
+            if (this.mapLayout[x][y] != null) {
+                continue;
+            }
 
-                    if (x >= 3 && x <= 6 && y >= 3 && y <= 6) {
-                        continue;
-                    }
+            if (x >= 3 && x <= 6 && y >= 3 && y <= 6) {
+                continue;
+            }
 
-                    if (this.roomsNearby(x, y, RoomType.GOLDEN) == 0 && this.roomsNearby(x, y, RoomType.DEFAULT) == 1 && rand.nextInt(4) < 1) {
-                        this.rooms[x][y] = new Room(this.wrap, "resource/roomLayouts/bossRoom.txt", RoomType.BOSS, floor);
-                        return;
-                    }
-                }
+            if (this.roomsNearbyCount(x, y, RoomType.GOLDEN) == 0 && this.roomsNearbyCount(x, y, RoomType.DEFAULT) == 1 && rand.nextInt(4) < 1) {
+                this.mapLayout[x][y] = RoomType.BOSS;
+                return;
             }
             failState--;
         }
-        System.out.println("Boss room generation failed");
+        throw new RuntimeException("Boss room generation failed");
+    }
+
+    private void setupRooms() {
+        Random rand = new Random();
+        for (int y = 0; y < MAX_SIZE; y++) {
+            for (int x = 0; x < MAX_SIZE; x++) {
+                if (this.mapLayout[x][y] == null) {
+                    continue;
+                }
+                String roomCode;
+                ArrayList<String> fileList = null;
+                boolean allGood = true;
+                while (fileList == null || fileList.isEmpty()) {
+                    roomCode = this.randomizeRoomsNearby(this.roomsNearby(x, y));
+                    fileList = this.roomLayouts[this.mapLayout[x][y].ordinal()][Integer.parseInt(roomCode, 2)];
+                    if (roomCode.equals("1111") && fileList.isEmpty()) {
+                        allGood = false;
+                        System.out.println("Error occured while generating a room");
+                        break;
+                    }
+                }
+                if (allGood) {
+                    String randomFile = fileList.get(rand.nextInt(0, fileList.size()));
+                    String path = "resource/roomLayouts/" + this.mapLayout[x][y].getPath() + "/" + randomFile;
+                    this.mapLayout[x][y] = this.mapLayout[x][y] == RoomType.STARTING ? RoomType.DEFAULT : this.mapLayout[x][y];
+                    this.rooms[x][y] = new Room(this.wrap, path, this.mapLayout[x][y], this.floor);
+                } else {
+                    this.rooms[x][y] = new Room(this.wrap, "resource/roomLayouts/error.txt", this.mapLayout[x][y], this.floor);
+                }
+
+            }
+        }
     }
 
     private void setupDoors() {
@@ -182,6 +224,41 @@ public class Map {
         }
     }
 
+    private void storeRoomOptions() {
+        for (int i = 0; i < RoomType.values().length; i++) {
+            File folder = new File("resource/roomLayouts/" + RoomType.values()[i].getPath());
+            File[] listOfFiles = folder.listFiles();
+            if (listOfFiles == null) {
+                continue;
+            }
+            for (File file : listOfFiles) {
+                try {
+                    Scanner scanner = new Scanner(file);
+                    this.roomLayouts[i][this.intFromRoomCode(scanner.nextLine())].add(file.getName());
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    private int intFromRoomCode(String code) {
+        int dec = 0;
+        if (code.contains("U")) {
+            dec += 8;
+        }
+        if (code.contains("D")) {
+            dec += 4;
+        }
+        if (code.contains("L")) {
+            dec += 2;
+        }
+        if (code.contains("R")) {
+            dec += 1;
+        }
+        return dec;
+    }
+
     private DoorType getDoorType(RoomType roomType, FloorType floorType) {
         if (roomType == RoomType.GOLDEN) {
             return DoorType.GOLDEN;
@@ -199,38 +276,59 @@ public class Map {
         return DoorType.BASEMENT;
     }
 
-    private int roomsNearby(int x, int y, RoomType type) {
-        int roomsNearby = 0;
-        if (x - 1 >= 0 && this.rooms[x - 1][y] != null && this.rooms[x - 1][y].getType() == type) {
-            roomsNearby++;
-        }
-        if (x + 1 < MAX_SIZE && this.rooms[x + 1][y] != null && this.rooms[x + 1][y].getType() == type) {
-            roomsNearby++;
-        }
-        if (y - 1 >= 0 && this.rooms[x][y - 1] != null && this.rooms[x][y - 1].getType() == type) {
-            roomsNearby++;
-        }
-        if (y + 1 < MAX_SIZE && this.rooms[x][y + 1] != null && this.rooms[x][y + 1].getType() == type) {
-            roomsNearby++;
-        }
-        return roomsNearby;
+    private int roomsNearbyCount(int x, int y, RoomType type) {
+        String roomsNearby = this.roomsNearby(x, y, type);
+        return roomsNearby.replace("0", "").length();
     }
 
-    private int roomsNearby(int x, int y) {
-        int roomsNearby = 0;
-        if (x - 1 >= 0 && this.rooms[x - 1][y] != null) {
-            roomsNearby++;
+    private int roomsNearbyCount(int x, int y) {
+        String roomsNearby = this.roomsNearby(x, y);
+        return roomsNearby.replace("0", "").length();
+    }
+
+    private String roomsNearby(int x, int y) {
+        char[] roomsNearby = {'0', '0', '0', '0'};
+        if (y - 1 >= 0 && this.mapLayout[x][y - 1] != null) {
+            roomsNearby[Side.UP.ordinal()] = '1';
         }
-        if (x + 1 < MAX_SIZE && this.rooms[x + 1][y] != null) {
-            roomsNearby++;
+        if (y + 1 < MAX_SIZE && this.mapLayout[x][y + 1] != null) {
+            roomsNearby[Side.DOWN.ordinal()] = '1';
         }
-        if (y - 1 >= 0 && this.rooms[x][y - 1] != null) {
-            roomsNearby++;
+        if (x - 1 >= 0 && this.mapLayout[x - 1][y] != null) {
+            roomsNearby[Side.LEFT.ordinal()] = '1';
         }
-        if (y + 1 < MAX_SIZE && this.rooms[x][y + 1] != null) {
-            roomsNearby++;
+        if (x + 1 < MAX_SIZE && this.mapLayout[x + 1][y] != null) {
+            roomsNearby[Side.RIGHT.ordinal()] = '1';
         }
-        return roomsNearby;
+        return new String(roomsNearby);
+    }
+
+    private String roomsNearby(int x, int y, RoomType type) {
+        char[] roomsNearby = {'0', '0', '0', '0'};
+        if (y - 1 >= 0 && this.mapLayout[x][y - 1] != null && this.mapLayout[x][y - 1] == type) {
+            roomsNearby[Side.UP.ordinal()] = '1';
+        }
+        if (y + 1 < MAX_SIZE && this.mapLayout[x][y + 1] != null && this.mapLayout[x][y + 1] == type) {
+            roomsNearby[Side.DOWN.ordinal()] = '1';
+        }
+        if (x - 1 >= 0 && this.mapLayout[x - 1][y] != null && this.mapLayout[x - 1][y] == type) {
+            roomsNearby[Side.LEFT.ordinal()] = '1';
+        }
+        if (x + 1 < MAX_SIZE && this.mapLayout[x + 1][y] != null && this.mapLayout[x + 1][y] == type) {
+            roomsNearby[Side.RIGHT.ordinal()] = '1';
+        }
+        return new String(roomsNearby);
+    }
+
+    private String randomizeRoomsNearby(String roomsNearby) {
+        Random random = new Random();
+        char[] roomsNearbyChar = roomsNearby.toCharArray();
+        for (int i = 0; i < roomsNearbyChar.length; i++) {
+            if (roomsNearbyChar[i] == '0') {
+                roomsNearbyChar[i] = random.nextInt(0, 3) == 0 ? '1' : '0';
+            }
+        }
+        return new String(roomsNearbyChar);
     }
 
     public void queueChangeRoom(Side side) {

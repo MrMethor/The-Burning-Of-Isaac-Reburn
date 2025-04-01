@@ -9,7 +9,7 @@ public class PickUp extends PhysicalEntity {
 
     public PickUp(Wrap wrap, EntityManager entities, EntityType type, double x, double y) {
         super(wrap, entities, type, "resource/entities/" + getPath(type) + ".png", x, y, 50, 50, 0.9, 0.9, 0, 0);
-        this.changeSlideFactor(0.92);
+        this.changeDefaultSlideFactor(0.92);
     }
 
     @Override

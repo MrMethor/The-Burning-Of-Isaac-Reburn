@@ -8,7 +8,7 @@ import tboir.tools.Collision;
 import tboir.map.Map;
 import tboir.hud.Hud;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 public class Player extends PhysicalEntity {
@@ -113,6 +113,10 @@ public class Player extends PhysicalEntity {
                     this.applyRelativeCollision(collision);
                 }
             }
+            case WEB -> {
+                this.isSlowed(true);
+                this.changeSlideFactor(0.5);
+            }
         }
     }
 
@@ -143,7 +147,7 @@ public class Player extends PhysicalEntity {
     }
 
     @Override
-    public void render(Graphics g) {
+    public void render(Graphics2D g) {
         if (this.gracePeriodCounter != 0 && this.gracePeriodCounter / 5 % 2 == 1) {
             return;
         }

@@ -6,7 +6,7 @@ import tboir.map.Map;
 import tboir.engine.GameState;
 import tboir.hud.Hud;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 public class Game {
 
@@ -43,7 +43,7 @@ public class Game {
         }
     }
 
-    public void render(Graphics g) {
+    public void render(Graphics2D g) {
         if (this.player.hasEntities()) {
             this.map.currentRoom().render(g);
         }

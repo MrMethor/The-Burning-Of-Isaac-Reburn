@@ -6,7 +6,7 @@ import tboir.map.Room;
 import tboir.tools.SpriteSheet;
 import tboir.tools.Image;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.Arrays;
 
 public class Hud {
@@ -56,7 +56,7 @@ public class Hud {
         }
     }
 
-    public void render(Graphics g) {
+    public void render(Graphics2D g) {
         for (Image heart : this.hearts) {
             if (heart != null) {
                 heart.draw(g);

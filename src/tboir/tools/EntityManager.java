@@ -12,7 +12,7 @@ import tboir.entities.EntityType;
 import tboir.engine.Side;
 import tboir.map.Door;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 public class EntityManager {
@@ -87,20 +87,20 @@ public class EntityManager {
         }
     }
 
-    public void renderBack(Graphics g) {
+    public void renderBack(Graphics2D g) {
         for (Entity entity : this.entities) {
             if (entity.getType() == EntityType.DOOR) {
                 entity.render(g);
             }
         }
         for (Entity entity : this.entities) {
-            if (entity.getType() == EntityType.OBSTACLE || entity.getType() == EntityType.VISUAL || entity.getType() == EntityType.SPIKE || entity.getType() == EntityType.TRAP_DOOR) {
+            if (entity.getType() == EntityType.OBSTACLE || entity.getType() == EntityType.VISUAL || entity.getType() == EntityType.SPIKE || entity.getType() == EntityType.TRAP_DOOR || entity.getType() == EntityType.WEB) {
                 entity.render(g);
             }
         }
     }
 
-    public void renderFront(Graphics g) {
+    public void renderFront(Graphics2D g) {
         for (Entity entity : this.entities) {
             if (entity.getType() == EntityType.ITEM) {
                 entity.render(g);
