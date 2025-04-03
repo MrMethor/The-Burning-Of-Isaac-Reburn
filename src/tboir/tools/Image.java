@@ -2,51 +2,56 @@ package tboir.tools;
 
 import tboir.engine.Wrap;
 
-import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class Image {
 
     private final Wrap wrap;
     private BufferedImage image;
+    private int rotatedTimes;
+    private boolean mirroredHorizontally;
+    private boolean mirroredVertically;
     private int x;
     private int y;
     private int width;
     private int height;
 
-    public Image(Wrap wrap, String path, double x, double y, double width, double height) {
+    public Image(Wrap wrap, String texture, double x, double y, double width, double height) {
         this.wrap = wrap;
-        try {
-            this.image = ImageIO.read(new File(path));
-        } catch (IOException e) {
-            System.out.println("Couldn't find the file " + path);
-        }
+        this.image = this.wrap.getResourceManager().getTexture(texture);
         this.x = (int)x;
         this.y = (int)y;
         this.width = (int)width;
         this.height = (int)height;
     }
 
-    public Image(Wrap wrap, String path, double x, double y) {
+    public Image(Wrap wrap, String texture, double x, double y) {
         this.wrap = wrap;
-        try {
-            this.image = ImageIO.read(new File(path));
-        } catch (IOException e) {
-            System.out.println("Couldn't find the file");
-        }
+        this.image = this.wrap.getResourceManager().getTexture(texture);
         this.x = (int)x;
         this.y = (int)y;
         this.width = this.image.getWidth();
         this.height = this.image.getHeight();
     }
 
+    public Image(Wrap wrap, int column, int row, String spriteSheet, double x, double y, double width, double height) {
+        this.wrap = wrap;
+        this.image = this.wrap.getResourceManager().getSprite(spriteSheet, column, row);
+        this.x = (int)x;
+        this.y = (int)y;
+        this.width = (int)width;
+        this.height = (int)height;
+    }
+
     public Image(Wrap wrap, BufferedImage image, double x, double y, double width, double height) {
         this.wrap = wrap;
         this.image = image;
+    }
+
+    protected Image(Wrap wrap, double x, double y, double width, double height) {
+        this.wrap = wrap;
         this.x = (int)x;
         this.y = (int)y;
         this.width = (int)width;
@@ -63,53 +68,65 @@ public class Image {
         this.height = (int)height;
     }
 
-    public void changeImage(String path) {
-        try {
-            this.image = ImageIO.read(new File(path));
-        } catch (IOException e) {
-            System.out.println("Couldn't find the file");
-        }
+    public void changeImage(String texture) {
+        this.image = this.wrap.getResourceManager().getTexture(texture);
     }
 
     public void changeImage(BufferedImage image) {
         this.image = image;
     }
 
+    public void changeImage(String sprite, int column, int row) {
+        this.image = this.wrap.getResourceManager().getSprite(sprite, column, row);
+    }
+
     public void draw(Graphics2D g) {
         if (this.image == null) {
             return;
         }
-        g.drawImage(
-                this.image,
-                (int)(this.x * this.wrap.getScale()),
-                (int)(this.y * this.wrap.getScale()),
-                (int)(this.width * this.wrap.getScale()),
-                (int)(this.height * this.wrap.getScale()),
-                null
-        );
+
+        AffineTransform oldTransform = g.getTransform();
+
+        double centerX = this.x + this.width / 2.0;
+        double centerY = this.y + this.height / 2.0;
+        g.translate(centerX, centerY);
+        g.rotate(Math.toRadians(this.rotatedTimes * 90));
+        if (this.mirroredHorizontally) {
+            g.scale(-1, 1);
+        }
+        if (this.mirroredVertically) {
+            g.scale(1, -1);
+        }
+        this.drawImage(g, this.image);
+
+        g.setTransform(oldTransform);
     }
 
-    public void draw(int rotation, Graphics2D g) {
-        if (this.image == null) {
-            return;
-        }
-        // From chatgpt
-        AffineTransform oldTransform = g.getTransform();
-        double scale = this.wrap.getScale();
-        double centerX = (this.x + this.width / 2.0) * scale;
-        double centerY = (this.y + this.height / 2.0) * scale;
-        g.translate(centerX, centerY);
-        g.rotate(Math.toRadians(rotation * 90));
-        g.translate(-centerX, -centerY);
-        //
-        g.drawImage(
-                this.image,
-                (int)(this.x * scale),
-                (int)(this.y * scale),
-                (int)(this.width * scale),
-                (int)(this.height * scale),
-                null
-        );
-        g.setTransform(oldTransform);
+    protected void drawImage(Graphics2D g, BufferedImage image) {
+        g.drawImage(image, -this.width / 2, -this.height / 2, this.width, this.height, null);
+    }
+
+    protected int getWidth() {
+        return this.width;
+    }
+
+    protected int getHeight() {
+        return this.height;
+    }
+
+    public void rotate(int times) {
+        this.rotatedTimes = (this.rotatedTimes + times) % 4;
+    }
+
+    public void resetRotation() {
+        this.rotatedTimes = 0;
+    }
+
+    public void mirrorHorizontally(boolean mirror) {
+        this.mirroredHorizontally = mirror;
+    }
+
+    public void mirrorVertically(boolean mirror) {
+        this.mirroredVertically = mirror;
     }
 }

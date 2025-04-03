@@ -89,7 +89,7 @@ public class EntityManager {
 
     public void renderBack(Graphics2D g) {
         for (Entity entity : this.entities) {
-            if (entity.getType() == EntityType.DOOR) {
+            if (entity.getType() == EntityType.DOOR || entity.getType() == EntityType.WALL) {
                 entity.render(g);
             }
         }

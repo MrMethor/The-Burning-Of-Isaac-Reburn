@@ -16,13 +16,13 @@ public abstract class DynamicEntity extends Entity {
     private double speed;
     private boolean slowed;
 
-    public DynamicEntity(Wrap wrap, EntityManager entities, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
-        super (wrap, entities, type, texturePath, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
+    public DynamicEntity(Wrap wrap, EntityManager entities, EntityType type, String name, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+        super (wrap, entities, type, name, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         this.speed = 1;
     }
 
-    public DynamicEntity(Wrap wrap, EntityManager entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
-        super (wrap, entities, type, spriteSheetPath, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
+    public DynamicEntity(Wrap wrap, EntityManager entities, EntityType type, String spriteSheet, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+        super (wrap, entities, type, spriteSheet, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         this.speed = 1;
     }
 

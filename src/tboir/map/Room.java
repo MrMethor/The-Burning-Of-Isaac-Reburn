@@ -1,7 +1,6 @@
 package tboir.map;
 
 import tboir.engine.Wrap;
-
 import tboir.entities.Entity;
 import tboir.entities.Fire;
 import tboir.entities.Poop;
@@ -56,12 +55,8 @@ public class Room {
         this.explored = false;
         this.entities = new EntityManager(wrap);
         this.completed = false;
-        double x = 1920 / 2.0;
-        double y = 1080 / 2.0;
-        double width = 1920;
-        double height = 1080;
-        this.background = new Image(wrap, "resource/rooms/" + this.getRoomType() + ".png", x - width / 2.0, y - height / 2.0, width, height);
-        this.shade = new Image(wrap, "resource/rooms/roomShade.png", x - width / 2.0, y - height / 2.0, width, height);
+        this.background = new Image(wrap, this.getRoomType(), 0, 0, 1920, 1080);
+        this.shade = new Image(wrap, "roomShade", 0, 0, 1920, 1080);
         String content = "";
         try {
             File file = new File(mapPath);
@@ -154,7 +149,7 @@ public class Room {
             case 'H' -> this.entities.addEntity(new PickUp(this.wrap, this.entities, EntityType.FULL_HEART, x, y));
             case 'N' -> this.entities.addEntity(new PickUp(this.wrap, this.entities, EntityType.HALF_HEART, x, y));
             case 'O' -> this.entities.addEntity(new PickUp(this.wrap, this.entities, EntityType.SOUL_HEART, x, y));
-            case 'I' -> this.entities.addEntity(new Item(this.wrap, this.entities, randomItem, this.wrap.getItemFromRegistry(randomItem).path(), x, y));
+            case 'I' -> this.entities.addEntity(new Item(this.wrap, this.entities, randomItem, x, y));
             case 'W' -> this.entities.addEntity(new Web(this.wrap, this.entities, x, y));
         }
     }

@@ -10,8 +10,18 @@ public class Item extends Entity {
 
     private final int id;
 
-    public Item(Wrap wrap, EntityManager entities, int id, String texturePath, double x, double y) {
-        super(wrap, entities, EntityType.ITEM, "resource/items/" + texturePath + ".png", x, y, 100, 100, 0.2, 0.2, 0, 0);
+    public Item(Wrap wrap, EntityManager entities, int id, double x, double y) {
+        super(wrap, entities,
+                EntityType.ITEM,
+                "items",
+                wrap.getItemFromRegistry(id).column(),
+                wrap.getItemFromRegistry(id).row(),
+                x, y,
+                120, 120,
+                0.2,
+                0.2,
+                0, 0
+        );
         this.id = id;
     }
 

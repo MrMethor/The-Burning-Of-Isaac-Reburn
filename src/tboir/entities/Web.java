@@ -7,10 +7,19 @@ import tboir.tools.EntityManager;
 import java.util.Random;
 
 public class Web extends Entity {
+
     public Web(Wrap wrap, EntityManager entities, double x, double y) {
-        super(wrap, entities, EntityType.WEB, "resource/entities/web.png", 4, 1, x, y, 130, 130, 0.8, 0.8, 0, 0);
+        super(wrap, entities,
+                EntityType.WEB,
+                "objects",
+                0, 2,
+                x, y,
+                120, 120,
+                0.7, 0.7,
+                0, 0
+        );
         Random random = new Random();
-        swapTexture(random.nextInt(3), 0);
+        this.changeImage("objects", random.nextInt(3), 2);
     }
 
     @Override

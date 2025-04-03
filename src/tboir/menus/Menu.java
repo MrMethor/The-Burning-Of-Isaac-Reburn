@@ -6,7 +6,7 @@ import tboir.engine.GameState;
 public class Menu extends MenuType {
 
     public Menu(Wrap wrap) {
-        super(wrap, "resource/backgrounds/menu.jpg");
+        super(wrap, "menu");
     }
 
     @Override

@@ -8,6 +8,7 @@ import java.awt.Cursor;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -37,6 +38,9 @@ public class Wrap {
     private int entityCount;
     private Cursor cursor;
     private ItemTemplate[] itemRegistry;
+    private final ResourceManager resourceManager;
+
+    private int animationCounter;
 
     private final ArrayList<TextBox> debug;
 
@@ -48,6 +52,7 @@ public class Wrap {
         this.newSettings = null;
         this.newState = GameState.MENU;
         this.gameState = GameState.MENU;
+        this.resourceManager = new ResourceManager();
         this.entityCount = 0;
 
         int defaultWidth = 0;
@@ -89,7 +94,7 @@ public class Wrap {
 
     private void loadItemRegistry() {
         try {
-            File file = new File("resource/items/itemRegistry.csv");
+            File file = new File("resource/itemRegistry.csv");
             Scanner itemCounter = new Scanner(file);
             itemCounter.nextLine();
             int itemCount = 0;
@@ -107,19 +112,21 @@ public class Wrap {
                     newItem[i] = newItem[i].isEmpty() ? "0" : newItem[i];
                 }
                 int id = Integer.parseInt(newItem[0]);
-                String itemPath = newItem[1];
-                int redHearts = Integer.parseInt(newItem[2]);
-                int redContainers = Integer.parseInt(newItem[3]);
-                int soulHearts = Integer.parseInt(newItem[4]);
-                double damage = Double.parseDouble(newItem[5]);
-                double range = Double.parseDouble(newItem[6]);
-                double shotSpeed = Double.parseDouble(newItem[7]);
-                double fireSpeed = Double.parseDouble(newItem[8]);
-                double shotSize = Double.parseDouble(newItem[9]);
-                double speed = Double.parseDouble(newItem[10]);
-                int size = Integer.parseInt(newItem[11]);
-                boolean special = Integer.parseInt(newItem[12]) == 1;
-                this.itemRegistry[id] = new ItemTemplate(itemPath, redHearts, redContainers, soulHearts, damage, range, shotSpeed, fireSpeed, shotSize, speed, size, special);
+                String name = newItem[1];
+                int column = Integer.parseInt(newItem[2]);
+                int row = Integer.parseInt(newItem[3]);
+                int redHearts = Integer.parseInt(newItem[4]);
+                int redContainers = Integer.parseInt(newItem[5]);
+                int soulHearts = Integer.parseInt(newItem[6]);
+                double damage = Double.parseDouble(newItem[7]);
+                double range = Double.parseDouble(newItem[8]);
+                double shotSpeed = Double.parseDouble(newItem[9]);
+                double fireSpeed = Double.parseDouble(newItem[10]);
+                double shotSize = Double.parseDouble(newItem[11]);
+                double speed = Double.parseDouble(newItem[12]);
+                int size = Integer.parseInt(newItem[13]);
+                boolean special = Integer.parseInt(newItem[14]) == 1;
+                this.itemRegistry[id] = new ItemTemplate(name, column, row, redHearts, redContainers, soulHearts, damage, range, shotSpeed, fireSpeed, shotSize, speed, size, special);
             }
         } catch (FileNotFoundException e) {
             System.out.println("Item registry not found.");
@@ -262,6 +269,14 @@ public class Wrap {
         this.counter.addUPS();
     }
 
+    public boolean isTimeToAnimate(int interval) {
+        return this.animationCounter % interval == 0;
+    }
+
+    public void increaseAnimationCounter() {
+        this.animationCounter++;
+    }
+
     // GameState Setters
     public void updateGameState(GameState newState) {
         this.gameState = newState;
@@ -342,5 +357,9 @@ public class Wrap {
 
     public int getNumOfItems() {
         return this.itemRegistry.length;
+    }
+
+    public ResourceManager getResourceManager() {
+        return this.resourceManager;
     }
 }

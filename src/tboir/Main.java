@@ -106,6 +106,7 @@ public class Main extends Canvas implements Runnable {
             return;
         }
         Graphics2D g = (Graphics2D)bs.getDrawGraphics();
+        g.scale(this.wrap.getScale(), this.wrap.getScale());
 
         if (this.wrap.getGameState() == GameState.GAME) {
             this.game.render(g);

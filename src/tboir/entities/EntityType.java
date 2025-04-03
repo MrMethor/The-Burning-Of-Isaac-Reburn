@@ -1,6 +1,9 @@
 package tboir.entities;
 
 public enum EntityType {
+    FULL_HEART,
+    HALF_HEART,
+    SOUL_HEART,
     FRIENDLY_PROJECTILE,
     ENEMY_PROJECTILE,
     PLAYER,
@@ -12,8 +15,6 @@ public enum EntityType {
     DOOR,
     TRAP_DOOR,
     WALL,
-    FULL_HEART,
-    HALF_HEART,
     WEB,
-    SOUL_HEART
+
 }

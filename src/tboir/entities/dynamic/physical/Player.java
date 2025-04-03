@@ -41,11 +41,13 @@ public class Player extends PhysicalEntity {
     private final int gracePeriod;
     private int gracePeriodCounter;
 
+    private int previousDirection;
+
     public Player(Wrap wrap, Hud hud) {
-        super(wrap, null, EntityType.PLAYER, "resource/entities/character.png", 3, 4, 1920 / 2.0, 1080 / 2.0, 150, 150, 0.4, 0.4, 0, 0.3);
+        super(wrap, null, EntityType.PLAYER, "player", 1920 / 2.0, 1080 / 2.0, 150, 150, 0.4, 0.4, 0, 0.3);
         this.hud = hud;
         this.dead = false;
-        this.firingSpeed = 2;
+        this.firingSpeed = 50;
         this.redHearts = 0;
         this.redContainers = 0;
         this.soulHearts = 0;
@@ -122,28 +124,36 @@ public class Player extends PhysicalEntity {
 
     @Override
     public void animate() {
-        int numFrame = (int)(this.getAnimationCounter() / (10.0 / this.getSpeed()) / (this.getWidth() / 150.0) % 4);
-        int column = numFrame == 3 ? 1 : numFrame;
-        int row;
+        int direction;
+        this.mirrorHorizontally(false);
         if (this.facing != null) {
-            row = this.facing.num();
-            if (this.movingX == 0 && this.movingY == 0) {
-                column = 1;
-            }
+            direction = this.facing.num();
         } else if (this.movingY == -1) {
-            row = 0;
+            direction = 0;
         } else if (this.movingY == 1) {
-            row = 1;
+            direction = 1;
         } else if (this.movingX == -1) {
-            row = 2;
+            direction = 2;
         } else if (this.movingX == 1) {
-            row = 3;
+            direction = 3;
         } else {
-            row = 1;
-            column = 1;
+            direction = 1;
         }
-        this.swapTexture(column, row);
-        this.addToAnimationCounter();
+        if (direction == 3) {
+            this.mirrorHorizontally(true);
+            direction = 2;
+        }
+        if (this.getWrap().isTimeToAnimate((int)((10.0 / this.getSpeed()) / (this.getWidth() / 150.0))) || direction != this.previousDirection) {
+            this.getAnimation().incrementAndReset(3);
+            if (this.getAnimation().getAnimationFrame() == 3) {
+                this.getAnimation().addTmp(1);
+            }
+            this.getAnimation().changeRow(direction);
+            if (this.movingX == 0 && this.movingY == 0) {
+                this.getAnimation().changeAnimationFrame(1);
+            }
+        }
+        this.previousDirection = direction;
     }
 
     @Override

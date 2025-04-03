@@ -15,16 +15,16 @@ public abstract class PhysicalEntity extends DynamicEntity {
     private double slideFactor;
     private boolean flying;
 
-    public PhysicalEntity(Wrap wrap, EntityManager entities, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
-        super (wrap, entities, type, texturePath, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
+    public PhysicalEntity(Wrap wrap, EntityManager entities, EntityType type, String name, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+        super (wrap, entities, type, name, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         this.velocityX = 0.0;
         this.velocityY = 0.0;
-        this.slideFactor = 0.9;
+        this.changeDefaultSlideFactor(0.9);
         this.changeSpeed(1);
     }
 
-    public PhysicalEntity(Wrap wrap, EntityManager entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
-        super (wrap, entities, type, spriteSheetPath, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
+    public PhysicalEntity(Wrap wrap, EntityManager entities, EntityType type, String spriteSheet, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+        super (wrap, entities, type, spriteSheet, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         this.velocityX = 0.0;
         this.velocityY = 0.0;
         this.changeDefaultSlideFactor(0.9);

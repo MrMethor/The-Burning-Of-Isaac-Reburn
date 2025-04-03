@@ -11,7 +11,14 @@ public class Fire extends Entity {
     private int health;
 
     public Fire(Wrap wrap, EntityManager entities, double x, double y) {
-        super(wrap, entities, EntityType.ENEMY, "resource/entities/fire.png", 7, 1, x, y, 130, 130, .3, .3, 0, .2);
+        super(wrap, entities,
+                EntityType.ENEMY,
+                "fire",
+                x, y,
+                100, 100,
+                .3, .3,
+                0, .2
+        );
         this.health = 15;
     }
 
@@ -35,8 +42,8 @@ public class Fire extends Entity {
 
     @Override
     public void animate() {
-        int column = (int)(this.getAnimationCounter() / 9.0 % 7);
-        this.swapTexture(column, 0);
-        this.addToAnimationCounter();
+        if (this.getWrap().isTimeToAnimate(10)) {
+            this.getAnimation().incrementAndReset(5);
+        }
     }
 }

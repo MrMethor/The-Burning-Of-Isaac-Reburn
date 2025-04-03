@@ -25,6 +25,7 @@ public class Game {
     }
 
     public void update() {
+        this.wrap.increaseAnimationCounter();
         if (this.map.changeLevelRequest()) {
             this.changeLevel();
         }

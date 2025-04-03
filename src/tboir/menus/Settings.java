@@ -10,7 +10,7 @@ public class Settings extends MenuType {
     private final HashMap<String, Boolean> settings;
 
     public Settings(Wrap wrap) {
-        super(wrap, "resource/backgrounds/menu.jpg");
+        super(wrap, "menu");
         this.settings = new HashMap<>();
         this.settings.put("debug", this.getWrap().isDebug());
         this.settings.put("fullscreen", this.getWrap().isFullscreen());

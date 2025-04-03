@@ -16,7 +16,7 @@ public class Keybinds extends MenuType {
     private String prevKeyLabel;
 
     public Keybinds(Wrap wrap) {
-        super(wrap, "resource/backgrounds/menu.jpg");
+        super(wrap, "menu");
     }
 
     @Override

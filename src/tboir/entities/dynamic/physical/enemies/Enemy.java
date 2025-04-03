@@ -15,15 +15,19 @@ public abstract class Enemy extends PhysicalEntity {
     private double health;
     private int initialWait;
     private boolean[][] tileObstacleGrid;
+    private boolean isDead;
 
-    public Enemy(Wrap wrap, EntityManager entities, EntityType type, double health, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
-        super(wrap, entities, type, spriteSheetPath, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
+    public Enemy(Wrap wrap, EntityManager entities, EntityType type, double health, String name, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+        super(wrap, entities, type, name, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         this.health = health;
         this.initialWait = 20;
     }
 
     @Override
     protected void applyCollision(Collision collision) {
+        if (this.isDead) {
+            return;
+        }
         switch (collision.entity().getType()) {
             case WALL -> this.applySolidCollision(collision);
             case PLAYER, ENEMY -> this.applyRelativeCollision(collision);
@@ -51,6 +55,7 @@ public abstract class Enemy extends PhysicalEntity {
             }
         }
         if (this.health <= 0) {
+            this.isDead = true;
             this.dropRoll();
             this.destroy();
         }

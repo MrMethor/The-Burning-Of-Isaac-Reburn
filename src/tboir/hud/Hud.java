@@ -3,7 +3,6 @@ package tboir.hud;
 import tboir.engine.Wrap;
 import tboir.map.Map;
 import tboir.map.Room;
-import tboir.tools.SpriteSheet;
 import tboir.tools.Image;
 
 import java.awt.Graphics2D;
@@ -14,8 +13,6 @@ public class Hud {
     public static final int MAX_HEARTS = 12;
 
     private final Wrap wrap;
-    private final SpriteSheet heartsSpriteSheet;
-    private final SpriteSheet mapIconSpriteSheet;
     private final Image[] hearts;
     private final Image[][] minimap;
     private final Image[][] mapIcons;
@@ -25,8 +22,6 @@ public class Hud {
         this.hearts = new Image[MAX_HEARTS];
         this.minimap = new Image[Map.MAX_SIZE][Map.MAX_SIZE];
         this.mapIcons = new Image[Map.MAX_SIZE][Map.MAX_SIZE];
-        this.heartsSpriteSheet = new SpriteSheet(this.wrap, "resource/hud/hearts.png", 0, 0, 48, 32, 3, 2);
-        this.mapIconSpriteSheet = new SpriteSheet(this.wrap, "resource/hud/mapIcons.png", 0, 0, 9, 8, 3, 2);
     }
 
     public void updateHearts(int redHearts, int containers, int soulHearts) {
@@ -78,7 +73,9 @@ public class Hud {
             Arrays.fill(this.minimap[i], null);
         }
 
-        int minimapComponentSize = 30;
+        int minimapComponentSize = 50;
+        int xDistance = (int)(minimapComponentSize - minimapComponentSize / 2.8);
+        int yDistance = (int)(minimapComponentSize - minimapComponentSize / 2.5);
         int baseX = 1600;
         int baseY = 0;
         for (int i = 0; i < Map.MAX_SIZE; i++) {
@@ -97,8 +94,8 @@ public class Hud {
                     roomState = RoomState.explored;
                 }
                 if (roomState != null) {
-                    this.minimap[i][j] = new Image(this.wrap, this.mapIconSpriteSheet.getImage(roomState.ordinal(), 0), baseX + (i) * minimapComponentSize, baseY + (j) * minimapComponentSize, minimapComponentSize, minimapComponentSize);
-                    this.mapIcons[i][j] = new Image(this.wrap, this.mapIconSpriteSheet.getImage(rooms[i][j].getType().ordinal(), 1), baseX + (i) * minimapComponentSize, baseY + (j) * minimapComponentSize, minimapComponentSize, minimapComponentSize);
+                    this.minimap[i][j] = new Image(this.wrap, roomState.ordinal(), 0, "mapIcons" , baseX + (i) * xDistance, baseY + (j) * yDistance, minimapComponentSize, minimapComponentSize);
+                    this.mapIcons[i][j] = new Image(this.wrap, rooms[i][j].getType().ordinal(), 1, "mapIcons", baseX + (i) * xDistance, baseY + (j) * yDistance, minimapComponentSize, minimapComponentSize);
                 }
             }
         }
@@ -109,6 +106,6 @@ public class Hud {
         int spacing = size - 10;
         int x = 50 + (index % (12 / 2)) * spacing;
         int y = 50 + (index / 6 * spacing);
-        this.hearts[index] = new Image(this.wrap, this.heartsSpriteSheet.getImage(column, row), x, y, size, size);
+        this.hearts[index] = new Image(this.wrap, column, row, "hearts", x, y, size, size);
     }
 }

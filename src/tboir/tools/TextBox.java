@@ -52,14 +52,13 @@ public class TextBox {
         Color previousColor = g.getColor();
         Font previousFont = g.getFont();
 
-        Font font = new Font(this.fontFamily, this.decor, (int)(this.size * this.wrap.getScale()));
-        Font fontCheck = new Font(this.fontFamily, this.decor, this.size);
+        Font font = new Font(this.fontFamily, this.decor, this.size);
         g.setColor(this.color);
         g.setFont(font);
         if (this.height == 0 || this.width == 0) {
-            g.drawString(this.text, (int)(this.x * this.wrap.getScale()), (int)(this.y * this.wrap.getScale()));
+            g.drawString(this.text, this.x, this.y);
         } else {
-            g.drawString(this.text, (int)((this.calculateX(g.getFontMetrics(fontCheck))) * this.wrap.getScale()), (int)(this.calculateY(g.getFontMetrics(fontCheck)) * this.wrap.getScale()));
+            g.drawString(this.text, this.calculateX(g.getFontMetrics(font)), this.calculateY(g.getFontMetrics(font)));
         }
 
         g.setColor(previousColor);

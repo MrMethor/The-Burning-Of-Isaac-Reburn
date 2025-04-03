@@ -6,7 +6,7 @@ import tboir.engine.GameState;
 public class DeathScreen extends MenuType {
 
     public DeathScreen(Wrap wrap) {
-        super(wrap, "resource/backgrounds/deathScreen.png");
+        super(wrap, "deathScreen");
     }
 
     @Override

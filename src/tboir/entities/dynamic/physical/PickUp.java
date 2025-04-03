@@ -8,7 +8,14 @@ import tboir.tools.EntityManager;
 public class PickUp extends PhysicalEntity {
 
     public PickUp(Wrap wrap, EntityManager entities, EntityType type, double x, double y) {
-        super(wrap, entities, type, "resource/entities/" + getPath(type) + ".png", x, y, 50, 50, 0.9, 0.9, 0, 0);
+        super(wrap, entities, type,
+                "pickups",
+                type.ordinal(), 0,
+                x, y,
+                100, 100,
+                0.5, 0.5,
+                0, 0
+        );
         this.changeDefaultSlideFactor(0.92);
     }
 
@@ -31,20 +38,5 @@ public class PickUp extends PhysicalEntity {
 
     @Override
     public void animate() {
-    }
-
-    private static String getPath(EntityType type) {
-        switch (type) {
-            case FULL_HEART -> {
-                return "fullHeart";
-            }
-            case HALF_HEART -> {
-                return "halfHeart";
-            }
-            case SOUL_HEART -> {
-                return "soulHeart";
-            }
-        }
-        return null;
     }
 }

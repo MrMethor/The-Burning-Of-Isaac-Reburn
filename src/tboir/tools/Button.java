@@ -29,11 +29,11 @@ public class Button {
         this.height = (int)(size / 480.0 * 100.0);
         this.isOn = isOn;
         this.hoverable = hoverable;
-        String path = this.isOn ? "resource/hud/onButton.png" : "resource/hud/offButton.png";
+        String texture = this.isOn ? "onButton" : "offButton";
 
         Color color = Color.decode("#BBBBBB");
         this.label = new TextBox(wrap, label, x, y, color, "Castellar", Font.BOLD, this.height / 2, this.width, this.height);
-        this.image = new Image(wrap, path, x, y, this.width, this.height);
+        this.image = new Image(wrap, texture, x, y, this.width, this.height);
     }
 
     public void update() {
@@ -65,8 +65,8 @@ public class Button {
 
     public void toggle() {
         this.isOn = !this.isOn;
-        String path = this.isOn ? "resource/hud/onButton.png" : "resource/hud/offButton.png";
-        this.image.changeImage(path);
+        String texture = this.isOn ? "onButton" : "offButton";
+        this.image.changeImage(texture);
     }
 
     public void changeLabel(String newLabel) {

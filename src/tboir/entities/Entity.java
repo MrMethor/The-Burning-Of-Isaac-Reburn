@@ -2,13 +2,14 @@ package tboir.entities;
 
 import tboir.engine.Wrap;
 import tboir.engine.Side;
+import tboir.tools.Animation;
 import tboir.tools.EntityManager;
 import tboir.tools.Image;
 import tboir.tools.Collision;
-import tboir.tools.SpriteSheet;
 
 import java.awt.Graphics2D;
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public abstract class Entity implements Comparable<Entity> {
@@ -28,11 +29,10 @@ public abstract class Entity implements Comparable<Entity> {
     private double hitboxOffsetY;
 
     private Image texture;
-    private int animationCounter;
 
     private final ArrayList<Collision> collisions;
 
-    public Entity(Wrap wrap, EntityManager entities, EntityType type, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+    public Entity(Wrap wrap, EntityManager entities, EntityType type, String name, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         this.wrap = wrap;
         this.collisions = new ArrayList<>();
         this.entities = entities;
@@ -45,10 +45,18 @@ public abstract class Entity implements Comparable<Entity> {
         this.hitboxHeightScale = heightScale;
         this.hitboxOffsetX = offsetX;
         this.hitboxOffsetY = offsetY;
-        this.texture = new Image(wrap, texturePath, x - width / 2.0, y - height / 2.0, width, height);
+        if (name == null) {
+            this.texture = new Image(wrap, (BufferedImage)null, x - width / 2.0, y - height / 2.0, width, height);
+        } else if (this.wrap.getResourceManager().getTexture(name) != null) {
+            this.texture = new Image(wrap, name, x - width / 2.0, y - height / 2.0, width, height);
+        } else if (this.wrap.getResourceManager().getAnimation(name) != null) {
+            this.texture = new Animation(wrap, this.wrap.getResourceManager().getAnimation(name), x - width / 2.0, y - height / 2.0, width, height);
+        } else {
+            System.out.println("Couldn't find animationsheet or texture: " + name);
+        }
     }
 
-    public Entity(Wrap wrap, EntityManager entities, EntityType type, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
+    public Entity(Wrap wrap, EntityManager entities, EntityType type, String spriteSheet, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY) {
         this.wrap = wrap;
         this.collisions = new ArrayList<>();
         this.entities = entities;
@@ -61,7 +69,7 @@ public abstract class Entity implements Comparable<Entity> {
         this.hitboxHeightScale = heightScale;
         this.hitboxOffsetX = offsetX;
         this.hitboxOffsetY = offsetY;
-        this.texture = new SpriteSheet(wrap, spriteSheetPath, x - width / 2.0, y - height / 2.0, width, height, column, row);
+        this.texture = new Image(wrap, column, row, spriteSheet, x - width / 2.0, y - height / 2.0, width, height);
     }
 
     public abstract void applyBehavior();
@@ -95,7 +103,7 @@ public abstract class Entity implements Comparable<Entity> {
     private void drawHitbox(Graphics2D g) {
         Color c = g.getColor();
         g.setColor(new Color(1f, 0f, 0f, .2f));
-        g.fillRect((int)((this.getHitboxX() - this.getHitboxWidth() / 2) * this.wrap.getScale()), (int)((this.getHitboxY() - this.getHitboxHeight() / 2) * this.wrap.getScale()), (int)(this.getHitboxWidth() * this.wrap.getScale()), (int)(this.getHitboxHeight() * this.wrap.getScale()));
+        g.fillRect((int)(this.getHitboxX() - this.getHitboxWidth() / 2), (int)(this.getHitboxY() - this.getHitboxHeight() / 2), (int)this.getHitboxWidth(), (int)this.getHitboxHeight());
         g.setColor(c);
     }
 
@@ -115,18 +123,28 @@ public abstract class Entity implements Comparable<Entity> {
         this.texture.changeSize(width, height);
     }
 
-    protected void changeSpriteSheet(String path, int column, int row) {
-        this.texture = new SpriteSheet(this.wrap, path, this.x, this.y, this.width, this.height, column, row);
+    protected void changeImage(String texture) {
+        this.texture.changeImage(texture);
     }
 
-    protected void changeTexture(String path) {
-        this.texture = new Image(this.wrap, path, this.x, this.y, this.width, this.height);
+    protected void changeImage(String spriteSheet, int column, int row) {
+        this.texture.changeImage(spriteSheet, column, row);
     }
 
-    protected void swapTexture(int column, int row) {
-        if (this.texture instanceof SpriteSheet) {
-            ((SpriteSheet)this.texture).swapImage(column, row);
-        }
+    protected void changeRotation(int times) {
+        this.texture.rotate(times);
+    }
+
+    protected void resetRotation() {
+        this.texture.resetRotation();
+    }
+
+    protected void mirrorHorizontally(boolean mirror) {
+        this.texture.mirrorHorizontally(mirror);
+    }
+
+    protected void mirrorVertically(boolean mirror) {
+        this.texture.mirrorVertically(mirror);
     }
 
     protected void addEntity(Entity newEntity) {
@@ -150,6 +168,7 @@ public abstract class Entity implements Comparable<Entity> {
     }
 
 
+
     // Protected Getters
     protected Wrap getWrap() {
         return this.wrap;
@@ -161,14 +180,6 @@ public abstract class Entity implements Comparable<Entity> {
 
     protected void changeType(EntityType newType) {
         this.type = newType;
-    }
-
-    protected long getAnimationCounter() {
-        return this.animationCounter;
-    }
-
-    protected void addToAnimationCounter() {
-        this.animationCounter++;
     }
 
     protected void setX(double x) {
@@ -196,6 +207,12 @@ public abstract class Entity implements Comparable<Entity> {
         return this.texture;
     }
 
+    protected Animation getAnimation() {
+        if (this.texture instanceof Animation) {
+            return (Animation)this.texture;
+        }
+        return null;
+    }
 
     // Public Getters
     public double getWeight() {

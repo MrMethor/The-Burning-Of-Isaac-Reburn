@@ -13,9 +13,9 @@ public abstract class MenuType {
     private final Image background;
     private final HashMap<String, Button> buttons;
 
-    public MenuType(Wrap wrap, String bgPath) {
+    public MenuType(Wrap wrap, String texture) {
         this.wrap = wrap;
-        this.background = new Image(wrap, bgPath, 0, 0);
+        this.background = new Image(wrap, texture, 0, 0);
         this.buttons = new HashMap<>();
         this.setupButtons();
     }

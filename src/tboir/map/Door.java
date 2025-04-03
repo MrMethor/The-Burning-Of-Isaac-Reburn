@@ -9,16 +9,30 @@ import tboir.tools.EntityManager;
 
 public class Door extends Entity {
 
-    private final Side side;
+    private final DoorType type;
 
     public Door(Wrap wrap, EntityManager entities, Side side, DoorType type) {
-        super(wrap, entities, EntityType.DOOR, getPath(type), 4, 2, Door.getX(side), Door.getY(side), 175, 175, 0.3, 0.3, 0, 0);
-        this.side = side;
-        swapTexture(side.num(), DoorState.CLOSED.ordinal());
+        super(wrap, entities,
+                EntityType.DOOR,
+                "doors",
+                type.ordinal(), 0,
+                Door.getX(side), Door.getY(side),
+                200, 200,
+                0.3, 0.3,
+                0, 0
+        );
+        this.type = type;
+        int rotation = 0;
+        switch (side) {
+            case DOWN -> rotation = 2;
+            case LEFT -> rotation = 3;
+            case RIGHT -> rotation = 1;
+        }
+        this.changeRotation(rotation);
     }
 
     public void openDoor() {
-        this.swapTexture(this.side.num(), DoorState.OPENED.ordinal());
+        this.changeImage("doors", this.type.ordinal(), 1);
     }
 
     @Override
@@ -64,16 +78,5 @@ public class Door extends Entity {
             }
         }
         return 0;
-    }
-
-    private static String getPath(DoorType type) {
-        String typeString = "";
-        switch (type) {
-            case BOSS -> typeString = "boss";
-            case BASEMENT -> typeString = "basement";
-            case DEPTHS -> typeString = "depths";
-            case GOLDEN -> typeString = "golden";
-        }
-        return "resource/doors/" + typeString + ".png";
     }
 }

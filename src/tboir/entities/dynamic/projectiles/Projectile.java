@@ -13,16 +13,16 @@ public abstract class Projectile extends DynamicEntity {
     private int timer;
     private double damage;
 
-    public Projectile(Wrap wrap, EntityManager entities, boolean isFriendly, double damage, double range, String texturePath, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY, double speed, double velocityX, double velocity, int angle) {
-        super (wrap, entities, isFriendly ? EntityType.FRIENDLY_PROJECTILE : EntityType.ENEMY_PROJECTILE, texturePath, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
+    public Projectile(Wrap wrap, EntityManager entities, boolean isFriendly, double damage, double range, String name, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY, double speed, double velocityX, double velocity, int angle) {
+        super (wrap, entities, isFriendly ? EntityType.FRIENDLY_PROJECTILE : EntityType.ENEMY_PROJECTILE, name, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         this.speed = speed;
         this.angle = angle;
         this.damage = damage;
         this.timer = (int)(range * 60);
     }
 
-    public Projectile(Wrap wrap, EntityManager entities, boolean isFriendly, double damage, double range, String spriteSheetPath, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY, double speed, double velocityX, double velocity, int angle) {
-        super (wrap, entities, isFriendly ? EntityType.FRIENDLY_PROJECTILE : EntityType.ENEMY_PROJECTILE, spriteSheetPath, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
+    public Projectile(Wrap wrap, EntityManager entities, boolean isFriendly, double damage, double range, String spriteSheet, int column, int row, double x, double y, int width, int height, double widthScale, double heightScale, double offsetX, double offsetY, double speed, double velocityX, double velocity, int angle) {
+        super (wrap, entities, isFriendly ? EntityType.FRIENDLY_PROJECTILE : EntityType.ENEMY_PROJECTILE, spriteSheet, column, row, x, y, width, height, widthScale, heightScale, offsetX, offsetY);
         this.speed = speed;
         this.angle = angle;
         this.damage = damage;
