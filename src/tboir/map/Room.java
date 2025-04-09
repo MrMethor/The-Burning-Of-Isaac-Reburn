@@ -11,11 +11,10 @@ import tboir.entities.Item;
 import tboir.entities.Web;
 import tboir.entities.TrapDoor;
 import tboir.entities.dynamic.physical.PickUp;
-import tboir.entities.dynamic.physical.enemies.Enemy;
+import tboir.entities.dynamic.physical.enemies.Body;
 import tboir.entities.dynamic.physical.enemies.Fly;
 import tboir.entities.EntityType;
 import tboir.engine.Side;
-import tboir.tools.EntityManager;
 import tboir.tools.Image;
 
 import java.awt.Graphics2D;
@@ -26,15 +25,12 @@ import java.util.Scanner;
 
 public class Room {
 
-    public static final int TILES_WIDTH = 15;
+    public static final int TILES_WIDTH = 13;
     public static final int TILES_HEIGHT = 7;
     public static final int TILE_WIDTH_PX = 102;
     public static final int TILE_HEIGHT_PX = 107;
     public static final int OFFSET_WIDTH_PX = 350;
     public static final int OFFSET_HEIGHT_PX = 215;
-
-    public static final int OBSTACLE_UPDATE_TIME_MS = 60;
-    private int counter;
 
     private final Wrap wrap;
 
@@ -97,7 +93,6 @@ public class Room {
     }
 
     public void update() {
-        this.updateObstacles();
         this.entities.update();
         if (!this.completed && !this.entities.hasEnemies()) {
             this.completed = true;
@@ -151,6 +146,7 @@ public class Room {
             case 'O' -> this.entities.addEntity(new PickUp(this.wrap, this.entities, EntityType.SOUL_HEART, x, y));
             case 'I' -> this.entities.addEntity(new Item(this.wrap, this.entities, randomItem, x, y));
             case 'W' -> this.entities.addEntity(new Web(this.wrap, this.entities, x, y));
+            case 'b' -> this.entities.addEntity(new Body(this.wrap, this.entities, x, y));
         }
     }
 
@@ -232,25 +228,6 @@ public class Room {
         }
     }
 
-    private void updateObstacles() {
-        boolean[][] tileObstacleGrid = new boolean[Room.TILES_WIDTH][Room.TILES_HEIGHT];
-        if (this.counter == 0) {
-            for (Entity entity : this.entities.getEntities()) {
-                if (entity.getType() == EntityType.OBSTACLE) {
-                    tileObstacleGrid[Room.getTileX(entity)][Room.getTileY(entity)] = true;
-                }
-            }
-            for (Entity entity : this.entities.getEntities()) {
-                if (entity instanceof Enemy) {
-                    ((Enemy)entity).updateObstacleGrid(tileObstacleGrid);
-                }
-            }
-            this.counter = OBSTACLE_UPDATE_TIME_MS;
-        } else {
-            this.counter--;
-        }
-    }
-
     // Getters
     public EntityManager getEntities() {
         return this.entities;
@@ -273,10 +250,18 @@ public class Room {
     }
 
     public static int getTileX(Entity entity) {
-        return (int)((entity.getX() - OFFSET_WIDTH_PX) / TILE_WIDTH_PX);
+        return (int)Math.round((entity.getHitboxX() - OFFSET_WIDTH_PX) / TILE_WIDTH_PX);
     }
 
     public static int getTileY(Entity entity) {
-        return (int)((entity.getY() - OFFSET_HEIGHT_PX) / TILE_HEIGHT_PX);
+        return (int)Math.round(((entity.getHitboxY() - OFFSET_HEIGHT_PX) / TILE_HEIGHT_PX));
+    }
+
+    public static int getTileCenterX(int tileX) {
+        return OFFSET_WIDTH_PX + tileX * TILE_WIDTH_PX;
+    }
+
+    public static int getTileCenterY(int tileY) {
+        return OFFSET_HEIGHT_PX + tileY * TILE_HEIGHT_PX;
     }
 }

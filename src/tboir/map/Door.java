@@ -5,7 +5,6 @@ import tboir.entities.Entity;
 import tboir.engine.Side;
 import tboir.entities.EntityType;
 import tboir.tools.Collision;
-import tboir.tools.EntityManager;
 
 public class Door extends Entity {
 

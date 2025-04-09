@@ -1,5 +1,6 @@
 package tboir.engine;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +34,8 @@ public class ResourceManager {
             for (File file : listOfFiles) {
                 int size = this.extractSpriteSize(file);
                 if (size > 0) {
-                    this.addSpriteSheet(file.getName().replaceAll(".png", ""), this.extractSpriteSize(file));
+                    String sheetName = file.getName().replaceAll(".png", "");
+                    this.spriteSheets.put(sheetName, new SpriteSheet(this.loadImage("resource/spritesheets/" + sheetName + ".png"), this.extractSpriteSize(file)));
                 } else {
                     System.out.println("Couldn't find sprite size in file: " + file.getName());
                 }
@@ -46,7 +48,8 @@ public class ResourceManager {
         File[] listOfFiles = folder.listFiles();
         if (listOfFiles != null) {
             for (File file : listOfFiles) {
-                this.addTexture(file.getName().replaceAll(".png", ""));
+                String textureName = file.getName().replaceAll(".png", "");
+                this.textures.put(textureName, new Texture(this.loadImage("resource/textures/" + textureName + ".png")));
             }
         }
     }
@@ -58,7 +61,8 @@ public class ResourceManager {
             for (File file : listOfFiles) {
                 int size = this.extractSpriteSize(file);
                 if (size > 0) {
-                    this.addAnimationSheet(file.getName().replaceAll(".png", ""), this.extractSpriteSize(file));
+                    String sheetName = file.getName().replaceAll(".png", "");
+                    this.animationSheets.put(sheetName, new AnimationSheet(this.loadImage("resource/animationsheets/" + sheetName + ".png"), this.extractSpriteSize(file)));
                 } else {
                     System.out.println("Couldn't find animation size in file: " + file.getName());
                 }
@@ -66,16 +70,12 @@ public class ResourceManager {
         }
     }
 
-    private void addSpriteSheet(String sheetName, int width) {
-        this.spriteSheets.put(sheetName, new SpriteSheet("resource/spritesheets/" + sheetName + ".png", width));
-    }
-
-    private void addAnimationSheet(String sheetName, int width) {
-        this.animationSheets.put(sheetName, new AnimationSheet("resource/animationsheets/" + sheetName + ".png", width));
-    }
-
-    private void addTexture(String textureName) {
-        this.textures.put(textureName, new Texture("resource/textures/" + textureName + ".png"));
+    private BufferedImage loadImage(String path) {
+        try {
+            return ImageIO.read(new File(path));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load image: " + path, e);
+        }
     }
 
     private int extractSpriteSize(File spriteSheet) {

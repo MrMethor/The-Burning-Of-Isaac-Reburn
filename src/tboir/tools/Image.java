@@ -90,13 +90,18 @@ public class Image {
         double centerX = this.x + this.width / 2.0;
         double centerY = this.y + this.height / 2.0;
         g.translate(centerX, centerY);
-        g.rotate(Math.toRadians(this.rotatedTimes * 90));
+
+        if (this.rotatedTimes != 0) {
+            g.rotate(Math.toRadians(this.rotatedTimes * 90));
+        }
+
         if (this.mirroredHorizontally) {
             g.scale(-1, 1);
         }
         if (this.mirroredVertically) {
             g.scale(1, -1);
         }
+
         this.drawImage(g, this.image);
 
         g.setTransform(oldTransform);

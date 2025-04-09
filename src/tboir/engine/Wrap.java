@@ -8,7 +8,6 @@ import java.awt.Cursor;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -254,6 +253,10 @@ public class Wrap {
 
     public void setInterpolation(double interpolation) {
         this.interpolation.setInterpolation(interpolation);
+    }
+
+    public boolean performanceDrop() {
+        return this.counter.getUPS() < this.counter.getDesiredUPS() || this.counter.getUPS() > this.counter.getDesiredUPS() + 10;
     }
 
     // Counter Increments

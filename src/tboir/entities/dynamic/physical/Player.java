@@ -47,7 +47,7 @@ public class Player extends PhysicalEntity {
         super(wrap, null, EntityType.PLAYER, "player", 1920 / 2.0, 1080 / 2.0, 150, 150, 0.4, 0.4, 0, 0.3);
         this.hud = hud;
         this.dead = false;
-        this.firingSpeed = 50;
+        this.firingSpeed = 2;
         this.redHearts = 0;
         this.redContainers = 0;
         this.soulHearts = 0;

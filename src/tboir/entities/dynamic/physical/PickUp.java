@@ -3,7 +3,7 @@ package tboir.entities.dynamic.physical;
 import tboir.engine.Wrap;
 import tboir.entities.EntityType;
 import tboir.tools.Collision;
-import tboir.tools.EntityManager;
+import tboir.map.EntityManager;
 
 public class PickUp extends PhysicalEntity {
 

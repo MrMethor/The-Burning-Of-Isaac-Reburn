@@ -2,8 +2,8 @@ package tboir.entities;
 
 import tboir.engine.Wrap;
 import tboir.engine.Side;
+import tboir.map.EntityManager;
 import tboir.tools.Animation;
-import tboir.tools.EntityManager;
 import tboir.tools.Image;
 import tboir.tools.Collision;
 

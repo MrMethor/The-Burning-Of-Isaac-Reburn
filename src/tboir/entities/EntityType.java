@@ -16,5 +16,4 @@ public enum EntityType {
     TRAP_DOOR,
     WALL,
     WEB,
-
 }

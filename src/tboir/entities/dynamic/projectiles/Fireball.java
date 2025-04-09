@@ -1,7 +1,7 @@
 package tboir.entities.dynamic.projectiles;
 
 import tboir.engine.Wrap;
-import tboir.tools.EntityManager;
+import tboir.map.EntityManager;
 
 public class Fireball extends Projectile {
 

@@ -1,8 +1,8 @@
 UDLR
-f....R.R....f
+b....R.R....b
 .....F.F.....
 RRRRRR.RRRRRR
 .............
 RRRRRR.RRRRRR
 .....F.F.....
-f....R.R....f
+b....R.R....b

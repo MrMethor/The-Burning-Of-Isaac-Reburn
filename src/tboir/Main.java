@@ -12,6 +12,8 @@ import tboir.menus.Pause;
 import tboir.menus.Keybinds;
 
 import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.RenderingHints;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.Dimension;
@@ -29,7 +31,16 @@ public class Main extends Canvas implements Runnable {
     private Game game;
     private MenuType menu;
 
+    private final RenderingHints renderingHints;
+
     public Main() {
+        RenderingHints hints = new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+        hints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
+        hints.put(RenderingHints.KEY_COLOR_RENDERING,  RenderingHints.VALUE_COLOR_RENDER_SPEED);
+        hints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
+        hints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        this.renderingHints = hints;
+
         this.frame = null;
         this.wrap = new Wrap();
         this.menu = new Menu(this.wrap);
@@ -106,11 +117,22 @@ public class Main extends Canvas implements Runnable {
             return;
         }
         Graphics2D g = (Graphics2D)bs.getDrawGraphics();
+        g.setRenderingHints(this.renderingHints);
         g.scale(this.wrap.getScale(), this.wrap.getScale());
+
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, getWidth(), getHeight());
+        if (this.wrap.performanceDrop()) {
+            this.wrap.setInterpolation(0);
+        }
 
         if (this.wrap.getGameState() == GameState.GAME) {
             this.game.render(g);
         } else {
+            if (this.menu instanceof Pause) {
+                this.wrap.setInterpolation(0);
+                this.game.render(g);
+            }
             this.menu.render(g);
         }
 
@@ -119,7 +141,9 @@ public class Main extends Canvas implements Runnable {
         }
         g.dispose();
         bs.show();
-        Toolkit.getDefaultToolkit().sync();
+        if (!this.wrap.performanceDrop()) {
+            Toolkit.getDefaultToolkit().sync();
+        }
     }
 
     private void updateState() {
@@ -168,6 +192,9 @@ public class Main extends Canvas implements Runnable {
     public static void main(String[] args) {
         System.setProperty("sun.java2d.uiScale", "1.0");
         System.setProperty("sun.java2d.opengl", "true");
+        System.setProperty("awt.image.scaling", "false");
+        System.setProperty("sun.java2d.accthreshold", "0");
+        System.setProperty("sun.java2d.pmoffscreen", "false");
         Main main = new Main();
         main.start();
     }

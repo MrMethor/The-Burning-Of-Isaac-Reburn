@@ -1,8 +1,8 @@
 package tboir.entities;
 
 import tboir.engine.Wrap;
+import tboir.map.EntityManager;
 import tboir.tools.Collision;
-import tboir.tools.EntityManager;
 
 public class Wall extends Entity {
 

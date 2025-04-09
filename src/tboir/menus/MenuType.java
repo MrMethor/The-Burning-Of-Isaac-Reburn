@@ -4,6 +4,8 @@ import tboir.engine.Wrap;
 import tboir.tools.Image;
 import tboir.tools.Button;
 
+
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.HashMap;
 
@@ -11,17 +13,20 @@ public abstract class MenuType {
 
     private final Wrap wrap;
     private final Image background;
+    private final Color backgroundColor;
     private final HashMap<String, Button> buttons;
 
     public MenuType(Wrap wrap, String texture) {
         this.wrap = wrap;
+        this.backgroundColor = null;
         this.background = new Image(wrap, texture, 0, 0);
         this.buttons = new HashMap<>();
         this.setupButtons();
     }
 
-    public MenuType(Wrap wrap) {
+    public MenuType(Wrap wrap, Color color) {
         this.wrap = wrap;
+        this.backgroundColor = color;
         this.background = null;
         this.buttons = new HashMap<>();
         this.setupButtons();
@@ -49,6 +54,11 @@ public abstract class MenuType {
     public void render(Graphics2D g) {
         if (this.background != null) {
             this.background.draw(g);
+        } else {
+            Color c = g.getColor();
+            g.setColor(this.backgroundColor);
+            g.fillRect(0, 0, 1920, 1080);
+            g.setColor(c);
         }
         this.buttons.forEach((_, button) -> button.render(g));
     }

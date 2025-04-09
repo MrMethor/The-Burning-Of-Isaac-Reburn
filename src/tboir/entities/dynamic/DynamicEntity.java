@@ -3,7 +3,7 @@ package tboir.entities.dynamic;
 import tboir.engine.Wrap;
 import tboir.entities.Entity;
 import tboir.entities.EntityType;
-import tboir.tools.EntityManager;
+import tboir.map.EntityManager;
 
 import java.awt.Graphics2D;
 
