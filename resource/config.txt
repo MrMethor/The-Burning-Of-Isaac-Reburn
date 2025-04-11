@@ -1,4 +1,4 @@
-width 1800
+width 1200
 ups 60
 debug true
 fullscreen false
